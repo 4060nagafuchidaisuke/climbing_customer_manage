@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('member_id')->constrained()->cascadeOnDelete(); // 会員ID
             $table->text('note'); // メモ内容
             $table->boolean('is_alert')->default(false); // 警告表示フラッグ
-            $table->foreignId('created_by')->nullable()->constrained('users'); // 作成スタッフID
+            $table->foreignId('created_by')->nullable()->constrained('staffs'); // 作成スタッフID
             // 検索機能
             $table->index('member_id');
             $table->index('is_alert');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('staffs_notes');
+        Schema::dropIfExists('staff_notes');
     }
 };
