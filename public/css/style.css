@@ -1,0 +1,109 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.bg-image {
+/* 画像のパスを指定 */
+    background-image: url('/images/HAZY_bolder_Reception.jpg');
+
+/* 背景を画面いっぱいに固定する設定 */
+    height: 100%;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+/* その上のコンテンツを中央に配置するためのFlexbox */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 3vh;
+}
+
+/* アニメーションの定義：下から上へフェードイン */
+@keyframes slideUpFade {
+    0% {
+        opacity: 0; /* 最初は完全に透明 */
+        transform: translateY(40px); /* 本来の位置より40px下にずらしておく */
+    }
+    100% {
+        opacity: 1; /* 完全に不透明になる */
+        transform: translateY(0); /* 本来の位置（0）に戻る */
+    }
+}
+
+.content-box {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px); /* 背景を少しぼかす「すりガラス」効果 */
+    padding: 3.5rem 4rem; /* 余白を大きくしてゆったりと */
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* 影をふんわり大きく */
+    max-width: 400px; /* 横幅が広がりすぎないように制限 */
+    width: 80%;
+    /* slideUpFadeを0.8秒かけて実行し、ease-out(最後ゆっくり)で停止(forwards)させる */
+    animation: slideUpFade 1.5s ease-out forwards;
+    animation-delay: 0.4s; /* 0.3秒待ってからアニメーション開始 */
+    opacity: 0; /* 待機中は見えないようにしておく */
+}
+
+.subtitle {
+    color: #4CAF50; /* ロゴの緑に近い色 */
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+}
+
+.main-title {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #222;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+}
+
+.main-title .highlight {
+    font-size: 2.2rem;
+    font-weight: 900; /* HAZY BOULDERを特に太く */
+}
+
+.divider {
+    border: none;
+    height: 3px;
+    background: #222; /* 黒くて短い力強いライン */
+    width: 40px;
+    margin: 0 auto 1.5rem auto;
+}
+
+.instruction {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+/* ボタンのデザイン */
+.btn-checkin {
+    display: inline-block;
+    background-color: #388E3C; /* 濃いめの緑 */
+    color: white;
+    padding: 1rem 3rem;
+    text-decoration: none;
+    border-radius: 50px; /* 丸みを帯びたボタン */
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: all 0.3s ease; /* ホバー時のアニメーション */
+    box-shadow: 0 4px 15px rgba(56, 142, 60, 0.3);
+}
+
+/* マウスが乗った時の動き */
+.btn-checkin:hover {
+    background-color: #2E7D32;
+    transform: translateY(-3px); /* 少し上に浮く */
+    box-shadow: 0 6px 20px rgba(56, 142, 60, 0.4); /* 影が濃くなる */
+}
