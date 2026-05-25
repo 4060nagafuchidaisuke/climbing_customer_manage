@@ -30,7 +30,7 @@ class MemberPlan extends Model
 
     // 型指定
     protected $casts = [
-        "plan_type"=>PlanType::class,
+        "plan_type" =>PlanType::class,
         'category'=>MemberCategory::class,
         "start_date"=>"date",
         "end_date"=>"date",

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\VisitType;
+use App\Enums\VisitSource;
 
 class Visit extends Model
 {
@@ -29,6 +30,7 @@ class Visit extends Model
         'check_in_at'=>'datetime',
         'check_out_at'=>'datetime',
         'visit_type'=> VisitType::class,
+        'visit_source' => VisitSource::class
     ];
 
     /**

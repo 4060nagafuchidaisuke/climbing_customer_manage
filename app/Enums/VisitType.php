@@ -22,8 +22,7 @@ enum VisitType: string
         return match ($this) {
             self::MEMBER,
             self::TRIAL => true,
-            self::LESSON => false,
+            self::LESSON => true,
         };
     }
-
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class Member extends Model
 {
@@ -114,19 +115,19 @@ class Member extends Model
      * Scope（）
      */
     // 注意フラグが立っている会員を検索
-    public function scopeCaution($query)
+    public function scopeCaution(Builder $query)
     {
         return $query->where('caution_flag', true);
     }
 
     // 現在入店中の会員
-    public function scopeCurrentlyIn($query)
+    public function scopeCurrentlyIn(Builder $query)
     {
         return $query->whereHas('activeVisit');
     }
 
     // バーコード or 会員番号で検索（受付用）
-    public function scopeFindByCode($query, string $code)
+    public function scopeFindByCode(Builder $query, string $code)
     {
         return $query->where(function ($q) use ($code) {
         $q->where('barcode', $code)->orWhere('member_code', $code);

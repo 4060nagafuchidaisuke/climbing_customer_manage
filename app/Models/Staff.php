@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,13 +12,16 @@ class Staff extends Authenticatable
 {
     use HasFactory;
 
+    protected $table = 'staffs';
+
     // fillable：外から書き換えられたら困るものを保護
     protected $fillable = [
         'name',
         'email',
+        'password',
         'role',
         'is_active',
-        'last_login_at',
+        'last_login_at'
     ]; 
 
     // 型指定
