@@ -47,56 +47,37 @@ QRコードを利用した入退館管理システムです。
 
 ## ER図
 
-┌─────────────────────┐
-│      members        │
-├─────────────────────┤
-│ id (PK)             │
-│ member_code         │
-│ barcode             │
-│ last_name           │
-│ first_name          │
-│ birth_date          │
-│ gender              │
-│ phone               │
-│ email               │
-│ address             │
-│ climbing_level      │
-│ caution_flag        │
-│ guardian_name       │
-│ emergency_name      │
-│ emergency_phone     │
-│ created_at          │
-│ updated_at          │
-└─────────┬───────────┘
-          │ 1
-          │
-          │ N
-┌─────────▼───────────┐
-│       visits        │
-├─────────────────────┤
-│ id (PK)             │
-│ member_id (FK)      │
-│ check_in_at         │
-│ check_out_at        │
-│ visit_type          │
-│ visit_source        │
-│ checked_in_by (FK)  │
-│ checked_out_by(FK)  │
-│ staff_note          │
-│ created_at          │
-│ updated_at          │
-└─────────┬───────────┘
-          │
-          │ N
-          │
-          │ 1
-┌─────────▼───────────┐
-│       staffs        │
-├─────────────────────┤
-│ id (PK)             │
-│ name                │
-│ ...                 │
-└─────────────────────┘
+```mermaid
+erDiagram
+
+    MEMBERS ||--o{ VISITS : has
+
+    MEMBERS {
+        bigint id PK
+        string member_code
+        string barcode
+        string last_name
+        string first_name
+        string phone
+        string email
+    }
+
+    VISITS {
+        bigint id PK
+        bigint member_id FK
+        datetime check_in_at
+        datetime check_out_at
+        string visit_type
+        string visit_source
+    }
+
+    STAFFS ||--o{ VISITS : manages
+
+    STAFFS {
+        bigint id PK
+        string name
+    }
+```
 
 ---
 
