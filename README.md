@@ -82,6 +82,24 @@ erDiagram
 ---
 
 ## 画面イメージ
+```mermaid
+flowchart TD
+
+    A[ログイン] --> B[ダッシュボード]
+
+    B --> C[会員一覧]
+    B --> D[QR受付]
+    B --> E[来館履歴]
+
+    C --> F[会員詳細]
+    F --> G[会員編集]
+    C --> H[会員登録]
+
+    D --> I[入館処理]
+    D --> J[退館処理]
+
+    E --> K[来館履歴詳細]
+```
 <img width="1919" height="912" alt="image" src="https://github.com/user-attachments/assets/1121837e-892a-41eb-8585-614e1ea80cc0" />
 <img width="1919" height="912" alt="image" src="https://github.com/user-attachments/assets/e7c25373-03c7-402a-bd9d-c8334237d023" />
 <img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/7aea9b8e-0b0f-4c17-a37b-827ec27b957c" />
