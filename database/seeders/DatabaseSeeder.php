@@ -20,8 +20,9 @@ class DatabaseSeeder extends Seeder
          */
         // 管理者の作成
         $adminStaff = Staff::factory()->admin()->create([
-            'name' => '管理者 太郎',
-            'email' => 'admin@gym.test',
+            'name'=>'管理者 太郎',
+            'email'=>'admin@gym.test',
+            'staff_code'=>'s0001',
         ]);
 
         // 一般スタッフの作成
@@ -92,16 +93,19 @@ class DatabaseSeeder extends Seeder
 
             // 過去の入退店履歴（checked_out_at あり）
             for ($i = 0; $i < $visitCount; $i++) {
+                $checkIn = fake()->dateTimeBetween('-6 months', '-2 hours');
                 Visit::factory()->create([
                     'member_id'       => $member->id,
                     'checked_in_by'   => $allStaff->random()->id,
                     'checked_out_by'  => $allStaff->random()->id,
+                    'check_in_at'    => $checkIn,
+                    'check_out_at'   => fake()->dateTimeBetween($checkIn, '-10 minutes'),
                 ]);
             }
         }
 
-        // 現在在店中の会員を 3名 作る（ダッシュボード確認用）
-        $allMembers->random(3)->each(function ($member) use ($allStaff) {
+        // 現在在店中の会員を 5名 作る（ダッシュボード確認用）
+        $allMembers->random(5)->each(function ($member) use ($allStaff) {
             Visit::factory()->staying()->create([
                 'member_id'      => $member->id,
                 'checked_in_by'  => $allStaff->random()->id,

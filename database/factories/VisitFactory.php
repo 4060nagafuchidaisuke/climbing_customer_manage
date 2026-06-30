@@ -66,31 +66,38 @@ class VisitFactory extends Factory
         return $this->state(fn () => [
             'check_in_at' => now()->subHours(3),
             'check_out_at' => now()->subHour(),
+            'checked_in_by' => Staff::factory(),
             'checked_out_by' => Staff::factory(),
         ]);
     }
     // トライアルかどうか
     public function trial(): static
     {
-        return $this->state(fn () => [
-            'visit_type' => VisitType::TRIAL,
-        ]);
+        return $this->state(function () {
+            return [
+                'visit_type' => VisitType::TRIAL,
+            ];
+        });
     }
 
     // レッスンかどうか
     public function lesson(): static
     {
-        return $this->state(fn () => [
-            'visit_type' => VisitType::LESSON,
-        ]);
+        return $this->state(function () {
+            return [
+                'visit_type' => VisitType::LESSON,
+            ];
+        });
     }
 
     // バーコードで受付したかどうか
     public function barcode(): static
     {
-        return $this->state(fn () => [
-            'visit_source' => VisitSource::BARCODE,
-        ]);
+        return $this->state(function (){
+            return [
+                'visit_source' => VisitSource::BARCODE,
+            ];
+        });
     }
 
 }

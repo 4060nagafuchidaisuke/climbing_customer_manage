@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use App\Enums\PlanStatus;
 
 class Member extends Model
 {
@@ -13,37 +14,37 @@ class Member extends Model
 
     // fillable：外から書き換えられたら困るものを保護
     protected $fillable = [
-        "member_code",
-        "barcode",
-        "last_name",
-        "first_name",
-        "last_name_kana",
-        "first_name_kana",
-        "birth_date",
-        "gender",
-        "phone",
-        "email",
-        "postal_code",
-        "address",
-        "occupation",
-        "photo_path",
-        "climbing_level",
-        "injury_notes",
-        "caution_flag",
-        "caution_notes",
-        "is_minor",
-        "guardian_name",
-        "guardian_phone",
-        "emergency_name",
-        "emergency_relation",
-        "emergency_phone"
+        'member_code',
+        'barcode',
+        'last_name',
+        'first_name',
+        'last_name_kana',
+        'first_name_kana',
+        'birth_date',
+        'gender',
+        'phone',
+        'email',
+        'postal_code',
+        'address',
+        'occupation',
+        'photo_path',
+        'climbing_level',
+        'injury_notes',
+        'caution_flag',
+        'caution_notes',
+        'is_minor',
+        'guardian_name',
+        'guardian_phone',
+        'emergency_name',
+        'emergency_relation',
+        'emergency_phone'
     ]; 
 
     // 型指定
     protected $casts = [
-        "birth_date" => "date",
-        "caution_flag" => "boolean",
-        "is_minor" => "boolean"
+        'birth_date'=>'date',
+        'caution_flag'=>'boolean',
+        'is_minor'=>'boolean'
     ];
 
     /**
@@ -99,7 +100,7 @@ class Member extends Model
     public function activePlan()
     {
         return $this->hasOne(MemberPlan::class)
-                    ->where('status', 'active')
+                    ->where('status', PlanStatus::ACTIVE)
                     ->latestOfMany();
     }
 
@@ -107,8 +108,14 @@ class Member extends Model
     public function activeVisit()
     {
         return $this->hasOne(Visit::class)
-                    ->whereNull('exit_at')
+                    ->whereNull('check_out_at')
                     ->latestOfMany();
+    }
+
+    // 現在退店中かどうか判定(2重読み防止)
+    public function isStaying(): bool
+    {
+        return $this->activeVisit()->exists();
     }
 
     /**

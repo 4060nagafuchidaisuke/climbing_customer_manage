@@ -10,25 +10,44 @@
 
                 {{-- ナビリンク（PC） --}}
                 <div class="hidden sm:flex sm:items-center sm:space-x-2">
+                    {{--ダッシュボードボタン--}}
                     <a href="{{ route('dashboard') }}"
                        class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
                               {{ request()->routeIs('dashboard') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                         ダッシュボード
                     </a>
-                    <a href="#"
+
+                    {{--会員管理ボタン--}}
+                    <a href="{{ route('members.index') }}"
                        class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
                               {{ request()->routeIs('members.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                         会員管理
                     </a>
-                    <a href="#"
+
+                    {{--在店中ボタン--}}
+                    <a href="{{ route('visits.index') }}"
                        class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
                               {{ request()->routeIs('visits.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                         在店中
                     </a>
 
+                    {{--バーコード読み取りボタン--}}
+                    <a href="{{ route('checkin.index') }}"
+                       class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
+                              {{ request()->routeIs('checkin.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                        来退店受付
+                    </a>
+
+                    {{--お知らせ入力ボタン--}}
+                    <a href="{{ route('notices.index') }}"
+                       class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
+                              {{ request()->routeIs('notices.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                        お知らせ入力
+                    </a>
+
                     {{-- 管理者のみ表示 --}}
                     @if(Auth::user()->role === \App\Enums\StaffRole::ADMIN)
-                        <a href="#"
+                        <a href="{{ route('staffs.index') }}"
                            class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
                                   {{ request()->routeIs('staff.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                             スタッフ管理
@@ -83,14 +102,20 @@
                       {{ request()->routeIs('dashboard') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                 ダッシュボード
             </a>
-            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
+            <a href="{{ route('members.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
                 会員管理
             </a>
-            <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
+            <a href="{{ route('visits.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
                 在店中
             </a>
+            <a href="{{ route('checkin.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
+                来退店受付
+            </a>
+            <a href="{{ route('notices.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
+                お知らせ入力
+            </a>
             @if(Auth::user()->role === \App\Enums\StaffRole::ADMIN)
-                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
+                <a href="{{ route('staffs.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
                     スタッフ管理
                 </a>
             @endif
