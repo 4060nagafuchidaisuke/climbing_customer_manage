@@ -18,7 +18,7 @@ body, html {
 
 /* --- ログイン画面系 --- */
 .bg-image {
-    background-image: url('/images/Reception.png');
+    background-image: url('/images/Reception.webp');
     height: 100%;
     background-position: center bottom;
     background-repeat: no-repeat;
@@ -65,7 +65,7 @@ body, html {
 
 /* --- ダッシュボード系 --- */
 .dashboard-page-container {
-    background-image: url('/images/DashBoad.png');
+    background-image: url('/images/Admin.webp');
     background-size: cover;
     background-position: center bottom;
     background-repeat: no-repeat;

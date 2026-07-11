@@ -3,12 +3,17 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MemberController;
-use App\Http\Controllers\CheckinController;;
+use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\VisitController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\QRController;
+use App\Http\Controllers\GuestRegistrationController;
+use App\Http\Controllers\MemberRegistrationController;
+use App\Http\Controllers\MemberPlanController;
+
 
 Route::get('/', function (){
     return view('welcome');
@@ -18,7 +23,21 @@ Route::get('/', function (){
 Route::middleware('auth')->group(function (){
     // ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+     // 【スタッフ側・要ログイン】QRを表示する画面
+        Route::get('/members/register-qr', [QRController::class, 'show'])->name('members.register_qr');
+
+    // 会員情報
     Route::resource('members', MemberController::class);
+    
+    // 会員の新規登録
+    Route::get('members/{member}/register', [MemberRegistrationController::class, 'create'])->name('members.register');
+
+    // 会員の情報変更
+    Route::post('members/{member}/register', [MemberRegistrationController::class, 'store'])->name('members.register.store');
+
+    // 会員のプラン変更
+    Route::post('members/{member}/plans', [MemberPlanController::class, 'store'])->name('members.plans.store');
 
     // 会員の検索
     Route::post('/checkin/search',[VisitController::class, 'search'])->name('visits.search');
@@ -51,6 +70,24 @@ Route::middleware('auth')->group(function (){
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+   
+
 });
+
+// お客さん登録用（authグループの外（公開））
+// URLのチェック
+Route::get('/register/guest', [GuestRegistrationController::class, 'create'])->name('register.guest.form')->middleware('signed');
+
+// 確認画面へ（confirm）
+Route::post('/register/guest/confirm', [GuestRegistrationController::class, 'confirm'])->name('register.guest.confirm');
+
+// 保存処理（store）
+Route::post('/register/guest/store', [GuestRegistrationController::class, 'store'])->name('register.guest.store');
+
+// 完了画面（complete）
+Route::get('/register/guest/complete', [GuestRegistrationController::class, 'complete'])->name('register.guest.complete');
+
+// セッション切れ案内（公開・保護なし）
+Route::get('/register/guest/expired', [GuestRegistrationController::class, 'expired'])->name('register.guest.expired');
 
 require __DIR__.'/auth.php';

@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 受付カメラのプレビューを鏡像から通常向きに戻す */
+#reader video {
+    transform: scaleX(-1);
+}

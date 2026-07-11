@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Member;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Enums\MemberCategory;
 
 /**
  * @extends Factory<Member>
@@ -22,10 +23,6 @@ class MemberFactory extends Factory
         $isMinor = fake()->boolean(20); // 20%の確率で未成年
 
         return [
-            // 業務キー
-            'member_code' => 'M-' . fake()->unique()->numerify('######'),
-            'barcode' => '20' . $this->faker->unique()->numerify('##########'),
-
             // 氏名
             'last_name' => fake()->lastName(),
             'first_name' => fake()->firstName(),
@@ -67,6 +64,38 @@ class MemberFactory extends Factory
             'emergency_name' => fake()->name(),
             'emergency_relation' => fake()->randomElement(['parent', 'spouse', 'sibling', 'friend']),
             'emergency_phone' => fake()->phoneNumber(),
+
+            
         ];
+    }
+
+    // 正会員（registered_at と category が確定している）
+    public function registered(): static
+    {
+        return $this->state(function () {
+            return [
+                'registered_at' => fake()->dateTimeBetween('-1 year', 'now'),
+                'category'      => fake()->randomElement(MemberCategory::cases()),
+            ];
+        });
+    }
+
+    // ビジター（明示的に未登録状態）
+    public function visitor(): static
+    {
+        return $this->state([
+            'registered_at' => null,
+            'category' => null,
+        ]);
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Member $member) {
+            $code = str_pad($member->id, 5, '0', STR_PAD_LEFT);
+            $member->member_code = $code;
+            $member->barcode = $code;
+            $member->save();
+        });
     }
 }

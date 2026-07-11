@@ -1,5 +1,5 @@
 <x-app-layout
-    background="images/SystemSetting.png"
+    background="images/SystemSetting.webp"
     bgPosition="center bottom"
     bgSize="50%"
 >

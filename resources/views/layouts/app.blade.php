@@ -1,6 +1,6 @@
- {{-- デフォルトはダッシュボード背景 --}}
+{{-- デフォルトはダッシュボード背景 --}}
 @props([
-    'background'=>'images/DashBoad.png',
+    'background'=>'images/Admin.webp',
     'bgPosition'=>'center center', 
     'bgSize'=>'cover',
 ]

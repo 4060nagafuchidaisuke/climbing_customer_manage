@@ -1,5 +1,5 @@
 <x-app-layout
-    background="images/SystemSetting.png"
+    background="images/SystemSetting.webp"
     bgPosition="center bottom"
     bgSize="50%"
 >
@@ -64,7 +64,8 @@
                 <div>
                     <label class="block text-base font-semibold text-gray-800 mb-2">パスワード</label>
                     <input type="password" name="password"
-                           class="w-full rounded-md border-gray-300 shadow-sm text-sm">
+                           class="w-full rounded-md border-gray-300 shadow-sm text-sm"
+                           placeholder="8文字以上の半角英数字">
                     @error('password')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror

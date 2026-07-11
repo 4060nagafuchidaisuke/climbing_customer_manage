@@ -1,10 +1,14 @@
+@push('scripts')
+    @vite('resources/js/guest-complete.js')
+@endpush
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <a href="{{ route('members.show', $member) }}"
                    class="text-gray-400 hover:text-gray-600 text-sm">← 詳細に戻る</a>
-                <h2 class="font-semibold text-xl text-gray-800">
+                <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
                     会員情報の編集
                 </h2>
                 <span class="text-sm text-gray-500 font-mono">{{ $member->member_code }}</span>
@@ -14,6 +18,17 @@
 
     <div class="py-8">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        @if (session('success'))
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                {{ session('error') }}
+            </div>
+        @endif
 
             {{-- バリデーションエラー表示 --}}
             @if($errors->any())
@@ -26,6 +41,16 @@
                     </ul>
                 </div>
             @endif
+
+            {{-- 会員証（QRコード再発行用） --}}
+            <div class="mb-6 bg-white/80 rounded-lg shadow p-6 flex flex-col items-center">
+                <h3 class="font-semibold text-gray-700 mb-3">会員証（QRコード）</h3>
+                <canvas id="qr-code" data-code="{{ $member->member_code }}"></canvas>
+                <p class="mt-3 text-2xl font-mono tracking-widest text-gray-800">{{ $member->member_code }}</p>
+                <p class="mt-1 text-xs text-gray-400">
+                    お客様がスクショを紛失した場合は、この画面を提示して再撮影してもらってください
+                </p>
+            </div>
 
             <form method="POST" action="{{ route('members.update', $member) }}">
                 @csrf
@@ -106,6 +131,21 @@
                                 @error('birth_date')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
+                            </div>
+
+                            {{-- 年齢カテゴリ --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">会員区分（一般・シニア・学生）<span class="text-red-500">*</span></label>
+                                <select name="category"
+                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+                                    <option value="">選択してください</option>
+                                    @foreach (\App\Enums\MemberCategory::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('category', $member->category?->value) === $case->value)>
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>
@@ -269,6 +309,46 @@
                 </div>
             </form>
 
+            {{-- プラン変更 --}}
+            <div class="mt-6 bg-white/80 rounded-lg shadow p-6">
+                <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">プラン変更</h3>
+
+                {{-- 現在のプラン --}}
+                <p class="text-sm text-gray-600 mb-4">
+                    現在の利用タイプ：
+                    <span class="font-medium">
+                        {{ $member->activePlan?->plan->plan_type->label() ?? '（未設定）' }}
+                    </span>
+                </p>
+
+                <form method="POST" action="{{ route('members.plans.store', $member) }}">
+                    @csrf
+                    <div class="flex gap-3 items-end">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                利用タイプ <span class="text-red-500">*</span>
+                            </label>
+                            <select name="plan_type"
+                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+                                <option value="">選択してください</option>
+                                @foreach (\App\Enums\PlanType::cases() as $case)
+                                    <option value="{{ $case->value }}"
+                                        @selected(old('plan_type') === $case->value)>
+                                        {{ $case->label() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('plan_type')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <button type="submit"
+                                class="px-6 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition font-medium">
+                            変更する
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </x-app-layout>

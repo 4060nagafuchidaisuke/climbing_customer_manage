@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         // ── 全体統計 ────────────────────────────────────
         $totalMembers=Member::count();
-        $activePlanCount=MemberPlan::where('status', 'active')->distinct('member_id')->count();
+        $activePlanCount = MemberPlan::active()->distinct('member_id')->count();
         $monthlyVisits=Visit::whereYear('check_in_at',  $today->year)->whereMonth('check_in_at', $today->month)->count();
 
         // ── 在店中一覧（入店順） ─────────────────────────

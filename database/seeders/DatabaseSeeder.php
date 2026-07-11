@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\StaffRole;
 use App\Models\Member;
 use App\Models\MemberPlan;
 use App\Models\Staff;
@@ -15,6 +14,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+         // PlanSeederの呼び出し
+        $this->call([
+            PlanSeeder::class,
+            SponsorSeeder::class,
+        ]);
+        
         /**
          * ⓵スタッフの作成
          */
@@ -35,24 +40,29 @@ class DatabaseSeeder extends Seeder
         /**
          * ⓶会員の作成
          */
-        // 成人会員
-        $adultMembers = Member::factory()->count(30)->create();
-
-        // 未成年会員
-        // guardian_name / guardian_phone はここで確定値を渡す
-        $minorMembers = Member::factory()->count(10)->create([
-            'birth_date' => fake()->dateTimeBetween('-17 years', '-5 years'),
-            'guardian_name' => fake()->name(),
+        // 正会員・未成年（プランを持つ）
+        $registeredMinors = Member::factory()->count(8)->registered()->create([
+            'birth_date'     => fake()->dateTimeBetween('-17 years', '-5 years'),
+            'guardian_name'  => fake()->name(),
             'guardian_phone' => fake()->phoneNumber(),
         ]);
 
-        $allMembers = $adultMembers->merge($minorMembers);
+        // ビジター（プランなし・正会員化テスト用）
+        $visitors = Member::factory()->count(7)->visitor()->create();
+
+        // // 正会員・成人（プランを持つ）
+        $registeredAdults = Member::factory()->count(25)->registered()->create();
+
+        // 正会員だけのコレクション（プラン付与に使う）
+        $registeredMembers = $registeredAdults->merge($registeredMinors);
+
+        // 全員のコレクション（Waiver・Visit・メモなど、正会員/ビジター問わず使う）
+        $allMembers = $registeredMembers->merge($visitors);
 
         /**
-         * ⓷会員プランの作成
-        */
-        // MemberPlan（会員プラン）
-        foreach ($allMembers as $member) {
+         * ③会員プランの作成（正会員のみ）
+         */
+        foreach ($registeredMembers as $member) {
             // 全員に有効プランを1件
             MemberPlan::factory()->active()->create([
                 'member_id' => $member->id,
@@ -67,22 +77,22 @@ class DatabaseSeeder extends Seeder
         }
 
         /**
-         * ⓸Waiver(誓約書)の有無
+         * ④Waiver(誓約書)の作成（全員が対象）
          */
-        // 成人
-        foreach ($adultMembers as $member) {
-            Waiver::factory()->signed()->create([
-                'member_id' => $member->id,
-            ]);
-        }
-
-        // 未成年
-        foreach ($minorMembers as $member) {
-            Waiver::factory()->signed()->create([
-                'member_id'       => $member->id,
-                'is_minor_signed' => true,
-                'guardian_name'   => $member->guardian_name,
-            ]);
+        foreach ($allMembers as $member) {
+            if ($member->is_minor) {
+                // 未成年：保護者署名あり
+                Waiver::factory()->signed()->create([
+                    'member_id' => $member->id,
+                    'is_minor_signed' => true,
+                    'guardian_name' => $member->guardian_name,
+                ]);
+            } else {
+                // 成人
+                Waiver::factory()->signed()->create([
+                    'member_id' => $member->id,
+                ]);
+            }
         }
 
         /**

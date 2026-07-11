@@ -15,7 +15,7 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $query = Member::query()
-            ->with(['activePlan'])
+            ->with(['activePlan.plan'])
             ->orderBy('created_at', 'desc');
 
         // 検索（氏名・会員番号）
@@ -49,16 +49,17 @@ class MemberController extends Controller
      */
     public function store(StoreMemberRequest $request)
     {
-        // member_code と barcode を自動生成
-        $code = 'M' . str_pad(Member::max('id') + 1, 6, '0', STR_PAD_LEFT);
+        // 会員の作成
+        $member = Member::create($request->validated());
 
-        // DBに保存
-        $member = Member::create(
-            array_merge(
-                $request->validated(),
-                ['member_code' => $code, 'barcode' => $code]
-            )
-        );
+        // 会員番号作成
+        $code = str_pad($member->id, 5, '0', STR_PAD_LEFT);
+        // $code = 'M' . str_pad(Member::max('id') + 1, 6, '0', STR_PAD_LEFT);
+
+        // 作製番号の保存
+        $member->member_code = $code;
+        $member->barcode = $code;
+        $member->save();
 
         // 詳細ページへリダイレクト
         return redirect()->route('members.show', $member)->with('success', '新規作成しました');
@@ -71,15 +72,11 @@ class MemberController extends Controller
     {
         // 会員詳細ページの表示
         $member->load([
-            // プランを「開始日が新しい順」にならべる（orderBy）
-            'memberPlans' => fn($q) => $q->orderBy('start_date', 'desc'),
+            // プランを「開始日が新しい順」にならべる + plan も一緒に読み込む
+            'memberPlans' => fn($q) => $q->with('plan')->orderBy('start_date', 'desc'),
 
-            // 来店履歴を「入店日時が新しい順」にならべて、10件表示
-            'visits'      => fn($q) => $q->orderBy('check_in_at', 'desc')->limit(10),
-
-            // スタッフメモを「作成日が新しい順」で取得
-            'staffNotes'  => fn($q) => $q->orderBy('created_at', 'desc'),
-
+            'visits' => fn($q) => $q->orderBy('check_in_at', 'desc')->limit(10),
+            'staffNotes' => fn($q) => $q->orderBy('created_at', 'desc'),
             'waivers',
         ]);
 

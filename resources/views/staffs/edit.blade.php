@@ -1,5 +1,5 @@
 <x-app-layout
-    background="images/SystemSetting.png"
+    background="images/SystemSetting.webp"
     bgPosition="center bottom"
     bgSize="50%"
 >
@@ -53,7 +53,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-base font-semibold text-gray-800 mb-2">パスワード</label>
+                    <label class="block text-base font-semibold text-gray-800 mb-2">パスワード(8文字以上)</label>
                     <input type="password" name="password"
                            class="w-full rounded-md border-gray-300 shadow-sm text-sm"
                            placeholder="変更する場合のみ入力">

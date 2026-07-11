@@ -1,17 +1,25 @@
 <x-app-layout
-    background="images/NewMember.png"
+    background="images/NewMember.webp"
     bgPosition="center bottom"
     bgSize="100%"
 >
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
                 会員管理
             </h2>
-            <a href="{{ route('members.create') }}"
-               class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">
-                ＋ 新規登録
-            </a>
+
+            <div class="flex items-center gap-3">
+                <a href="{{ route('members.register_qr') }}"
+                class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">
+                    QRで新規登録
+                </a>
+                
+                <a href="{{ route('members.create') }}"
+                class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">
+                    ＋ 新規登録
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -82,7 +90,7 @@
                                     {{--プラン--}}
                                     @if($member->activePlan)
                                         <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                                            {{ $member->activePlan->plan_type->label() }}
+                                            {{ $member->activePlan->plan->plan_type->label() }}
                                         </span>
                                     @else
                                         <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">

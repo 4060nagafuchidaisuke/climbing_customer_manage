@@ -1,5 +1,5 @@
 <x-app-layout
-    background="images/NewMember.png"
+    background="images/NewMember.webp"
     bgPosition="center bottom"
     bgSize="100%"
 >
@@ -8,7 +8,7 @@
             <div class="flex items-center gap-3">
                 <a href="{{ route('members.index') }}"
                    class="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
-                <h2 class="font-semibold text-xl text-gray-800">
+                <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
                     会員新規登録
                 </h2>
             </div>
@@ -30,8 +30,9 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('members.store') }}">
+            <form method="POST" action="{{ route('register.guest.confirm') }}">
                 @csrf
+                <input type="hidden" name="signed_url" value="{{ url()->full() }}">
                 {{-- create は @method('PUT') 不要 --}}
 
                 <div class="space-y-6">

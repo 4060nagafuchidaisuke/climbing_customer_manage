@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Enums\MemberCategory;
 
 class UpdateMemberRequest extends FormRequest
 {
@@ -26,9 +28,10 @@ class UpdateMemberRequest extends FormRequest
             // 必須項目
             'last_name' => ['required', 'string', 'max:50'],
             'first_name' => ['required', 'string', 'max:50'],
-            'last_name_kana' => ['required', 'string', 'max:50'],
-            'first_name_kana' => ['required', 'string', 'max:50'],
+            'last_name_kana'  => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
+            'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'birth_date' => ['required', 'date', 'before:today'],
+            'category' => ['required', Rule::enum(MemberCategory::class)],
 
             // 任意項目
             'gender' => ['nullable', 'string', 'max:20'],
@@ -67,6 +70,7 @@ class UpdateMemberRequest extends FormRequest
             'last_name_kana' => '姓（カナ）',
             'first_name_kana' => '名（カナ）',
             'birth_date' => '生年月日',
+            'category' => '会員区分',
             'phone' => '電話番号',
             'email' => 'メールアドレス',
             'postal_code' => '郵便番号',

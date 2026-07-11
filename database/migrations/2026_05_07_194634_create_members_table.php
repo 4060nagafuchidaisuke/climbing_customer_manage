@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
             $table->id(); // 内部キー
-            $table->string('member_code')->unique(); // 会員番号
-            $table->string('barcode')->unique(); // バーコード文字列
+            $table->string('member_code')->nullable()->unique(); // 会員番号
+            $table->string('barcode')->nullable()->unique(); // バーコード文字列
             $table->string('last_name'); // 姓
             $table->string('first_name'); // 名
             $table->string('last_name_kana'); // 姓カナ
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('address'); // 住所
             $table->string('occupation')->nullable(); // 職業
             $table->string('photo_path')->nullable(); // 顔写真保存先
-            $table->string('climbing_level')->default('beginner'); // クライミングレベル
+            $table->string('climbing_level')->default('beginner')->nullable();;// クライミングレベル
             $table->text('injury_notes')->nullable(); // 怪我歴
             $table->boolean('caution_flag')->nullable(); // 注意人物フラグ
             $table->text('caution_notes')->nullable(); // 注意事項
@@ -38,7 +38,11 @@ return new class extends Migration
             $table->string('emergency_relation')->nullable(); // 続柄
             $table->string('emergency_phone'); // 緊急連絡先電話番号
             $table->timestamps(); // 初回登録日・更新日時間
-            $table->index(['last_name', 'first_name']); // 検索用インデックス
+            $table->string('category')->nullable(); // MemberCategory(6区分)
+            $table->timestamp('registered_at')->nullable();
+
+            // 検索用インデックス
+            $table->index(['last_name', 'first_name']);
         });
     }
 

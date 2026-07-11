@@ -1,7 +1,11 @@
-<x-app-layout>
+<x-app-layout
+    background="images/SystemSetting.webp"
+    bgPosition="center bottom"
+    bgSize="50%"
+>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-100 tracking-wide">
+            <h2 class="text-xl font-bold text-gray-700 tracking-wide">
                 ダッシュボード
             </h2>
             <span class="text-sm text-gray-300">

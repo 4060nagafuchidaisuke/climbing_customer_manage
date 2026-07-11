@@ -1,5 +1,5 @@
 <x-app-layout
-    background="images/Profile(Details).png"
+    background="images/Profile_Details_.webp"
     bgPosition="center bottom"
     bgSize="100%"
 >

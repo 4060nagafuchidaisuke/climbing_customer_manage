@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <title>HAZY BOULDER - 受付</title>
 </head>
@@ -11,7 +12,7 @@
 
     <div class="bg-image">
         <div style="margin-bottom: -20px;">
-            <img src="{{ asset('images/HAZY_Bolder_logos.png') }}" alt="Logo" style="width: 250px;">
+            <img src="{{ asset('images/HAZY_Bolder_logos.webp') }}" alt="Logo" style="width: 250px;">
         </div>
 
         <div class="content-box">

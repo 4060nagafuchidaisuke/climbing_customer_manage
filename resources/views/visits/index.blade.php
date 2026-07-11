@@ -53,7 +53,7 @@
 
                                 {{--プラン--}}
                                 <td class="px-6 py-4 text-gray-600">
-                                    {{ $visit->member->activePlan?->plan_type->label() ?? '－' }}
+                                    {{ $visit->member->activePlan?->plan->plan_type->label() ?? '－' }}
                                 </td>
 
                                 {{--入店時間 --}}

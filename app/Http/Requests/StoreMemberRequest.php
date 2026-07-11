@@ -27,35 +27,36 @@ class StoreMemberRequest extends FormRequest
             // 基本情報
             'last_name'=>['required', 'string', 'max:15'],
             'first_name'=>['required', 'string', 'max:15'],
-            'last_name_kana'=>['required', 'string', 'max:25'],
-            'first_name_kana'=>['required', 'string', 'max:25'],
+            'last_name_kana'  => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
+            'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'birth_date'=>['required', 'date', 'before:today'],
             'address'=>['required', 'string', 'max:255'],
 
             // 任意の項目
-            'gender'=>['nullable', 'string', 'max:20'],
-            'phone'=>['required', 'string', 'max:20'],
+            'gender'=>['nullable', 'in:male,female,other'],
+            'phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
             'email'=>['nullable', 'email', 'max:255', 'unique:members,email'],
-            'postal_code'=>['nullable', 'string', 'max:10'],
+            'postal_code'=>['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
             'occupation'=>['nullable', 'string', 'max:100'],
             
-            // クライミングレベル・怪我情報（'photo_path',は後から！）
-            'climbing_level'=>['nullable', 'string', 'max:50'],
+            // クライミングレベル・怪我情報
+            'climbing_level'=>['nullable', 'in:beginner,intermediate,advanced'],
             'injury_notes'=>['nullable', 'string', 'max:1000'],
 
             // 注意フラグ
             'caution_flag'=>['nullable', 'boolean'],
             'caution_notes'=>['nullable', 'string', 'max:1000'],
 
-            // 未成年フラグ（必須）・保護者情報
+            // 未成年フラグ・保護者情報
             'is_minor'=>['nullable', 'boolean'],
             'guardian_name'=>['nullable', 'string', 'max:100'],
-            'guardian_phone'=>['nullable', 'string', 'max:20'],
+            'guardian_phone'=>['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
-            // 緊急連絡先（必須）
+            // 緊急連絡先
             'emergency_name'=>['required', 'string', 'max:100'],
             'emergency_relation'=>['nullable', 'string', 'max:50'],
-            'emergency_phone'=>['required', 'string', 'max:20'],
+            'emergency_phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+
         ];
     }
     
@@ -88,4 +89,21 @@ class StoreMemberRequest extends FormRequest
             'emergency_phone'=>'緊急連絡先電話番号',
         ];
     }
+
+     /**
+     * 入力時のメッセージの日本語化
+     */
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'このメールアドレスは既に登録されています。受付スタッフにお声がけください。',
+            'last_name_kana.regex' => '姓（カナ）は全角カタカナで入力してください。',
+            'first_name_kana.regex' => '名（カナ）は全角カタカナで入力してください。',
+            'phone.regex' => '電話番号は半角数字（ハイフンなし）で入力してください。',
+            'emergency_phone.regex' => '緊急連絡先電話番号は半角数字（ハイフンなし）で入力してください。',
+            'guardian_phone.regex' => '保護者電話番号は半角数字（ハイフンなし）で入力してください。',
+            'postal_code.regex' => '郵便番号は半角数字（ハイフンなし）で入力してください。',
+        ];
+    }
+    
 }

@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
-use App\Enums\PlanStatus;
+use App\Enums\PlanType;
+use App\Enums\MemberCategory;
 
 class Member extends Model
 {
@@ -37,14 +38,17 @@ class Member extends Model
         'guardian_phone',
         'emergency_name',
         'emergency_relation',
-        'emergency_phone'
+        'emergency_phone',
+        'category',
     ]; 
 
     // 型指定
     protected $casts = [
         'birth_date'=>'date',
         'caution_flag'=>'boolean',
-        'is_minor'=>'boolean'
+        'is_minor'=>'boolean',
+        'category'=> MemberCategory::class,
+        'registered_at' => 'datetime',
     ];
 
     /**
@@ -99,17 +103,13 @@ class Member extends Model
     // 現在有効なプラン（最新1件）
     public function activePlan()
     {
-        return $this->hasOne(MemberPlan::class)
-                    ->where('status', PlanStatus::ACTIVE)
-                    ->latestOfMany();
+        return $this->hasOne(MemberPlan::class)->active()->latestOfMany();
     }
 
     // 現在入店中（退店時刻がnull）
     public function activeVisit()
     {
-        return $this->hasOne(Visit::class)
-                    ->whereNull('check_out_at')
-                    ->latestOfMany();
+        return $this->hasOne(Visit::class)->whereNull('check_out_at')->latestOfMany();
     }
 
     // 現在退店中かどうか判定(2重読み防止)

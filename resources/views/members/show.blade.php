@@ -14,21 +14,47 @@
                         ⚠ 注意
                     </span>
                 @endif
+
                 @if($member->is_minor)
                     <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
                         未成年
                     </span>
                 @endif
             </div>
-            <a href="{{ route('members.edit', $member) }}"
-               class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">
-                編集
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('members.edit', $member) }}"
+                   class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">
+                    編集
+                </a>
+                {{-- @if($member->registered_at === null)
+                    <a href="{{ route('members.register', $member) }}"
+                       class="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-500 transition">
+                        正会員にする
+                    </a>
+                @else
+                    <span class="px-4 py-2 bg-gray-100 text-gray-500 text-sm rounded-md">
+                        正会員（{{ $member->registered_at->format('Y/m/d') }} 登録）
+                    </span>
+                @endif --}}
+            </div>
         </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            {{-- フラッシュメッセージ --}}
+            @if(session('success'))
+                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('info'))
+                <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm">
+                    {{ session('info') }}
+                </div>
+            @endif
 
             {{-- 注意メモ（caution_flag が true の場合） --}}
             @if($member->caution_flag && $member->caution_notes)
@@ -184,7 +210,7 @@
                                 {{ $plan->status->value === 'active' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-sm font-medium text-gray-800">
-                                        {{ $plan->plan_type?->value ?? '—' }}
+                                        {{ $plan->plan?->plan_type?->label() ?? '—' }}   {{-- 直した --}}
                                     </span>
                                     <span class="text-xs px-2 py-0.5 rounded-full
                                         {{ $plan->status->value === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500' }}">
@@ -194,6 +220,9 @@
                                 <div class="text-xs text-gray-500">
                                     {{ $plan->start_date?->format('Y/m/d') }} 〜
                                     {{ $plan->end_date?->format('Y/m/d') ?? '期限なし' }}
+                                </div>
+                                <div class="text-xs text-gray-600 mt-1">          {{-- 追加（任意） --}}
+                                    ¥{{ number_format($plan->price_paid) }}
                                 </div>
                             </div>
                         @empty

@@ -1,11 +1,11 @@
 <x-app-layout
-    background="images/SystemSetting.png"
+    background="images/SystemSetting.webp"
     bgPosition="center bottom"
     bgSize="50%"
 >
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-800 tracking-wide">スタッフ管理</h2>
+            <h2 class="text-xl font-bold text-gray-800 tracking-wide ">スタッフ管理</h2>
             <div class="flex items-center gap-2">
                 @can('create', App\Models\Staff::class)
                     <a href="{{ route('staffs.create') }}"
