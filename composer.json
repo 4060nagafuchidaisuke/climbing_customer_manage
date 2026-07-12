@@ -11,9 +11,12 @@
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.0",
-        "laravel/tinker": "^3.0"
+        "laravel/reverb": "^1.0",
+        "laravel/tinker": "^3.0",
+        "simplesoftwareio/simple-qrcode": "^4.2"
     },
     "require-dev": {
+        "askdkc/breezejp": "^2.5",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.4",
         "laravel/pail": "^1.2.5",
