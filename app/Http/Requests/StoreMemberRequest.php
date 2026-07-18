@@ -4,6 +4,10 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Enums\MemberCategory;
+use App\Enums\Gender;
+use App\Enums\ClimbingLevel;
 
 class StoreMemberRequest extends FormRequest
 {
@@ -31,16 +35,18 @@ class StoreMemberRequest extends FormRequest
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'birth_date'=>['required', 'date', 'before:today'],
             'address'=>['required', 'string', 'max:255'],
+            'category' => ['required', Rule::enum(MemberCategory::class)],
+
 
             // 任意の項目
-            'gender'=>['nullable', 'in:male,female,other'],
+            'gender'=>['nullable', Rule::enum(Gender::class)],
             'phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
             'email'=>['nullable', 'email', 'max:255', 'unique:members,email'],
             'postal_code'=>['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
             'occupation'=>['nullable', 'string', 'max:100'],
             
             // クライミングレベル・怪我情報
-            'climbing_level'=>['nullable', 'in:beginner,intermediate,advanced'],
+            'climbing_level'=>['nullable', Rule::enum(ClimbingLevel::class)],
             'injury_notes'=>['nullable', 'string', 'max:1000'],
 
             // 注意フラグ

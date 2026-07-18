@@ -44,5 +44,8 @@
                 >{{ __('Saved.') }}</p>
             @endif
         </div>
+        <div class="mt-6 flex justify-between">
+            <a href="{{ route('dashboard') }}" class="text-gray-500">← 戻る</a>
+        </div>
     </form>
 </section>

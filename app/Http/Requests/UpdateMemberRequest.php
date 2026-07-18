@@ -6,6 +6,9 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Enums\MemberCategory;
+use App\Enums\Gender;
+use App\Enums\ClimbingLevel;
+
 
 class UpdateMemberRequest extends FormRequest
 {
@@ -34,13 +37,13 @@ class UpdateMemberRequest extends FormRequest
             'category' => ['required', Rule::enum(MemberCategory::class)],
 
             // 任意項目
-            'gender' => ['nullable', 'string', 'max:20'],
+            'gender' => ['nullable', Rule::enum(Gender::class)],
             'phone' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:10'],
             'address' => ['nullable', 'string', 'max:255'],
             'occupation' => ['nullable', 'string', 'max:100'],
-            'climbing_level' => ['nullable', 'string', 'max:50'],
+            'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
             'injury_notes' => ['nullable', 'string', 'max:1000'],
 
             // 注意フラグ
@@ -69,6 +72,7 @@ class UpdateMemberRequest extends FormRequest
             'first_name' => '名',
             'last_name_kana' => '姓（カナ）',
             'first_name_kana' => '名（カナ）',
+            'gender' => '性別',
             'birth_date' => '生年月日',
             'category' => '会員区分',
             'phone' => '電話番号',
@@ -76,6 +80,7 @@ class UpdateMemberRequest extends FormRequest
             'postal_code' => '郵便番号',
             'address' => '住所',
             'climbing_level' => 'クライミングレベル',
+            'occupation' => '職業',
             'injury_notes' => '負傷・注意事項',
             'caution_notes' => '注意メモ',
             'guardian_name' => '保護者氏名',

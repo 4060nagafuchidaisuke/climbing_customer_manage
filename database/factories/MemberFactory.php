@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\Member;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Enums\MemberCategory;
+use App\Enums\Gender;
+use App\Enums\ClimbingLevel;
 
 /**
  * @extends Factory<Member>
@@ -37,7 +39,7 @@ class MemberFactory extends Factory
 
             // 基本情報
             'birth_date' => fake()->dateTimeBetween('-100 years', '-5 years'),
-            'gender' => fake()->randomElement(['male', 'female', 'other']),
+            'gender' => fake()->randomElement(Gender::cases()),
 
             // 連絡先
             'phone' => fake()->phoneNumber(),
@@ -48,7 +50,7 @@ class MemberFactory extends Factory
             // 任意項目
             'occupation' => fake()->jobTitle(),
             'photo_path' => null,
-            'climbing_level' => fake()->randomElement(['beginner', 'intermediate', 'advanced']),
+            'climbing_level' => fake()->randomElement(ClimbingLevel::cases()),
             'injury_notes' => fake()->boolean(20) ? fake()->sentence() : null,
 
             // 注意フラグ

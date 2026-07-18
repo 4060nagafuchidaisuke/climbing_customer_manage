@@ -16,19 +16,20 @@ class PlanSeeder extends Seeder
     {
         // 料金表
         $matrix = [
-            //                              一般   大学生ｼﾆｱ  キッズ
-            PlanType::ONE_DAY->value     => [2100,  1900,   1600],
-            PlanType::MINUTES_120->value => [1600,  1400,   1200],
-            PlanType::MONTHLY->value     => [12000, 10000,  9000],
-            PlanType::FIFTEEN_DAY->value => [6000,  5000,   4500],
-            PlanType::HALF_YEAR->value   => [58000, 49000,  43000],
+            //                              一般   大学生   ｼﾆｱ  キッズ
+            PlanType::ONE_DAY->value     => [2100,  1900,  1900,   1600],
+            PlanType::MINUTES_120->value => [1600,  1400,  1400,  1200],
+            PlanType::MONTHLY->value     => [12000, 10000, 10000, 9000],
+            PlanType::FIFTEEN_DAY->value => [6000,  5000,  5000,  4500],
+            PlanType::HALF_YEAR->value   => [58000, 49000, 49000, 43000],
         ];
 
         // 列の並び。上の配列のインデックス0/1/2 と対応させる。
         $tiers = [
-            PriceTier::GENERAL,          // [0]
-            PriceTier::STUDENT_SENIOR,   // [1]
-            PriceTier::KIDS,             // [2]
+            PriceTier::GENERAL, // [0]
+            PriceTier::STUDENT, // [1]
+            PriceTier::SENIOR, // [2]
+            PriceTier::KIDS, // [3]
         ];
 
         $sort = 0;

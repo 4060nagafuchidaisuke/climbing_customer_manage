@@ -13,7 +13,7 @@ class VisitController extends Controller
     public function index()
     {
         // 在店中の人
-        $activeVisits = Visit::whereNull('check_out_at')->with(['member.activePlan'])->orderBy('check_in_at', 'asc')->get();
+        $activeVisits = Visit::whereNull('check_out_at')->with(['member.activePlan', 'member.previousVisit'])->orderBy('check_in_at', 'asc')->get();
 
         return view('visits.index', compact('activeVisits'));
     }

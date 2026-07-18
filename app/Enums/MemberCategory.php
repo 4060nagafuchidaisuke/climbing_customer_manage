@@ -28,7 +28,8 @@ enum MemberCategory: string
 {
     return match ($this) {
         self::GENERAL => PriceTier::GENERAL,
-        self::UNIVERSITY, self::SENIOR => PriceTier::STUDENT_SENIOR,
+        self::UNIVERSITY => PriceTier::STUDENT,
+        self::SENIOR => PriceTier::SENIOR,
         self::HIGH_SCHOOL, self::JUNIOR_HIGH, self::ELEMENTARY => PriceTier::KIDS,
     };
 }

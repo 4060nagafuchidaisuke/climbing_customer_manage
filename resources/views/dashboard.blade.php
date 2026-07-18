@@ -4,11 +4,11 @@
     bgSize="50%"
 >
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-700 tracking-wide">
+        <div class="relative flex items-center">
+            <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
                 ダッシュボード
             </h2>
-            <span class="text-sm text-gray-300">
+            <span class="ml-auto text-sm text-gray-500">
                 {{ now()->isoFormat('YYYY年M月D日（ddd）HH:mm') }} 現在
             </span>
         </div>
@@ -37,7 +37,7 @@
             <div class="bg-white/90 backdrop-blur rounded-2xl shadow p-5 flex flex-col gap-1 border-l-4 border-violet-500">
                 <span class="text-xs font-semibold text-violet-600 uppercase tracking-widest">総会員数</span>
                 <span class="text-4xl font-black text-gray-800">{{ $totalMembers }}</span>
-                <span class="text-xs text-gray-400">アクティブプラン {{ $activePlanCount }} 名</span>
+                <span class="text-xs text-gray-400">初回登録済み {{ $activePlanCount }} 名</span>
             </div>
 
             {{-- 今月の入店 --}}
@@ -74,11 +74,10 @@
                                 <div>
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ $visit->member->full_name }}
-                                    </p>
-                                    <p class="text-xs text-gray-400">
-                                        {{ $visit->member->activePlan?->plan_type?->label() ?? '都度利用' }}
-                                    </p>
                                 </div>
+
+
+
                             </div>
                             <div class="text-right">
                                 <p class="text-xs text-gray-500">
@@ -149,4 +148,19 @@
         @endif
 
     </div>
+
+    @push('scripts')
+    <script>
+        // 自動リロード機能（10m）
+        document.addEventListener('DOMContentLoaded', () => {
+            window.Echo.channel('visits')
+                .listen('CheckedIn', (e)=>{console.log('CheckedIn received!', e); location.reload();})
+                .listen('CheckedOut', (e)=>{location.reload();});
+            setInterval(() => {
+                location.reload();
+            }, 100000);
+        });
+    </script>
+    @endpush
+
 </x-app-layout>

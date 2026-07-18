@@ -4,6 +4,9 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use App\Enums\Gender;
+use App\Enums\ClimbingLevel;
 
 class GuestRegistrationRequest extends FormRequest
 {
@@ -33,12 +36,12 @@ class GuestRegistrationRequest extends FormRequest
             'address'=>['required', 'string', 'max:255'],
 
             // 任意の項目
-            'gender'=>['nullable', 'in:male,female,other'],
+            'gender'=>['nullable', Rule::enum(Gender::class)],
             'phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
             'email'=>['nullable', 'email', 'max:255', 'unique:members,email'],
             'postal_code'=>['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
             'occupation'=>['nullable', 'string', 'max:100'],
-            'climbing_level' => ['nullable', 'in:beginner,intermediate,advanced'],
+            'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
 
             // 未成年フラグ（必須）・保護者情報
             'is_minor'=>['nullable', 'boolean'],
@@ -67,6 +70,7 @@ class GuestRegistrationRequest extends FormRequest
             'last_name_kana' => '姓（カナ）',
             'first_name_kana' => '名（カナ）',
             'birth_date' => '生年月日',
+            'gender' => '性別',
             'address' => '住所',
             'phone' => '電話番号',
             'email' => 'メールアドレス',

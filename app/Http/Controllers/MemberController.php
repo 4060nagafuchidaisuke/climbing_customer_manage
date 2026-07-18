@@ -14,9 +14,7 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Member::query()
-            ->with(['activePlan.plan'])
-            ->orderBy('created_at', 'desc');
+        $query = Member::query()->with(['activePlan.plan', 'latestVisit'])->orderBy('created_at', 'desc');
 
         // 検索（氏名・会員番号）
         if ($request->filled('search')) {
