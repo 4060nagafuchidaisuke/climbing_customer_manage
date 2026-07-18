@@ -1,6 +1,11 @@
-<x-app-layout>
+<x-app-layout
+    background="images/StaffManagement.webp"
+    bgPosition="center bottom"
+    bgSize="80%"
+>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{-- <h2 class="font-semibold text-xl text-gray-800 leading-tight"> --}}
+        <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
             在店中
             <span class="ml-2 bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
                 {{ $activeVisits->count() }}名
@@ -32,6 +37,8 @@
                             <th class="px-6 py-3">プラン</th>
                             <th class="px-6 py-3">入店時刻</th>
                             <th class="px-6 py-3">滞在時間</th>
+                            <th class="px-6 py-3">前回来店日時</th>
+                            <th class="px-6 py-3"></th>
                             <th class="px-6 py-3"></th>
                         </tr>
                     </thead>
@@ -66,6 +73,11 @@
                                     {{ $visit->check_in_at->diffForHumans(now(), true) }}
                                 </td>
 
+                                {{--前回来店日時--}}
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $visit->member->previousVisit?->check_in_at?->format('Y/m/d H:i') ?? '初来店' }}
+                                </td>
+
                                 {{-- 退店指示ボタン --}}
                                 <td class="px-6 py-4 text-right">
                                     <form action="{{ route('visits.checkout', $visit) }}" method="POST">
@@ -77,6 +89,14 @@
                                         </button>
                                     </form>
                                 </td>
+
+                                {{--詳細--}}
+                                <td class="px-4 py-3 text-right">
+                                    <a href="{{ route('members.show', $visit->member) }}"
+                                       class="text-slate-600 hover:text-slate-900 text-xs font-medium">
+                                        詳細 →
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -85,9 +105,9 @@
         </div>
     </div>
 
-    @push('scripts')
+    {{-- @push('scripts')
     <script>
-        // 購読コード()
+        // 自動リロード機能（10s）
         document.addEventListener('DOMContentLoaded', () => {
             window.Echo.channel('visits')
                 .listen('CheckedIn', (e)=>{console.log('CheckedIn received!', e); location.reload();})
@@ -97,7 +117,7 @@
             }, 10000);
         });
     </script>
-    @endpush
+    @endpush --}}
 
 
 </x-app-layout>

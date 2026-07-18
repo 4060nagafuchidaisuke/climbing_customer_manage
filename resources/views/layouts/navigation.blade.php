@@ -5,7 +5,7 @@
 
                 {{-- ロゴ --}}
                 <a href="{{ route('dashboard') }}" class="text-white font-bold text-xl tracking-wider me-10">
-                    <img src="{{ asset('images/HAZY_Bolder_logos.png') }}" alt="HAZY BOULDER"class="h-10 w-auto brightness-0 invert">
+                    <img src="{{ asset('images/HAZY_Bolder_logos.webp') }}" alt="HAZY BOULDER" class="h-10 w-auto brightness-0 invert">
                 </a>
 
                 {{-- ナビリンク（PC） --}}
@@ -38,21 +38,41 @@
                         来退店受付
                     </a>
 
-                    {{--お知らせ入力ボタン--}}
+                    {{--お知らせ更新ボタン--}}
                     <a href="{{ route('notices.index') }}"
                        class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
                               {{ request()->routeIs('notices.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                        お知らせ入力
+                        「おしらせ」を編集する
                     </a>
 
-                    {{-- 管理者のみ表示 --}}
-                    @if(Auth::user()->role === \App\Enums\StaffRole::ADMIN)
-                        <a href="{{ route('staffs.index') }}"
-                           class="px-3 py-2 rounded-md text-sm font-medium transition duration-150
-                                  {{ request()->routeIs('staff.*') ? 'bg-slate-600 text-white' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                            スタッフ管理
-                        </a>
-                    @endif
+                    {{-- 管理者のみ表示:staff管理 --}}
+                    @can('admin')
+                        {{-- 管理ドロップダウン --}}
+                        <div class="hidden sm:flex sm:items-center">
+                            <x-dropdown align="left" width="48">
+                                <x-slot name="trigger">
+                                    <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium transition duration-150
+                                        {{ request()->routeIs('staffs.*', 'notices.*', 'sponsors.*', 'plans.*')
+                                            ? 'bg-slate-600 text-white'
+                                            : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                                        管理
+                                        <svg class="ms-1 h-4 w-4 fill-current" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </x-slot>
+
+                                <x-slot name="content">
+                                    <x-dropdown-link :href="route('staffs.index')">スタッフ管理</x-dropdown-link>
+                                    {{-- <x-dropdown-link :href="route('sponsors.edit')">スポンサー</x-dropdown-link> --}}
+                                    <x-dropdown-link :href="route('plans.index')">料金設定</x-dropdown-link>
+                                </x-slot>
+                            </x-dropdown>
+                        </div>
+                    @endcan
+
                 </div>
             </div>
 
@@ -68,9 +88,9 @@
                         </button>
                     </x-slot>
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
+                        {{-- <x-dropdown-link :href="route('profile.edit')">
                             プロフィール
-                        </x-dropdown-link>
+                        </x-dropdown-link> --}}
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <x-dropdown-link :href="route('logout')"
@@ -112,13 +132,13 @@
                 来退店受付
             </a>
             <a href="{{ route('notices.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
-                お知らせ入力
+                「おしらせ」を編集する
             </a>
-            @if(Auth::user()->role === \App\Enums\StaffRole::ADMIN)
-                <a href="{{ route('staffs.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">
-                    スタッフ管理
-                </a>
-            @endif
+            @can('admin')
+                <a href="{{ route('staffs.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">スタッフ管理</a>
+                {{-- <a href="{{ route('sponsors.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">スポンサー</a> --}}
+                <a href="{{ route('plans.index') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:bg-slate-700 hover:text-white">料金設定</a>
+            @endcan
         </div>
         <div class="pt-4 pb-1 border-t border-slate-700">
             <div class="px-4">

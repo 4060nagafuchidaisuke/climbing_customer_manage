@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+body { background-color: #ece7dc; }
+
 /* 受付カメラのプレビューを鏡像から通常向きに戻す */
 #reader video {
     transform: scaleX(-1);

@@ -9,7 +9,7 @@
                 会員管理
             </h2>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 ml-auto">
                 <a href="{{ route('members.register_qr') }}"
                 class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">
                     QRで新規登録
@@ -65,15 +65,20 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">カナ</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">プラン</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">登録日</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">前回来店日時</th>
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @forelse($members as $member)
                             <tr class="hover:bg-gray-50 transition">
+
+                                {{--会員番号--}}
                                 <td class="px-4 py-3 font-mono text-gray-600">
                                     {{ $member->member_code }}
                                 </td>
+
+                                {{--氏名--}}
                                 <td class="px-4 py-3 font-medium text-gray-900">
                                     {{ $member->last_name }} {{ $member->first_name }}
 
@@ -82,12 +87,14 @@
                                         <span class="ms-1 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">未成年</span>
                                     @endif
                                 </td>
+
+                                {{--氏名（カナ）--}}
                                 <td class="px-4 py-3 text-gray-500">
                                     {{ $member->last_name_kana }} {{ $member->first_name_kana }}
                                 </td>
 
+                                {{--プラン--}}
                                 <td class="px-4 py-3">
-                                    {{--プラン--}}
                                     @if($member->activePlan)
                                         <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                                             {{ $member->activePlan->plan->plan_type->label() }}
@@ -98,9 +105,18 @@
                                         </span>
                                     @endif
                                 </td>
+
+                                {{--登録日--}}
+                                <td class="px-4 py-3 text-gray-500">
+                                    {{ $member->latestVisit?->check_in_at?->format('Y/m/d') ?? '—' }}
+                                </td>
+
+                                {{--前回来店日--}}
                                 <td class="px-4 py-3 text-gray-500">
                                     {{ $member->created_at->format('Y/m/d') }}
                                 </td>
+
+                                {{--詳細--}}
                                 <td class="px-4 py-3 text-right">
                                     <a href="{{ route('members.show', $member) }}"
                                        class="text-slate-600 hover:text-slate-900 text-xs font-medium">
@@ -110,7 +126,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center text-gray-400">
+                                <td colspan="7" class="px-4 py-10 text-center text-gray-400">
                                     会員が見つかりませんでした
                                 </td>
                             </tr>

@@ -118,9 +118,12 @@
                                         class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                                focus:ring-slate-500 focus:border-slate-500">
                                     <option value="">選択してください</option>
-                                    <option value="male"   {{ old('gender') === 'male'   ? 'selected' : '' }}>男性</option>
-                                    <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>女性</option>
-                                    <option value="other"  {{ old('gender') === 'other'  ? 'selected' : '' }}>その他</option>
+                                    @foreach(\App\Enums\Gender::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('gender') === $case->value)> {{-- $member->climbing_level?->valueは編集用 --}}
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -164,10 +167,13 @@
                                         class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                                focus:ring-slate-500 focus:border-slate-500">
                                     <option value="">選択してください</option>
-                                    <option value="beginner"     {{ old('climbing_level') === 'beginner'     ? 'selected' : '' }}>初心者</option>
-                                    <option value="intermediate" {{ old('climbing_level') === 'intermediate' ? 'selected' : '' }}>中級者</option>
-                                    <option value="advanced"     {{ old('climbing_level') === 'advanced'     ? 'selected' : '' }}>上級者</option>
-                                </select>
+                                    @foreach(\App\Enums\ClimbingLevel::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('climbing_level') === $case->value)>
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
+                                <select>
                             </div>
 
                             <div class="col-span-2">

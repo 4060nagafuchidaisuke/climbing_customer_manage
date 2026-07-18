@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
-use App\Enums\PlanType;
+use App\Enums\Gender;
+use App\Enums\ClimbingLevel;
 use App\Enums\MemberCategory;
 
 class Member extends Model
@@ -47,7 +49,9 @@ class Member extends Model
         'birth_date'=>'date',
         'caution_flag'=>'boolean',
         'is_minor'=>'boolean',
+        'gender' => Gender::class,
         'category'=> MemberCategory::class,
+        'climbing_level' => ClimbingLevel::class,
         'registered_at' => 'datetime',
     ];
 
@@ -76,6 +80,20 @@ class Member extends Model
     public function staffNotes():HasMany
     {
         return $this->hasMany(StaffNote::class);
+    }
+
+    // 前回来店時の日時表示
+    public function latestVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class)->latestOfMany('check_in_at');
+    }
+
+    //在店中画面の前回来店表示機能
+    public function previousVisit(): HasOne
+    {
+        return $this->hasOne(Visit::class)
+            ->whereNotNull('check_out_at')     // 退店済み＝過去の来店だけ
+            ->latestOfMany('check_in_at');     // その中で最新の1件
     }
         
     /**
