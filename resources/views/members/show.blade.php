@@ -210,7 +210,7 @@
                                 {{ $plan->status->value === 'active' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200' }}">
                                 <div class="flex justify-between items-center mb-1">
                                     <span class="text-sm font-medium text-gray-800">
-                                        {{ $plan->plan?->plan_type?->label() ?? '—' }}   {{-- 直した --}}
+                                        {{ $plan->plan?->plan_type?->label() ?? '—' }}
                                     </span>
                                     <span class="text-xs px-2 py-0.5 rounded-full
                                         {{ $plan->status->value === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500' }}">
@@ -221,7 +221,7 @@
                                     {{ $plan->start_date?->format('Y/m/d') }} 〜
                                     {{ $plan->end_date?->format('Y/m/d') ?? '期限なし' }}
                                 </div>
-                                <div class="text-xs text-gray-600 mt-1">          {{-- 追加（任意） --}}
+                                <div class="text-xs text-gray-600 mt-1">
                                     ¥{{ number_format($plan->price_paid) }}
                                 </div>
                             </div>

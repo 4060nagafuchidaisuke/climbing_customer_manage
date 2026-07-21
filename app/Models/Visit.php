@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\VisitType;
 use App\Enums\VisitSource;
+use App\Enums\PlanType;
 
 class Visit extends Model
 {

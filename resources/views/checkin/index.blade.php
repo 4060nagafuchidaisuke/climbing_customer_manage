@@ -4,9 +4,13 @@
     bgSize="55%"
 >
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-800 tracking-wide">来退店受付</h2>
-            <span class="text-sm text-gray-500" id="clock"></span>
+        <div class="relative flex items-center">
+            <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
+                来店・退店受付
+            </h2>
+            <span class="ml-auto text-sm text-gray-500">
+                {{ now()->isoFormat('YYYY年M月D日（ddd）HH:mm') }} 現在
+            </span>
         </div>
     </x-slot>
 

@@ -67,6 +67,7 @@
                                 <x-slot name="content">
                                     <x-dropdown-link :href="route('staffs.index')">スタッフ管理</x-dropdown-link>
                                     {{-- <x-dropdown-link :href="route('sponsors.edit')">スポンサー</x-dropdown-link> --}}
+                                    <x-dropdown-link :href="route('sales.index')">集計（日次集計・月報etc）</x-dropdown-link>
                                     <x-dropdown-link :href="route('plans.index')">料金設定</x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>

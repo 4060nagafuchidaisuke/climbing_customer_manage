@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Visit;
-use Illuminate\Http\Request;
 
 class VisitController extends Controller
 {
@@ -29,4 +28,14 @@ class VisitController extends Controller
 
         return redirect()->route('visits.index')->with('success', '退店処理が完了しました');
     }
+
+    // 本日の来店者
+    public function today()
+   {
+       $visits = Visit::whereDate('check_in_at', today())
+           ->with(['member.activePlan.plan', 'member.previousVisit'])
+           ->orderByDesc('check_in_at')
+           ->paginate(10);
+       return view('visits.today', compact('visits'));
+   }
 }

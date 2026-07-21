@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
                     'checked_in_by'   => $allStaff->random()->id,
                     'checked_out_by'  => $allStaff->random()->id,
                     'check_in_at'    => $checkIn,
-                    'check_out_at'   => fake()->dateTimeBetween($checkIn, '-10 minutes'),
+                    'check_out_at'   => fake()->dateTimeBetween($checkIn, 'now'),
                 ]);
             }
         }

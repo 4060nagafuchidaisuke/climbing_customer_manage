@@ -17,7 +17,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
         {{-- ── KPI カード ────────────────────────────────── --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
 
             {{-- 現在在店中 --}}
             <div class="bg-white/90 backdrop-blur rounded-2xl shadow p-5 flex flex-col gap-1 border-l-4 border-emerald-500">
@@ -47,6 +47,13 @@
                 <span class="text-xs text-gray-400">{{ now()->isoFormat('M月') }} 累計</span>
             </div>
 
+            {{-- 今日の売り上げ状況 --}}
+            <div class="bg-white/90 backdrop-blur rounded-2xl shadow p-5 flex flex-col gap-1 border-l-4 border-rose-500">
+                <span class="text-xs font-semibold text-rose-600 uppercase tracking-widest">今日の売上</span>
+                <span class="text-4xl font-black text-gray-800">¥{{ number_format($dailySales->total) }}</span>
+                <span class="text-xs text-gray-400">{{ now()->isoFormat('M月D日') }}（{{ $dailySales->count }}件）</span>
+            </div>
+
         </div>
 
         {{-- ── 中段：在店中 ＋ 本日ログ ─────────────────── --}}
@@ -67,10 +74,13 @@
                         @foreach ($activeVisits as $visit)
                         <li class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition">
                             <div class="flex items-center gap-3">
+
                                 {{-- アバター代わりの頭文字 --}}
                                 <div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
                                     {{ mb_substr($visit->member->last_name, 0, 1) }}
                                 </div>
+
+                                {{-- 来店者名 --}}
                                 <div>
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ $visit->member->full_name }}
@@ -104,6 +114,7 @@
                 @else
                     <ul class="divide-y divide-gray-50">
                         @foreach ($recentVisits as $visit)
+                        
                         <li class="px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition">
                             <div class="flex items-center gap-3">
                                 {{-- 在店中 or 退店済みバッジ --}}
@@ -113,12 +124,34 @@
                                     <span class="inline-block w-2 h-2 rounded-full bg-gray-300"></span>
                                 @endif
                                 <div>
-                                    <p class="text-sm font-medium text-gray-800">
-                                        {{ $visit->member->full_name }}
-                                    </p>
+                                    {{-- 入退店者のNo --}}
                                     <p class="text-xs text-gray-400">
                                         {{ $visit->member->member_code }}
                                     </p>
+
+                                    {{-- 入退店者の名前 --}}
+                                    <p class="text-sm font-medium text-gray-800">
+                                        {{ $visit->member->full_name }}
+                                    </p>                                   
+
+                                   {{-- レベル・プラン・区分を横並び --}}
+                                    <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                                        {{-- レベル --}}
+                                        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-600">
+                                            {{ $visit->member->climbing_level?->label() ?? '—' }}
+                                        </span>
+
+                                        {{-- プラン --}}
+                                        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-600">
+                                            {{ $visit->member->activePlan?->plan?->plan_type?->label() ?? '—' }}
+                                        </span>
+
+                                        {{-- 区分 --}}
+                                        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-600">
+                                            {{ $visit->member->category?->label() ?? '—' }}
+                                        </span>
+                                    </div>
+                                    
                                 </div>
                             </div>
                             <div class="text-right text-xs text-gray-500">
@@ -131,10 +164,15 @@
                             </div>
                         </li>
                         @endforeach
+                        @if ($todayVisitsTotal > 5)
+                            <li class="px-5 py-3 text-center text-xs text-gray-400">
+                                …他 {{ $todayVisitsTotal - 5 }} 件
+                                <a href="{{ route('visits.today') }}" class="text-sky-600 hover:underline">（全員見る）</a>
+                            </li>
+                        @endif
                     </ul>
                 @endif
             </div>
-
         </div>
 
         {{-- 本日の新規登録があれば表示 --}}
