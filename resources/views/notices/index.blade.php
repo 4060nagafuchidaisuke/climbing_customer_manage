@@ -4,8 +4,10 @@
     bgSize="70%"
 >
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-800 tracking-wide">お知らせ入力一覧</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
+                お知らせ入力一覧
+            </h2>
             <span class="text-sm text-gray-500" id="clock"></span>
             <a href="{{ route('notices.create') }}"
                class="px-4 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition">

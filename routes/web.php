@@ -13,7 +13,9 @@ use App\Http\Controllers\QRController;
 use App\Http\Controllers\SponsorController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\VisitController;
+use App\Http\Controllers\SalesReportController;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -46,10 +48,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/visits', [VisitController::class, 'index'])->name('visits.index');
     Route::patch('/visits/{visit}/checkout', [VisitController::class, 'checkout'])->name('visits.checkout');
 
+    // 今日の来退店
+    Route::get('visits/today', [VisitController::class, 'today'])->name('visits.today');
+    
     // 入退店管理
     // 入退店管理画面
     Route::get('/checkin', [CheckinController::class, 'index'])->name('checkin.index');
     Route::post('/checkin', [CheckinController::class, 'process'])->name('checkin.process');
+    
 
     // お知らせ画面表示
     Route::resource('notices', NoticeController::class)->except(['show']);
@@ -59,9 +65,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    
+
     // スタッフ管理(管理者のみ使用可能)
     Route::middleware('can:admin')->group(function () {
-
+        // 業務の集計
+        Route::get('sales', [SalesReportController::class, 'index'])->name('sales.index');
+        Route::get('sales/details', [SalesReportController::class, 'details'])->name('sales.details');
+        
         // 削除スタッフの一覧・復活
         Route::get('staffs/trashed', [StaffController::class, 'trashed'])->name('staffs.trashed');
         Route::patch('staffs/{id}/restore', [StaffController::class, 'restore'])->name('staffs.restore');

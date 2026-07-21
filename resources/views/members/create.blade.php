@@ -120,7 +120,7 @@
                                     <option value="">選択してください</option>
                                     @foreach(\App\Enums\Gender::cases() as $case)
                                         <option value="{{ $case->value }}"
-                                            @selected(old('gender') === $case->value)> {{-- $member->climbing_level?->valueは編集用 --}}
+                                            @selected(old('gender') === $case->value)>
                                             {{ $case->label() }}
                                         </option>
                                     @endforeach
@@ -296,6 +296,34 @@
                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                              focus:ring-slate-500 focus:border-slate-500">{{ old('caution_notes') }}</textarea>
                         </div>
+                    </div>
+
+                     {{-- 使用同意書 --}}
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-2">使用同意書</h3>
+
+                        {{-- スクロール枠 --}}
+                        <div class="max-h-64 overflow-y-auto border rounded p-4 bg-white/50 text-sm text-gray-600">
+
+
+
+                            {{-- 同意書の本文をここに --}}
+
+
+
+                            
+                        </div>
+
+                        {{-- チェックボックス --}}
+                        <label class="flex items-center gap-2 mt-3">
+                            <input type="checkbox" name="agreement" value="1"
+                                   {{ old('agreement') ? 'checked' : '' }}>
+                            <span>上記の内容に同意します</span>
+                        </label>
+
+                        @error('agreement')
+                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     {{-- ボタン --}}
