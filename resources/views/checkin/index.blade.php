@@ -12,7 +12,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div id="checkin-root" data-has-result="{{ session('result_status') || session('checkin_error') ? '1' : '' }}">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                 {{-- ── 左カラム：来退店 ＋ お知らせ ── --}}
                 <div class="space-y-5">
