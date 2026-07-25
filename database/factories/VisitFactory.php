@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Visit;
+use App\Enums\VisitSource;
+use App\Enums\VisitType;
 use App\Models\Member;
 use App\Models\Staff;
-use App\Enums\VisitType;
-use App\Enums\VisitSource;
+use App\Models\Visit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,10 +22,10 @@ class VisitFactory extends Factory
     public function definition(): array
     {
         // 営業時間内のチェックイン
-        $checkIn  = fake()->dateTimeBetween('-6 months', '-10 minutes');
+        $checkIn = fake()->dateTimeBetween('-6 months', '-10 minutes');
 
         // 「80%の確率でチェックアウト済み」
-        $checkOut = fake()->boolean(80)? fake()->dateTimeBetween($checkIn, 'now'): null;
+        $checkOut = fake()->boolean(80) ? fake()->dateTimeBetween($checkIn, 'now') : null;
 
         return [
             // Memberを自動で紐づけ (外部キー)
@@ -36,7 +36,7 @@ class VisitFactory extends Factory
             'check_out_at' => $checkOut,
 
             // 利用種別（normal / trial / lesson）
-            'visit_type'=> fake()->randomElement(VisitType::cases()),
+            'visit_type' => fake()->randomElement(VisitType::cases()),
 
             // 受付方法（barcode / manual）
             'visit_source' => fake()->randomElement(VisitSource::cases()),
@@ -46,7 +46,7 @@ class VisitFactory extends Factory
             'checked_out_by' => $checkOut ? Staff::factory() : null, // チェックアウト時刻があるときだけスタッフも入れる
 
             // 受付メモ
-            'staff_note' => fake()->realText(80)
+            'staff_note' => fake()->realText(80),
         ];
     }
 
@@ -54,7 +54,7 @@ class VisitFactory extends Factory
     public function staying(): static
     {
         return $this->state([
-            'check_in_at'  => fake()->dateTimeBetween('-3 hours', '-10 minutes'),
+            'check_in_at' => fake()->dateTimeBetween('-3 hours', '-10 minutes'),
             'check_out_at' => null,
             'checked_out_by' => null,
         ]);
@@ -70,6 +70,7 @@ class VisitFactory extends Factory
             'checked_out_by' => Staff::factory(),
         ]);
     }
+
     // トライアルかどうか
     public function trial(): static
     {
@@ -93,12 +94,10 @@ class VisitFactory extends Factory
     // バーコードで受付したかどうか
     public function barcode(): static
     {
-        return $this->state(function (){
+        return $this->state(function () {
             return [
                 'visit_source' => VisitSource::BARCODE,
             ];
         });
     }
-
 }
-

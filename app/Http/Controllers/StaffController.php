@@ -21,6 +21,7 @@ class StaffController extends Controller
     {
         $this->authorize('viewAny', Staff::class);
         $staffs = Staff::orderBy('created_at', 'desc')->paginate(15);
+
         return view('staffs.index', compact('staffs'));
     }
 
@@ -28,6 +29,7 @@ class StaffController extends Controller
     public function create(): View
     {
         $this->authorize('create', Staff::class);
+
         return view('staffs.create');
     }
 
@@ -36,6 +38,7 @@ class StaffController extends Controller
     {
         $this->authorize('create', Staff::class);
         $this->staffService->create($request->validated());
+
         return redirect()->route('staffs.index')->with('success', 'スタッフを登録しました');
     }
 
@@ -43,6 +46,7 @@ class StaffController extends Controller
     public function edit(Staff $staff): View
     {
         $this->authorize('update', $staff);
+
         return view('staffs.edit', compact('staff'));
     }
 
@@ -50,13 +54,14 @@ class StaffController extends Controller
     public function update(UpdateStaffRequest $request, Staff $staff): RedirectResponse
     {
         $this->authorize('update', $staff);
-        try{
+        try {
             $this->staffService->update($staff, $request->validated(), auth()->user());
+
             return redirect()->route('staffs.index')->with('success', 'スタッフ情報を更新しました');
-        }catch (RuntimeException $e) {
+        } catch (RuntimeException $e) {
             return redirect()->route('staffs.index')->with('error', $e->getMessage());
         }
-            
+
     }
 
     // スタッフの削除
@@ -77,6 +82,7 @@ class StaffController extends Controller
     {
         $this->authorize('viewAny', Staff::class);
         $staffs = Staff::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(15);
+
         return view('staffs.trashed', compact('staffs'));
     }
 
@@ -86,6 +92,7 @@ class StaffController extends Controller
         $staff = Staff::onlyTrashed()->findOrFail($id);   // 削除済みを探して受け取る
         $this->authorize('update', $staff);               // 認可（探した後に）
         $this->staffService->restore($staff);             // Serviceに委譲
+
         return redirect()->route('staffs.trashed')->with('success', 'スタッフを復活しました');
     }
 
@@ -95,6 +102,7 @@ class StaffController extends Controller
         $staff = Staff::onlyTrashed()->findOrFail($id);   // スタッフを探して受け取る
         $this->authorize('delete', $staff);               // 認可（探した後に）
         $this->staffService->forceDelete($staff);             // Serviceに委譲
+
         return redirect()->route('staffs.trashed')->with('success', 'スタッフを完全に削除しました');
     }
 }

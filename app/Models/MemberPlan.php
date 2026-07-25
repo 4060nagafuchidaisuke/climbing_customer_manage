@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 use App\Enums\PlanStatus;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MemberPlan extends Model
-
 {
     use HasFactory;
 
@@ -21,13 +20,13 @@ class MemberPlan extends Model
         'start_date',
         'end_date',
         'cancelled_at',
-    ]; 
+    ];
 
     // 型指定
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'cancelled_at' => 'datetime'
+        'cancelled_at' => 'datetime',
     ];
 
     /**
@@ -39,9 +38,9 @@ class MemberPlan extends Model
     {
         return $this->belongsTo(Member::class);
     }
-     
-    //この購入記録は、どのプラン（商品マスタ）か
-    public function plan(): BelongsTo     
+
+    // この購入記録は、どのプラン（商品マスタ）か
+    public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
     }
@@ -59,6 +58,7 @@ class MemberPlan extends Model
         if ($this->end_date !== null && $this->end_date->isPast()) {
             return PlanStatus::EXPIRED;
         }
+
         return PlanStatus::ACTIVE;
     }
 
@@ -74,8 +74,7 @@ class MemberPlan extends Model
     // 有効なプランのみ（Member::activePlan から呼ばれる）
     public function scopeActive(Builder $query): Builder
     {
-        return $query->whereNull('cancelled_at')->where(function ($q)
-        {
+        return $query->whereNull('cancelled_at')->where(function ($q) {
             $q->whereDate('end_date', '>=', now())->orWhereNull('end_date');
         });
     }

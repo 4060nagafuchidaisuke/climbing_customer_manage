@@ -15,11 +15,11 @@ class Sponsor extends Model
         'is_active',
         'display_seconds',
         'sort_order',
-    ]; 
+    ];
 
     // 型指定
     protected $casts = [
-        'is_active'=>'boolean',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -28,11 +28,10 @@ class Sponsor extends Model
     // 画像の公開URLを返すアクセサ
     public function getImageUrlAttribute(): string
     {
-        return asset('storage/' . $this->image_path);
+        return asset('storage/'.$this->image_path);
     }
-    
+
     /**
      * Scope(CRUD処理)
      */
-    
 }

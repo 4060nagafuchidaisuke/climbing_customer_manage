@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member;
 use App\Enums\MemberCategory;
 use App\Http\Requests\RegisterMemberRequest;
+use App\Models\Member;
 use App\Services\MemberRegistrationService;
 
 class MemberRegistrationController extends Controller
 {
     // Service を DI で受け取る
-    public function __construct(private MemberRegistrationService $service) 
-    {
-    }
+    public function __construct(private MemberRegistrationService $service) {}
 
     // 正会員化フォーム
     public function create(Member $member)
@@ -20,6 +18,7 @@ class MemberRegistrationController extends Controller
         if ($member->registered_at !== null) {
             return redirect()->route('members.show', $member)->with('info', 'この会員はすでに本登録済みです。');
         }
+
         return view('members.register', compact('member'));
     }
 
@@ -34,5 +33,4 @@ class MemberRegistrationController extends Controller
         // 完了後、会員詳細などにリダイレクト＋成功メッセージ
         return redirect()->route('members.show', $member)->with('success', '正会員として登録しました。');
     }
-        
 }

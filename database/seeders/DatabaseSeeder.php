@@ -14,20 +14,20 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-         // PlanSeederの呼び出し
+        // PlanSeederの呼び出し
         $this->call([
             PlanSeeder::class,
             SponsorSeeder::class,
         ]);
-        
+
         /**
          * ⓵スタッフの作成
          */
         // 管理者の作成
         $adminStaff = Staff::factory()->admin()->create([
-            'name'=>'管理者 太郎',
-            'email'=>'admin@gym.test',
-            'staff_code'=>'s0001',
+            'name' => '管理者 太郎',
+            'email' => 'admin@gym.test',
+            'staff_code' => 's0001',
         ]);
 
         // 一般スタッフの作成
@@ -42,8 +42,8 @@ class DatabaseSeeder extends Seeder
          */
         // 正会員・未成年（プランを持つ）
         $registeredMinors = Member::factory()->count(8)->registered()->create([
-            'birth_date'     => fake()->dateTimeBetween('-17 years', '-5 years'),
-            'guardian_name'  => fake()->name(),
+            'birth_date' => fake()->dateTimeBetween('-17 years', '-5 years'),
+            'guardian_name' => fake()->name(),
             'guardian_phone' => fake()->phoneNumber(),
         ]);
 
@@ -97,7 +97,7 @@ class DatabaseSeeder extends Seeder
 
         /**
          * ⓹入退店記録
-        */
+         */
         foreach ($allMembers as $member) {
             $visitCount = fake()->numberBetween(0, 5);
 
@@ -105,11 +105,11 @@ class DatabaseSeeder extends Seeder
             for ($i = 0; $i < $visitCount; $i++) {
                 $checkIn = fake()->dateTimeBetween('-6 months', '-2 hours');
                 Visit::factory()->create([
-                    'member_id'       => $member->id,
-                    'checked_in_by'   => $allStaff->random()->id,
-                    'checked_out_by'  => $allStaff->random()->id,
-                    'check_in_at'    => $checkIn,
-                    'check_out_at'   => fake()->dateTimeBetween($checkIn, '-10 minutes'),
+                    'member_id' => $member->id,
+                    'checked_in_by' => $allStaff->random()->id,
+                    'checked_out_by' => $allStaff->random()->id,
+                    'check_in_at' => $checkIn,
+                    'check_out_at' => fake()->dateTimeBetween($checkIn, '-10 minutes'),
                 ]);
             }
         }
@@ -117,8 +117,8 @@ class DatabaseSeeder extends Seeder
         // 現在在店中の会員を 5名 作る（ダッシュボード確認用）
         $allMembers->random(5)->each(function ($member) use ($allStaff) {
             Visit::factory()->staying()->create([
-                'member_id'      => $member->id,
-                'checked_in_by'  => $allStaff->random()->id,
+                'member_id' => $member->id,
+                'checked_in_by' => $allStaff->random()->id,
                 'checked_out_by' => null,
             ]);
         });
@@ -142,7 +142,7 @@ class DatabaseSeeder extends Seeder
                     : StaffNote::factory();
 
                 $factory->create([
-                    'member_id'  => $member->id,
+                    'member_id' => $member->id,
                     'created_by' => $allStaff->random()->id,
                 ]);
             }

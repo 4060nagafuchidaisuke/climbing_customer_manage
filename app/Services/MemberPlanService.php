@@ -6,8 +6,8 @@ use App\Enums\PlanType;
 use App\Models\Member;
 use App\Models\MemberPlan;
 use App\Models\Plan;
-use Illuminate\Support\Facades\DB;
 use DomainException;
+use Illuminate\Support\Facades\DB;
 
 class MemberPlanService
 {

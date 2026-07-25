@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\StaffRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Enums\StaffRole;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Staff extends Authenticatable
 {
@@ -25,16 +25,16 @@ class Staff extends Authenticatable
         'password',
         'role',
         'is_active',
-        'last_login_at'
-    ]; 
+        'last_login_at',
+    ];
 
     // 型指定
     protected $casts = [
-        'password'=>'hashed',
-        'role'=>StaffRole::class,
-        'is_active'=>'boolean',
-        'last_login_at'=>'datetime',
-        'deleted_at'=>'datetime',
+        'password' => 'hashed',
+        'role' => StaffRole::class,
+        'is_active' => 'boolean',
+        'last_login_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     // パスワードの保護(カラム隠し)
@@ -46,7 +46,7 @@ class Staff extends Authenticatable
      * リレーション設定
      */
     // 作成したメモとの連携
-    public function staffNotes():HasMany
+    public function staffNotes(): HasMany
     {
         return $this->hasMany(StaffNote::class, 'created_by');
     }
@@ -71,13 +71,13 @@ class Staff extends Authenticatable
      * Scope(CRUD処理)
      */
     // 有効なスタッフ
-    public function scopeActive(Builder $query):Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
     }
 
     // adminsかどうか
-    public function scopeAdmins(Builder $query):Builder
+    public function scopeAdmins(Builder $query): Builder
     {
         return $query->where('role', StaffRole::ADMIN);
     }
@@ -90,12 +90,12 @@ class Staff extends Authenticatable
             $staff->staff_code ??= self::generateStaffCode();
         });
     }
-        private static function generateStaffCode(): string
-        {
-            $latest = self::max('id');
-            $number = ($latest ?? 0) + 1;
-            return 's' . str_pad($number, 4, '0', STR_PAD_LEFT);
-        }
 
+    private static function generateStaffCode(): string
+    {
+        $latest = self::max('id');
+        $number = ($latest ?? 0) + 1;
 
+        return 's'.str_pad($number, 4, '0', STR_PAD_LEFT);
+    }
 }

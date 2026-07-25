@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
             // 検索機能
-            $table->index("member_id");
+            $table->index('member_id');
         });
     }
 

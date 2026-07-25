@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\StaffNote;
 use App\Models\Member;
 use App\Models\Staff;
+use App\Models\StaffNote;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

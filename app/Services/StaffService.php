@@ -17,13 +17,13 @@ class StaffService
     public function create(array $data): Staff
     {
         return Staff::create([
-            'name'=>$data['name'],
-            'phone'=>$data['phone'] ?? null,
-            'address'=>$data['address'] ?? null,
-            'email'=>$data['email'] ?? null,
-            'password'=>Hash::make($data['password']),
-            'role'=>$data['role'],
-            'is_active'=>$data['is_active'] ?? true,
+            'name' => $data['name'],
+            'phone' => $data['phone'] ?? null,
+            'address' => $data['address'] ?? null,
+            'email' => $data['email'] ?? null,
+            'password' => Hash::make($data['password']),
+            'role' => $data['role'],
+            'is_active' => $data['is_active'] ?? true,
         ]);
     }
 
@@ -48,12 +48,12 @@ class StaffService
         }
 
         // 無効化を防御
-        if ($staff->id === $currentUser->id && $staff->is_active && !$data['is_active']){
+        if ($staff->id === $currentUser->id && $staff->is_active && ! $data['is_active']) {
             throw new RuntimeException('管理者が自分自身を無効かすることはできません');
         }
 
         // 最後の管理者の無効化を防御
-        if ($staff->role === StaffRole::ADMIN && $staff->is_active && !$data['is_active']) {
+        if ($staff->role === StaffRole::ADMIN && $staff->is_active && ! $data['is_active']) {
             $adminCount = Staff::where('role', StaffRole::ADMIN->value)->count();
             if ($adminCount === 1) {
                 throw new RuntimeException('最後の管理者を無効化することはできません。');
@@ -61,15 +61,15 @@ class StaffService
         }
 
         $staff->fill([
-            'name'=>$data['name'],
-            'phone'=>$data['phone'] ?? null,
-            'address'=>$data['address'] ?? null,
-            'email'=>$data['email'] ?? null,
-            'role'=>$data['role'],
-            'is_active'=>$data['is_active'] ?? false,
+            'name' => $data['name'],
+            'phone' => $data['phone'] ?? null,
+            'address' => $data['address'] ?? null,
+            'email' => $data['email'] ?? null,
+            'role' => $data['role'],
+            'is_active' => $data['is_active'] ?? false,
         ]);
 
-        // 
+        //
         if (! empty($data['password'])) {
             $staff->password = Hash::make($data['password']);
         }

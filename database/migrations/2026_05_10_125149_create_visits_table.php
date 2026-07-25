@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('visit_source')->nullable(); // 受付方法（barcode / manual）
             $table->foreignId('checked_in_by')->nullable()->constrained('staffs')->nullOnDelete(); // 入店受付スタッフID
             $table->foreignId('checked_out_by')->nullable()->constrained('staffs')->nullOnDelete(); // 退店受付スタッフID
-            $table->text('staff_note')->nullable();; // 受付メモ
+            $table->text('staff_note')->nullable(); // 受付メモ
             // 検索機能
             $table->index('member_id');
             $table->index('check_in_at');

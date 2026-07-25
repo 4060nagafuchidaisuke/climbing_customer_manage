@@ -2,14 +2,12 @@
 
 namespace App\Events;
 
+use App\Models\Visit;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Visit;
 
 class CheckedIn implements ShouldBroadcastNow
 {
@@ -20,7 +18,7 @@ class CheckedIn implements ShouldBroadcastNow
      */
     public function __construct(public Visit $visit)
     {
-        // 
+        //
     }
 
     /**

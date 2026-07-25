@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ClimbingLevel;
+use App\Enums\Gender;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\Gender;
-use App\Enums\ClimbingLevel;
 
 class GuestRegistrationRequest extends FormRequest
 {
@@ -28,34 +28,34 @@ class GuestRegistrationRequest extends FormRequest
         return [
             // お客さん入力内容
             // 基本情報
-            'last_name'=>['required', 'string', 'max:15'],
-            'first_name'=>['required', 'string', 'max:15'],
-            'last_name_kana'  => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
+            'last_name' => ['required', 'string', 'max:15'],
+            'first_name' => ['required', 'string', 'max:15'],
+            'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
-            'birth_date'=>['required', 'date', 'before:today'],
-            'address'=>['required', 'string', 'max:255'],
+            'birth_date' => ['required', 'date', 'before:today'],
+            'address' => ['required', 'string', 'max:255'],
 
             // 任意の項目
-            'gender'=>['nullable', Rule::enum(Gender::class)],
-            'phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
-            'email'=>['nullable', 'email', 'max:255', 'unique:members,email'],
-            'postal_code'=>['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
-            'occupation'=>['nullable', 'string', 'max:100'],
+            'gender' => ['nullable', Rule::enum(Gender::class)],
+            'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:members,email'],
+            'postal_code' => ['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
+            'occupation' => ['nullable', 'string', 'max:100'],
             'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
 
             // 未成年フラグ（必須）・保護者情報
-            'is_minor'=>['nullable', 'boolean'],
-            'guardian_name'=>['nullable', 'string', 'max:100'],
-            'guardian_phone'=>['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'is_minor' => ['nullable', 'boolean'],
+            'guardian_name' => ['nullable', 'string', 'max:100'],
+            'guardian_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
             // 緊急連絡先（必須）
-            'emergency_name'=>['required', 'string', 'max:100'],
-            'emergency_relation'=>['nullable', 'string', 'max:50'],
-            'emergency_phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'emergency_name' => ['required', 'string', 'max:100'],
+            'emergency_relation' => ['nullable', 'string', 'max:50'],
+            'emergency_phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
             // 同意書
             'agreement' => ['accepted'],
-            
+
         ];
     }
 
@@ -75,9 +75,9 @@ class GuestRegistrationRequest extends FormRequest
             'phone' => '電話番号',
             'email' => 'メールアドレス',
             'postal_code' => '郵便番号',
-            'occupation'=>'職業',
+            'occupation' => '職業',
             'climbing_level' => 'クライミングレベル',
-            'is_minor'=>'未成年',
+            'is_minor' => '未成年',
             'guardian_name' => '保護者氏名',
             'guardian_phone' => '保護者電話番号',
             'emergency_name' => '緊急連絡先氏名',
@@ -86,7 +86,8 @@ class GuestRegistrationRequest extends FormRequest
             'agreement' => '使用同意書',
         ];
     }
-     /**
+
+    /**
      * お客さん向けメッセージの日本語化
      */
     public function messages(): array
@@ -102,5 +103,4 @@ class GuestRegistrationRequest extends FormRequest
             'postal_code.regex' => '郵便番号は半角数字（ハイフンなし）で入力してください。',
         ];
     }
-    
 }

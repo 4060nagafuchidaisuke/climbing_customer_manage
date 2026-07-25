@@ -15,6 +15,7 @@ class SponsorController extends Controller
     {
         //
         $sponsors = Sponsor::orderBy('sort_order')->get();
+
         return view('sponsors.index', compact('sponsors'));
     }
 
@@ -34,22 +35,22 @@ class SponsorController extends Controller
     {
         //
         $request->validate([
-            'title'=>'required|string|max:100',
-            'image'=>'required|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'link_url'=>'nullable|url',
-            'display_seconds'=>'required|integer|min:1|max:60',
-            'sort_order'=>'required|integer|min:0',
+            'title' => 'required|string|max:100',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'link_url' => 'nullable|url',
+            'display_seconds' => 'required|integer|min:1|max:60',
+            'sort_order' => 'required|integer|min:0',
         ]);
 
         // 画像を storage/app/public/sponsors/ に保存
         $path = $request->file('image')->store('sponsors', 'public');
 
         Sponsor::create([
-            'title'=>$request->title,
-            'image_path'=>$path,
-            'link_url'=>$request->link_url,
-            'display_seconds'=>$request->display_seconds,
-            'sort_order'=>$request->sort_order,
+            'title' => $request->title,
+            'image_path' => $path,
+            'link_url' => $request->link_url,
+            'display_seconds' => $request->display_seconds,
+            'sort_order' => $request->sort_order,
         ]);
 
         return redirect()->route('sponsors.index')->with('success', '広告を登録しました');
@@ -63,6 +64,7 @@ class SponsorController extends Controller
         //
         Storage::disk('public')->delete($sponsor->image_path);
         $sponsor->delete();
+
         return redirect()->route('sponsors.index')->with('success', '広告を削除しました');
     }
 }

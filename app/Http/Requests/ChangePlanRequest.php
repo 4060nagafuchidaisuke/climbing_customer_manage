@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\PlanType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\PlanType;
 
 class ChangePlanRequest extends FormRequest
 {

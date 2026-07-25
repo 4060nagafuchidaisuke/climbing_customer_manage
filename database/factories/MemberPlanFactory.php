@@ -33,11 +33,11 @@ class MemberPlanFactory extends Factory
             // Memberを自動で紐づけ
             'member_id' => Member::factory(),
             'plan_id' => $plan->id,
-            'price_paid'=> $plan->price,
+            'price_paid' => $plan->price,
             'start_date' => $startDate,
-            'end_date' => $endDate, 
+            'end_date' => $endDate,
 
-            'cancelled_at' =>null,
+            'cancelled_at' => null,
         ];
     }
 
@@ -57,9 +57,10 @@ class MemberPlanFactory extends Factory
     {
         return $this->state(function () {
             $start = fake()->dateTimeBetween('-2 years', '-1 month');
+
             return [
                 'start_date' => $start,
-                'end_date'   => fake()->dateTimeBetween($start, '-1 day'), // 過去で終了
+                'end_date' => fake()->dateTimeBetween($start, '-1 day'), // 過去で終了
             ];
         });
     }

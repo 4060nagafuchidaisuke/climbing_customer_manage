@@ -9,7 +9,7 @@ enum StaffRole: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADMIN => '管理者',
             self::STAFF => 'スタッフ',
         };

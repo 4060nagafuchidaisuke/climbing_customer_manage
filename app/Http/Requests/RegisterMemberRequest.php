@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\MemberCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\MemberCategory;
 
 class RegisterMemberRequest extends FormRequest
 {
@@ -25,11 +25,11 @@ class RegisterMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            
+
             // 正会員化フォームの入力検証
             'category' => ['required', Rule::enum(MemberCategory::class)],
 
-            'payment_received' => ['accepted']
+            'payment_received' => ['accepted'],
         ];
     }
 

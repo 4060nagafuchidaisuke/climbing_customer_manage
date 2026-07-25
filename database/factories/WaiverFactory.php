@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Waiver;
 use App\Models\Member;
+use App\Models\Waiver;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,18 +18,18 @@ class WaiverFactory extends Factory
      */
     public function definition(): array
     {
-        $signedAt = fake()->boolean(90) ? fake()->dateTimeBetween('-10 years', 'now'): null;
-        
+        $signedAt = fake()->boolean(90) ? fake()->dateTimeBetween('-10 years', 'now') : null;
+
         return [
             // Memberを自動で紐づけ (外部キー)
             'member_id' => Member::factory(),
             'version' => 'v1.0',
             'signed_at' => $signedAt,
-            'signature_path'  => $signedAt ? 'signatures/dummy_' . fake()->uuid() . '.png': null,
-            
+            'signature_path' => $signedAt ? 'signatures/dummy_'.fake()->uuid().'.png' : null,
+
             // Seederから渡されなかったらdefault値とする
             'is_minor_signed' => false,
-            'guardian_name'=> null,
+            'guardian_name' => null,
         ];
     }
 
@@ -37,8 +37,8 @@ class WaiverFactory extends Factory
     public function signed(): static
     {
         return $this->state([
-            'signed_at'      => fake()->dateTimeBetween('-1 year', 'now'),
-            'signature_path' => 'signatures/dummy_' . fake()->uuid() . '.png',
+            'signed_at' => fake()->dateTimeBetween('-1 year', 'now'),
+            'signature_path' => 'signatures/dummy_'.fake()->uuid().'.png',
         ]);
     }
 
@@ -46,7 +46,7 @@ class WaiverFactory extends Factory
     public function unsigned(): static
     {
         return $this->state([
-            'signed_at'      => null,
+            'signed_at' => null,
             'signature_path' => null,
         ]);
     }

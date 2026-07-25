@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('link_url')->nullable(); // クリック先のurl
             $table->boolean('is_active'); // 表示するかどうか
             $table->integer('display_seconds'); // 表示秒数
-            $table->integer('sort_order');// 表示順
+            $table->integer('sort_order'); // 表示順
             $table->timestamps();
         });
     }

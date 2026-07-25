@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\ClimbingLevel;
+use App\Enums\Gender;
+use App\Enums\MemberCategory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Builder;
-use App\Enums\Gender;
-use App\Enums\ClimbingLevel;
-use App\Enums\MemberCategory;
 
 class Member extends Model
 {
@@ -42,15 +42,15 @@ class Member extends Model
         'emergency_relation',
         'emergency_phone',
         'category',
-    ]; 
+    ];
 
     // 型指定
     protected $casts = [
-        'birth_date'=>'date',
-        'caution_flag'=>'boolean',
-        'is_minor'=>'boolean',
+        'birth_date' => 'date',
+        'caution_flag' => 'boolean',
+        'is_minor' => 'boolean',
         'gender' => Gender::class,
-        'category'=> MemberCategory::class,
+        'category' => MemberCategory::class,
         'climbing_level' => ClimbingLevel::class,
         'registered_at' => 'datetime',
     ];
@@ -59,25 +59,25 @@ class Member extends Model
      * リレーション設定
      */
     // 契約内容（Members_plansテーブルとの紐づけ）
-    public function memberPlans():HasMany
+    public function memberPlans(): HasMany
     {
         return $this->hasMany(MemberPlan::class);
     }
 
     // 来店履歴（visitsテーブルとの紐づけ）
-    public function  visits():HasMany
+    public function visits(): HasMany
     {
         return $this->hasMany(Visit::class);
     }
-    
+
     // 同意書（waiversテーブルとの紐づけ）
-    public function waivers():HasMany
+    public function waivers(): HasMany
     {
         return $this->hasMany(Waiver::class);
     }
 
     // スタッフメモ（staff_notesテーブルとの紐づけ）
-    public function staffNotes():HasMany
+    public function staffNotes(): HasMany
     {
         return $this->hasMany(StaffNote::class);
     }
@@ -88,36 +88,35 @@ class Member extends Model
         return $this->hasOne(Visit::class)->latestOfMany('check_in_at');
     }
 
-    //在店中画面の前回来店表示機能
+    // 在店中画面の前回来店表示機能
     public function previousVisit(): HasOne
     {
         return $this->hasOne(Visit::class)
             ->whereNotNull('check_out_at')     // 退店済み＝過去の来店だけ
             ->latestOfMany('check_in_at');     // その中で最新の1件
     }
-        
+
     /**
      * Accessor
      */
-    
+
     // 名前の取得
-    public function getFullNameAttribute():string
+    public function getFullNameAttribute(): string
     {
         return "{$this->last_name}{$this->first_name}";
     }
-    
-    public function getFullNameKanaAttribute():string
+
+    public function getFullNameKanaAttribute(): string
     {
         return "{$this->last_name_kana}{$this->first_name_kana}";
     }
 
-    //年齢の計算
-    public function getAgeAttribute():?int
+    // 年齢の計算
+    public function getAgeAttribute(): ?int
     {
         return $this->birth_date?->age;
     }
 
-    
     // 現在有効なプラン（最新1件）
     public function activePlan()
     {
@@ -155,8 +154,7 @@ class Member extends Model
     public function scopeFindByCode(Builder $query, string $code)
     {
         return $query->where(function ($q) use ($code) {
-        $q->where('barcode', $code)->orWhere('member_code', $code);
+            $q->where('barcode', $code)->orWhere('member_code', $code);
         });
     }
-
 }

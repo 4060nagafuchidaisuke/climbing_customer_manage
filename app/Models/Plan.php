@@ -21,8 +21,8 @@ class Plan extends Model
     {
         return [
             'price_tier' => PriceTier::class,
-            'plan_type'  => PlanType::class,
-            'is_active'  => 'boolean',
+            'plan_type' => PlanType::class,
+            'is_active' => 'boolean',
         ];
     }
 }

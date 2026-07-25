@@ -32,6 +32,7 @@ enum PlanType: string
             self::HALF_YEAR => true,
         };
     }
+
     public function durationDays(): ?int
     {
         return match ($this) {
