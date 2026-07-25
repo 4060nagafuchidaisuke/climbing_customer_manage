@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Visit;
-use Illuminate\Http\Request;
 
 class VisitController extends Controller
 {
@@ -24,7 +23,7 @@ class VisitController extends Controller
     public function checkout(Visit $visit)
     {
         //
-        $visit->update(['check_out_at'=>now(),
+        $visit->update(['check_out_at' => now(),
         ]);
 
         return redirect()->route('visits.index')->with('success', '退店処理が完了しました');

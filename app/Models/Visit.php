@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
-use App\Enums\VisitType;
 use App\Enums\VisitSource;
+use App\Enums\VisitType;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Visit extends Model
 {
@@ -22,37 +22,37 @@ class Visit extends Model
         'visit_source',
         'checked_in_by',
         'checked_out_by',
-        'staff_note'
-    ]; 
+        'staff_note',
+    ];
 
     // 型指定
     protected $casts = [
-        'check_in_at'=>'datetime',
-        'check_out_at'=>'datetime',
-        'visit_type'=> VisitType::class,
-        'visit_source' => VisitSource::class
+        'check_in_at' => 'datetime',
+        'check_out_at' => 'datetime',
+        'visit_type' => VisitType::class,
+        'visit_source' => VisitSource::class,
     ];
 
     /**
      * リレーション設定
      */
     // Memberと紐づけ
-    public function member():BelongsTo
+    public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
     }
-    
+
     // staffテーブルと紐づけ
     // 受付スタッフ(checked_in_by)
-    public function checkedInStaff():BelongsTo
+    public function checkedInStaff(): BelongsTo
     {
-        return $this->belongsTo(Staff::class, 'checked_in_by')->withDefault();;
+        return $this->belongsTo(Staff::class, 'checked_in_by')->withDefault();
     }
-    
+
     // 退店スタッフ
-    public function checkedOutStaff():BelongsTo
+    public function checkedOutStaff(): BelongsTo
     {
-        return $this->belongsTo(Staff::class, 'checked_out_by')->withDefault();;
+        return $this->belongsTo(Staff::class, 'checked_out_by')->withDefault();
     }
 
     /**
@@ -61,16 +61,16 @@ class Visit extends Model
     // 滞在時間を計算
     public function getStayMinutesAttribute(): ?int
     {
-        if (!$this->check_in_at || !$this->check_out_at) {
+        if (! $this->check_in_at || ! $this->check_out_at) {
             return null;
         }
 
         return $this->check_in_at
-                    ->diffInMinutes($this->check_out_at); // 
+            ->diffInMinutes($this->check_out_at); //
     }
 
     // 現在滞在中かどうか
-    public function getIsStayingAttribute():bool
+    public function getIsStayingAttribute(): bool
     {
         return is_null($this->check_out_at);
     }

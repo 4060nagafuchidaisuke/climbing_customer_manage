@@ -25,7 +25,7 @@ class PlanUpdateRequest extends FormRequest
         return [
             //
             'price' => ['required', 'integer', 'min:0'],
-            'is_active'  => ['required', 'boolean'],
+            'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0'],
         ];
     }
@@ -34,8 +34,8 @@ class PlanUpdateRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'price'      => '料金',
-            'is_active'  => '有効状態',
+            'price' => '料金',
+            'is_active' => '有効状態',
             'sort_order' => '表示順',
         ];
     }

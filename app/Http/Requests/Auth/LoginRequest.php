@@ -28,8 +28,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'staff_code'=>['required', 'string'],
-            'password'=>['required', 'string'],
+            'staff_code' => ['required', 'string'],
+            'password' => ['required', 'string'],
         ];
     }
 
@@ -46,7 +46,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'staff_code'=>trans('auth.failed'),
+                'staff_code' => trans('auth.failed'),
             ]);
         }
 
@@ -72,9 +72,9 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'staff_code'=>trans('auth.throttle', [
-                'seconds'=>$seconds,
-                'minutes'=>ceil($seconds / 60),
+            'staff_code' => trans('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
             ]),
         ]);
     }

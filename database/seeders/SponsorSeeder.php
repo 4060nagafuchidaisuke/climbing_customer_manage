@@ -15,15 +15,14 @@ class SponsorSeeder extends Seeder
             ['title' => 'スポンサーC', 'image_path' => 'sponsors/ad3.png', 'sort_order' => 3],
         ];
 
-
         foreach ($sponsors as $data) {
             Sponsor::create([
-                'title'           => $data['title'], 
-                'image_path'      => $data['image_path'],
-                'link_url'        => null,        // リンク先は今は無しでOK
-                'is_active'       => true,
+                'title' => $data['title'],
+                'image_path' => $data['image_path'],
+                'link_url' => null,        // リンク先は今は無しでOK
+                'is_active' => true,
                 'display_seconds' => 5,
-                'sort_order'      => $data['sort_order'],
+                'sort_order' => $data['sort_order'],
             ]);
         }
     }

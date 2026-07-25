@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
+use App\Enums\StaffRole;
+use App\Models\Staff;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use Carbon\Carbon;
-use App\Models\Staff;
-use App\Enums\StaffRole;
 
 class AppServiceProvider extends ServiceProvider
 {

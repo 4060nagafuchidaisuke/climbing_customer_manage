@@ -11,7 +11,7 @@ class MemberRegistrationService
     public function register(Member $member, MemberCategory $category): void
     {
         // 本登録が完了していた場合
-        if ($member->registered_at !== null){
+        if ($member->registered_at !== null) {
             throw new \DomainException('この会員はすでに本登録済みです');
         }
 

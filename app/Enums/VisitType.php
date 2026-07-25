@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum VisitType: string
 {
-    case MEMBER  = 'member';
-    case TRIAL   = 'trial';
-    case LESSON  = 'lesson';
+    case MEMBER = 'member';
+    case TRIAL = 'trial';
+    case LESSON = 'lesson';
 
     public function label(): string
     {

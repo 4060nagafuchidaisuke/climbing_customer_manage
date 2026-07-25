@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Staff;
 use App\Enums\StaffRole;
+use App\Models\Staff;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,22 +21,22 @@ class StaffFactory extends Factory
     public function definition(): array
     {
         return [
-        // Staffのダミーデータを作成
-        'name'=>fake()->name,
-        'email'=>fake()->unique()->safeEmail(),
-        'password'=>Hash::make('password'), // 全員同じPWでOK（開発用）
-        'role'=>fake()->randomElement(StaffRole::cases()),
-        'is_active'=>true,
+            // Staffのダミーデータを作成
+            'name' => fake()->name,
+            'email' => fake()->unique()->safeEmail(),
+            'password' => Hash::make('password'), // 全員同じPWでOK（開発用）
+            'role' => fake()->randomElement(StaffRole::cases()),
+            'is_active' => true,
         ];
     }
 
     /**
      * ── States（特定の状態を作りやすくする）──────────────
-    */ 
+     */
     // 管理者だけを上書きする
     public function admin(): static
     {
-        return $this->state(['role' => StaffRole::ADMIN]); 
+        return $this->state(['role' => StaffRole::ADMIN]);
     }
 
     // 現在働いているかを上書きする

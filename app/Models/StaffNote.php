@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StaffNote extends Model
 {
@@ -18,29 +18,29 @@ class StaffNote extends Model
         'note',
         'is_alert',
         'created_by',
-    ]; 
+    ];
 
     // 型指定
     protected $casts = [
-        'is_alert'=>'boolean',
+        'is_alert' => 'boolean',
     ];
 
     /**
      * リレーション設定
      */
     // 会員
-    public function member():BelongsTo
+    public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
 
     }
-    
+
     // 作成スタッフ
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(Staff::class, 'created_by');
     }
-    
+
     /**
      * Accessor(良く使う計算値)
      */
@@ -48,7 +48,7 @@ class StaffNote extends Model
     /**
      * Scope(CRUD処理)
      */
-    
+
     // アラートメモ
     public function scopeAlert(Builder $query): Builder
     {
@@ -66,6 +66,4 @@ class StaffNote extends Model
                 : '通常'
         );
     }
-
-
 }

@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('address'); // 住所
             $table->string('occupation')->nullable(); // 職業
             $table->string('photo_path')->nullable(); // 顔写真保存先
-            $table->string('climbing_level')->default('beginner')->nullable();;// クライミングレベル
+            $table->string('climbing_level')->default('beginner')->nullable(); // クライミングレベル
             $table->text('injury_notes')->nullable(); // 怪我歴
             $table->boolean('caution_flag')->nullable(); // 注意人物フラグ
             $table->text('caution_notes')->nullable(); // 注意事項

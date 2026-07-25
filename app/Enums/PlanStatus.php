@@ -8,7 +8,7 @@ enum PlanStatus: string
     case ACTIVE = 'active';
     case EXPIRED = 'expired';
     case CANCELLED = 'cancelled';
-    
+
     public function label(): string
     {
         return match ($this) {

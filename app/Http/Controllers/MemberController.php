@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreMemberRequest;
-use App\Models\Member;
 use App\Http\Requests\UpdateMemberRequest;
+use App\Models\Member;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
@@ -21,10 +21,10 @@ class MemberController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('member_code', 'like', "%{$search}%")
-                ->orWhere('last_name', 'like', "%{$search}%")
-                ->orWhere('first_name', 'like', "%{$search}%")
-                ->orWhere('last_name_kana', 'like', "%{$search}%")
-                ->orWhere('first_name_kana', 'like', "%{$search}%");
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name_kana', 'like', "%{$search}%")
+                    ->orWhere('first_name_kana', 'like', "%{$search}%");
             });
         }
 
@@ -39,7 +39,7 @@ class MemberController extends Controller
     public function create()
     {
         // 新規フォームデータを表示
-        return view('members.create'); 
+        return view('members.create');
     }
 
     /**
@@ -71,10 +71,10 @@ class MemberController extends Controller
         // 会員詳細ページの表示
         $member->load([
             // プランを「開始日が新しい順」にならべる + plan も一緒に読み込む
-            'memberPlans' => fn($q) => $q->with('plan')->orderBy('start_date', 'desc'),
+            'memberPlans' => fn ($q) => $q->with('plan')->orderBy('start_date', 'desc'),
 
-            'visits' => fn($q) => $q->orderBy('check_in_at', 'desc')->limit(10),
-            'staffNotes' => fn($q) => $q->orderBy('created_at', 'desc'),
+            'visits' => fn ($q) => $q->orderBy('check_in_at', 'desc')->limit(10),
+            'staffNotes' => fn ($q) => $q->orderBy('created_at', 'desc'),
             'waivers',
         ]);
 
@@ -95,7 +95,7 @@ class MemberController extends Controller
      */
     public function update(UpdateMemberRequest $request, Member $member)
     {
-        //会員情報の編集
+        // 会員情報の編集
         $member->update($request->validated());
 
         return redirect()->route('members.show', $member)->with('success', '会員情報を更新しました');

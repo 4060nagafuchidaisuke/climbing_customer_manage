@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum VisitSource:string
+enum VisitSource: string
 {
     // 受付方法（barcode / manual）
     case BARCODE = 'barcode';

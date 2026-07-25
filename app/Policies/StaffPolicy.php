@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Staff;
-use Illuminate\Auth\Access\Response;
 
 class StaffPolicy
 {
@@ -60,5 +59,4 @@ class StaffPolicy
     {
         return $authUser->role->canManageStaff();
     }
-
 }

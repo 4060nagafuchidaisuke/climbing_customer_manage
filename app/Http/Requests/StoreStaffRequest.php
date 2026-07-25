@@ -21,26 +21,26 @@ class StoreStaffRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'=>['required', 'string', 'max:100'],
-            'phone'=>['nullable', 'string', 'max:20'],
-            'address'=>['nullable', 'string', 'max:255'],
-            'email'=>['nullable', 'email', 'max:255', 'unique:staffs,email'],
-            'password'=> ['required', 'confirmed', Password::defaults()],
-            'role'=>['required', Rule::enum(StaffRole::class)],
-            'is_active'=>['nullable', 'boolean'],
+            'name' => ['required', 'string', 'max:100'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:staffs,email'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'role' => ['required', Rule::enum(StaffRole::class)],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'name'=>'氏名',
-            'phone'=>'電話番号',
-            'address'=>'住所',
-            'email'=>'メールアドレス',
-            'password'=>'パスワード',
-            'role'=>'権限',
-            'is_active'=>'有効フラグ',
+            'name' => '氏名',
+            'phone' => '電話番号',
+            'address' => '住所',
+            'email' => 'メールアドレス',
+            'password' => 'パスワード',
+            'role' => '権限',
+            'is_active' => '有効フラグ',
         ];
     }
 

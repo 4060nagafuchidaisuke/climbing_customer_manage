@@ -14,12 +14,12 @@ class Notice extends Model
         'is_active',
         'sort_order',
         'expires_at',
-    ]; 
+    ];
 
     // 型指定
     protected $casts = [
-        'is_active'=>'boolean',
-        'expires_at'=>'date',
+        'is_active' => 'boolean',
+        'expires_at' => 'date',
     ];
 
     /**
@@ -28,10 +28,9 @@ class Notice extends Model
     // 有効なお知らせを表示
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->where(function ($q) 
-            {
-                $q->whereNull('expires_at')->orWhere('expires_at', '>=', today());
-            })
+        return $query->where('is_active', true)->where(function ($q) {
+            $q->whereNull('expires_at')->orWhere('expires_at', '>=', today());
+        })
             ->orderBy('sort_order');
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\GuestRegistrationRequest;
 use App\Models\Member;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GuestRegistrationController extends Controller
@@ -29,21 +29,21 @@ class GuestRegistrationController extends Controller
 
         // 表示用の日本語ラベル（※将来Enum化して置き換える）
         $genderLabels = ['male' => '男性', 'female' => '女性', 'other' => 'その他'];
-        $levelLabels  = ['beginner' => '初心者', 'intermediate' => '中級者', 'advanced' => '上級者'];
+        $levelLabels = ['beginner' => '初心者', 'intermediate' => '中級者', 'advanced' => '上級者'];
 
         // 確認画面へ
         return view('guest.confirm', [
             'data' => $validated,
             'genderLabels' => $genderLabels,
-            'levelLabels'  => $levelLabels,
-            ]);
+            'levelLabels' => $levelLabels,
+        ]);
     }
 
     public function store(Request $request)
     {
         // session から回収（無ければセッション切れ→フォームへ）
         $data = session('guest_member');
-        if (!$data) {
+        if (! $data) {
             return redirect()->route('register.guest.expired');
         }
 
@@ -69,9 +69,9 @@ class GuestRegistrationController extends Controller
             $member->waivers()->create([
                 'version' => 'v1',
                 'signed_at' => now(),
-                'is_minor_signed' => !empty($data['is_minor']),
-                'guardian_name' => $data['guardian_name'] ?? null,]);
-            
+                'is_minor_signed' => ! empty($data['is_minor']),
+                'guardian_name' => $data['guardian_name'] ?? null, ]);
+
             return $code;
         });
 

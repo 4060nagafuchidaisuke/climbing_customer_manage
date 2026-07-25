@@ -2,13 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ClimbingLevel;
+use App\Enums\Gender;
+use App\Enums\MemberCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\MemberCategory;
-use App\Enums\Gender;
-use App\Enums\ClimbingLevel;
-
 
 class UpdateMemberRequest extends FormRequest
 {
@@ -31,7 +30,7 @@ class UpdateMemberRequest extends FormRequest
             // 必須項目
             'last_name' => ['required', 'string', 'max:50'],
             'first_name' => ['required', 'string', 'max:50'],
-            'last_name_kana'  => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
+            'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'birth_date' => ['required', 'date', 'before:today'],
             'category' => ['required', Rule::enum(MemberCategory::class)],

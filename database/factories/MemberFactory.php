@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\ClimbingLevel;
+use App\Enums\Gender;
+use App\Enums\MemberCategory;
 use App\Models\Member;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Enums\MemberCategory;
-use App\Enums\Gender;
-use App\Enums\ClimbingLevel;
 
 /**
  * @extends Factory<Member>
@@ -28,7 +28,7 @@ class MemberFactory extends Factory
             // 氏名
             'last_name' => fake()->lastName(),
             'first_name' => fake()->firstName(),
-            'last_name_kana'  => fake()->randomElement([
+            'last_name_kana' => fake()->randomElement([
                 'ヤマダ', 'タナカ', 'スズキ', 'サトウ', 'イトウ',
                 'ワタナベ', 'ナカムラ', 'コバヤシ', 'カトウ', 'ヨシダ',
             ]),
@@ -67,7 +67,6 @@ class MemberFactory extends Factory
             'emergency_relation' => fake()->randomElement(['parent', 'spouse', 'sibling', 'friend']),
             'emergency_phone' => fake()->phoneNumber(),
 
-            
         ];
     }
 
@@ -77,7 +76,7 @@ class MemberFactory extends Factory
         return $this->state(function () {
             return [
                 'registered_at' => fake()->dateTimeBetween('-1 year', 'now'),
-                'category'      => fake()->randomElement(MemberCategory::cases()),
+                'category' => fake()->randomElement(MemberCategory::cases()),
             ];
         });
     }

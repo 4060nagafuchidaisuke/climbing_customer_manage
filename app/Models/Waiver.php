@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Waiver extends Model
 {
@@ -19,20 +19,20 @@ class Waiver extends Model
         'signed_at',
         'signature_path',
         'is_minor_signed',
-        'guardian_name'
-    ]; 
+        'guardian_name',
+    ];
 
     // 型指定
     protected $casts = [
-        'signed_at'=>'datetime',
-        'is_minor_signed'=>'boolean'
+        'signed_at' => 'datetime',
+        'is_minor_signed' => 'boolean',
     ];
 
     /**
      * リレーション設定
      */
     // 会員情報と連結
-    public function member():BelongsTo
+    public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
     }
@@ -44,7 +44,7 @@ class Waiver extends Model
     protected function isSigned(): Attribute
     {
         return Attribute::make(
-            get: fn () => !is_null($this->signed_at),
+            get: fn () => ! is_null($this->signed_at),
         );
     }
 
@@ -52,9 +52,8 @@ class Waiver extends Model
     protected function hasGuardianConsent(): Attribute
     {
         return Attribute::make(
-            get: fn () =>
-                $this->is_minor_signed
-                && !empty($this->guardian_name),
+            get: fn () => $this->is_minor_signed
+                && ! empty($this->guardian_name),
         );
     }
 
@@ -62,7 +61,7 @@ class Waiver extends Model
      * Scope(検索、CRUD処理)
      */
     // 同意書の作成の有無
-     public function scopeSigned(Builder $query):Builder
+    public function scopeSigned(Builder $query): Builder
     {
         return $query->whereNotNull('signed_at');
     }

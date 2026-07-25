@@ -74,6 +74,7 @@
                                 <div>
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ $visit->member->full_name }}
+                                    </p>
                                 </div>
 
 

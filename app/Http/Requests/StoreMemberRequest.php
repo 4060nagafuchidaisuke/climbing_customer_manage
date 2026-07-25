@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ClimbingLevel;
+use App\Enums\Gender;
+use App\Enums\MemberCategory;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\MemberCategory;
-use App\Enums\Gender;
-use App\Enums\ClimbingLevel;
 
 class StoreMemberRequest extends FormRequest
 {
@@ -29,74 +29,73 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             // 基本情報
-            'last_name'=>['required', 'string', 'max:15'],
-            'first_name'=>['required', 'string', 'max:15'],
-            'last_name_kana'  => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
+            'last_name' => ['required', 'string', 'max:15'],
+            'first_name' => ['required', 'string', 'max:15'],
+            'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
-            'birth_date'=>['required', 'date', 'before:today'],
-            'address'=>['required', 'string', 'max:255'],
+            'birth_date' => ['required', 'date', 'before:today'],
+            'address' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::enum(MemberCategory::class)],
 
-
             // 任意の項目
-            'gender'=>['nullable', Rule::enum(Gender::class)],
-            'phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
-            'email'=>['nullable', 'email', 'max:255', 'unique:members,email'],
-            'postal_code'=>['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
-            'occupation'=>['nullable', 'string', 'max:100'],
-            
+            'gender' => ['nullable', Rule::enum(Gender::class)],
+            'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:members,email'],
+            'postal_code' => ['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
+            'occupation' => ['nullable', 'string', 'max:100'],
+
             // クライミングレベル・怪我情報
-            'climbing_level'=>['nullable', Rule::enum(ClimbingLevel::class)],
-            'injury_notes'=>['nullable', 'string', 'max:1000'],
+            'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
+            'injury_notes' => ['nullable', 'string', 'max:1000'],
 
             // 注意フラグ
-            'caution_flag'=>['nullable', 'boolean'],
-            'caution_notes'=>['nullable', 'string', 'max:1000'],
+            'caution_flag' => ['nullable', 'boolean'],
+            'caution_notes' => ['nullable', 'string', 'max:1000'],
 
             // 未成年フラグ・保護者情報
-            'is_minor'=>['nullable', 'boolean'],
-            'guardian_name'=>['nullable', 'string', 'max:100'],
-            'guardian_phone'=>['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'is_minor' => ['nullable', 'boolean'],
+            'guardian_name' => ['nullable', 'string', 'max:100'],
+            'guardian_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
             // 緊急連絡先
-            'emergency_name'=>['required', 'string', 'max:100'],
-            'emergency_relation'=>['nullable', 'string', 'max:50'],
-            'emergency_phone'=>['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'emergency_name' => ['required', 'string', 'max:100'],
+            'emergency_relation' => ['nullable', 'string', 'max:50'],
+            'emergency_phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
         ];
     }
-    
-     /**
+
+    /**
      * エラーメッセージの日本語化
      */
     public function attributes(): array
     {
         return [
-            'last_name'=>'姓',
-            'first_name'=>'名',
-            'last_name_kana'=>'姓（カナ）',
-            'first_name_kana'=>'名（カナ）',
-            'birth_date'=>'生年月日',
-            'gender'=>'性別',
-            'phone'=>'電話番号',
-            'email'=>'メールアドレス',
-            'postal_code'=>'郵便番号',
-            'address'=>'住所',
-            'occupation'=>'職業',
-            'climbing_level'=>'クライミングレベル',
-            'injury_notes'=>'怪我歴',
-            'caution_flag'=>'注意フラグ',
-            'caution_notes'=>'注意事項',
-            'is_minor'=>'未成年フラグ',
-            'guardian_name'=>'保護者氏名',
-            'guardian_phone'=>'保護者連絡先',
-            'emergency_name'=>'緊急連絡先氏名',
-            'emergency_relation'=>'続柄',
-            'emergency_phone'=>'緊急連絡先電話番号',
+            'last_name' => '姓',
+            'first_name' => '名',
+            'last_name_kana' => '姓（カナ）',
+            'first_name_kana' => '名（カナ）',
+            'birth_date' => '生年月日',
+            'gender' => '性別',
+            'phone' => '電話番号',
+            'email' => 'メールアドレス',
+            'postal_code' => '郵便番号',
+            'address' => '住所',
+            'occupation' => '職業',
+            'climbing_level' => 'クライミングレベル',
+            'injury_notes' => '怪我歴',
+            'caution_flag' => '注意フラグ',
+            'caution_notes' => '注意事項',
+            'is_minor' => '未成年フラグ',
+            'guardian_name' => '保護者氏名',
+            'guardian_phone' => '保護者連絡先',
+            'emergency_name' => '緊急連絡先氏名',
+            'emergency_relation' => '続柄',
+            'emergency_phone' => '緊急連絡先電話番号',
         ];
     }
 
-     /**
+    /**
      * 入力時のメッセージの日本語化
      */
     public function messages(): array
@@ -111,5 +110,4 @@ class StoreMemberRequest extends FormRequest
             'postal_code.regex' => '郵便番号は半角数字（ハイフンなし）で入力してください。',
         ];
     }
-    
 }
