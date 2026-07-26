@@ -9,10 +9,13 @@
             <span class="text-sm text-gray-500" id="clock"></span>
         </div>
     </x-slot>
-
+{{-- <div style="position:fixed;top:0;left:0;background:red;color:#fff;z-index:9999;font-size:24px;padding:4px">
+    幅: <span id="__w"></span>px
+</div> --}}
+<script>document.getElementById('__w').textContent = window.innerWidth;</script>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div id="checkin-root" data-has-result="{{ session('result_status') || session('checkin_error') ? '1' : '' }}">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                 {{-- ── 左カラム：来退店 ＋ お知らせ ── --}}
                 <div class="space-y-5">
