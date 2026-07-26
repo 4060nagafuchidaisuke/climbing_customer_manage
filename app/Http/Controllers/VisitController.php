@@ -31,11 +31,12 @@ class VisitController extends Controller
 
     // 本日の来店者
     public function today()
-   {
-       $visits = Visit::whereDate('check_in_at', today())
-           ->with(['member.activePlan.plan', 'member.previousVisit'])
-           ->orderByDesc('check_in_at')
-           ->paginate(10);
-       return view('visits.today', compact('visits'));
-   }
+    {
+        $visits = Visit::whereDate('check_in_at', today())
+            ->with(['member.activePlan.plan', 'member.previousVisit'])
+            ->orderByDesc('check_in_at')
+            ->paginate(10);
+
+        return view('visits.today', compact('visits'));
+    }
 }

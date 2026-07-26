@@ -73,7 +73,8 @@ class SalesReportService
     }
 
     // 明細取得
-    public function details(?string $date = null, ?string $month = null, ?string $planType = null, ?string $priceTier = null, ?string $from = null, ?string $to = null) {
+    public function details(?string $date = null, ?string $month = null, ?string $planType = null, ?string $priceTier = null, ?string $from = null, ?string $to = null)
+    {
         return MemberPlan::query()
             ->whereNull('cancelled_at')
             ->when($date, fn ($q) => $q->whereDate('start_date', $date))
@@ -87,4 +88,3 @@ class SalesReportService
             ->get();
     }
 }
-
