@@ -12,7 +12,9 @@ class GuestRegistrationController extends Controller
     // お客さん向け会員登録フォームを表示
     public function create()
     {
-        return view('guest.create');
+        $data = session('guest_member', []);   // ← キー名はconfirm側と合わせる
+
+        return view('guest.create', compact('data'));
     }
 
     // 入力確認画面を表示
@@ -27,21 +29,15 @@ class GuestRegistrationController extends Controller
         // 「修正で戻る」用に、元の署名付きURLも保管 ★2
         session()->put('guest_signed_url', $request->input('signed_url'));
 
-        // 表示用の日本語ラベル（※将来Enum化して置き換える）
-        $genderLabels = ['male' => '男性', 'female' => '女性', 'other' => 'その他'];
-        $levelLabels = ['beginner' => '初心者', 'intermediate' => '中級者', 'advanced' => '上級者'];
-
         // 確認画面へ
         return view('guest.confirm', [
             'data' => $validated,
-            'genderLabels' => $genderLabels,
-            'levelLabels' => $levelLabels,
         ]);
     }
 
     public function store(Request $request)
     {
-        // session から回収（無ければセッション切れ→フォームへ）
+        // session から回収（無ければセッション切れ）
         $data = session('guest_member');
         if (! $data) {
             return redirect()->route('register.guest.expired');
@@ -50,38 +46,34 @@ class GuestRegistrationController extends Controller
         // agreement を除外（DBに保存しない）
         unset($data['agreement']);
 
-        // トランザクションで Member と Waiver を両方作る
-        $code = DB::transaction(function () use ($data) {
+        // ★ $member も返すように変更
+        [$member, $code] = DB::transaction(function () use ($data) {
+            $data['member_code'] = Member::generateMemberCode();
 
-            // member_code 抜きで作る（id 確定）
             $member = Member::create($data);
 
-            // 確定した id を5桁整形
-            // $code = 'M' . str_pad(Member::max('id') + 1, 6, '0', STR_PAD_LEFT);
-            $code = str_pad($member->id, 5, '0', STR_PAD_LEFT);
-
-            // 書き込んで保存
-            $member->member_code = $code;
-            $member->barcode = $code;
-            $member->save();
-
-            // waiver は今まで通り
             $member->waivers()->create([
                 'version' => 'v1',
                 'signed_at' => now(),
                 'is_minor_signed' => ! empty($data['is_minor']),
-                'guardian_name' => $data['guardian_name'] ?? null, ]);
+                'guardian_name' => $data['guardian_name'] ?? null,
+            ]);
 
-            return $code;
+            return [$member, $data['member_code']];   // ← 配列で2つ返す
         });
 
-        // session クリア
+        // session クリア（両フロー共通）
         session()->forget(['guest_member', 'guest_signed_url']);
 
-        // ★ 会員番号を flash（次の1リクエストだけ生きる）
+        // ★ 店員（ログイン中）が登録 → 会員詳細へ
+        if (auth()->check()) {
+            return redirect()->route('members.show', $member)
+                ->with('success', '新規会員の'.$member->full_name.'さんが仲間になりました');
+        }
+
+        // お客さん自己登録（未ログイン）→ 完了画面へ
         session()->flash('registered_code', $code);
 
-        // complete!
         return redirect()->route('register.guest.complete');
     }
 

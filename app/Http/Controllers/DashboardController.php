@@ -38,9 +38,17 @@ class DashboardController extends Controller
         $dailySales = $service->summary(now()->format('Y-m-d'), now()->format('Y-m-d'));
 
         return view('dashboard', compact(
-            'currentVisitors', 'todayCheckIns', 'todayCheckOuts', 'todayNewMembers',
-            'totalMembers', 'activePlanCount', 'monthlyVisits',
-            'activeVisits', 'recentVisits', 'dailySales', 'todayVisitsTotal'
+            'currentVisitors',
+            'todayCheckIns',
+            'todayCheckOuts',
+            'todayNewMembers',
+            'totalMembers',
+            'activePlanCount',
+            'monthlyVisits',
+            'activeVisits',
+            'recentVisits',
+            'dailySales',
+            'todayVisitsTotal'
         ));
     }
 }

@@ -63,6 +63,19 @@
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">基本情報</h3>
                         <div class="grid grid-cols-2 gap-4">
 
+                        {{-- 会員番号の編集--}}
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">会員番号<span class="text-red-500">*</span></label>
+                            <input type="text" name="member_code"
+                                    value="{{ old('member_code', $member->member_code) }}"
+                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm
+                                          focus:ring-slate-500 focus:border-slate-500">
+                            @error('member_code')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- 名前の管理--}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     姓 <span class="text-red-500">*</span>
@@ -119,6 +132,7 @@
                                 @enderror
                             </div>
 
+                            {{-- 生年月日--}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     生年月日 <span class="text-red-500">*</span>
