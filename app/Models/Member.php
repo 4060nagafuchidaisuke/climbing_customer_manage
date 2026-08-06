@@ -157,4 +157,23 @@ class Member extends Model
             $q->where('barcode', $code)->orWhere('member_code', $code);
         });
     }
+
+    // 会員番号の自動採番と変更
+    protected static function booted(): void
+    {
+        static::creating(function (Member $member) {
+            if (empty($member->member_code)) {
+                $next = (int) static::max('member_code') + 1;
+                $member->member_code = str_pad($next, 5, '0', STR_PAD_LEFT);
+            }
+        });
+    }
+
+    public static function generateMemberCode(): string
+    {
+        // FOR UPDATE で現存の最大値をロックして読む（呼び出し側がトランザクション内である前提）
+        $next = (int) static::lockForUpdate()->max('member_code') + 1;
+
+        return str_pad($next, 5, '0', STR_PAD_LEFT);
+    }
 }

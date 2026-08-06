@@ -41,7 +41,7 @@
                                     姓 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="last_name"
-                                       value="{{ old('last_name', session('guest_member.last_name')) }}"
+                                       value="{{ old('last_name', $data['last_name'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('last_name') border-red-400 @enderror">
@@ -55,7 +55,7 @@
                                     名 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="first_name"
-                                       value="{{ old('first_name', session('guest_member.first_name')) }}"
+                                       value="{{ old('first_name', $data['first_name'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('first_name') border-red-400 @enderror">
@@ -69,7 +69,7 @@
                                     姓（カナ）<span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="last_name_kana"
-                                       value="{{ old('last_name_kana', session('guest_member.last_name_kana')) }}"
+                                       value="{{ old('last_name_kana', $data['last_name_kana'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('last_name_kana') border-red-400 @enderror">
@@ -83,7 +83,7 @@
                                     名（カナ）<span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="first_name_kana"
-                                       value="{{ old('first_name_kana', session('guest_member.first_name_kana')) }}"
+                                       value="{{ old('first_name_kana', $data['first_name_kana'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('first_name_kana') border-red-400 @enderror">
@@ -97,7 +97,7 @@
                                     生年月日 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="date" name="birth_date"
-                                       value="{{ old('birth_date', session('guest_member.birth_date')) }}"
+                                       value="{{ old('birth_date', $data['birth_date'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('birth_date') border-red-400 @enderror">
@@ -105,17 +105,20 @@
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-
+                            
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">性別</label>
-                                <select name="gender"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                               focus:ring-slate-500 focus:border-slate-500">
-                                    <option value="">選択してください</option>
-                                    <option value="male"   {{ old('gender', session('guest_member.gender')) === 'male' ? 'selected' : '' }}>男性</option>
-                                    <option value="female" {{ old('gender', session('guest_member.gender')) === 'female' ? 'selected' : '' }}>女性</option>
-                                    <option value="other"  {{ old('gender', session('guest_member.gender')) === 'other' ? 'selected' : '' }}>その他</option>
-                                </select>
+                                    <select name="gender"
+                                            class="w-full rounded-md border-gray-300 shadow-sm text-sm
+                                                focus:ring-slate-500 focus:border-slate-500">
+                                        <option value="">選択してください</option>
+                                        @foreach(\App\Enums\Gender::cases() as $case)
+                                            <option value="{{ $case->value }}"
+                                                @selected(old('gender', $data['gender'] ?? '') === $case->value)>
+                                                {{ $case->label() }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                             </div>
 
                             <div>
@@ -123,7 +126,7 @@
                                     電話番号 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="phone" inputmode="numeric"
-                                       value="{{ old('phone', session('guest_member.phone')) }}"
+                                       value="{{ old('phone', $data['phone'] ?? '' )}}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('phone') border-red-400 @enderror">
@@ -135,7 +138,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
                                 <input type="email" name="email"
-                                       value="{{ old('email', session('guest_member.email')) }}"
+                                       value="{{ old('email', $data['email'] ?? '' ) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('email') border-red-400 @enderror">
@@ -147,7 +150,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">郵便番号</label>
                                 <input type="text" name="postal_code" inputmode="numeric"
-                                       value="{{ old('postal_code', session('guest_member.postal_code')) }}"
+                                       value="{{ old('postal_code', $data['postal_code'] ?? '' ) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('postal_code') border-red-400 @enderror">
@@ -162,9 +165,12 @@
                                         class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                                focus:ring-slate-500 focus:border-slate-500">
                                     <option value="">選択してください</option>
-                                    <option value="beginner" {{ old('climbing_level', session('guest_member.climbing_level')) === 'beginner' ? 'selected' : '' }}>初心者</option>
-                                    <option value="intermediate" {{ old('climbing_level', session('guest_member.climbing_level')) === 'intermediate' ? 'selected' : '' }}>中級者</option>
-                                    <option value="advanced" {{ old('climbing_level', session('guest_member.climbing_level')) === 'advanced' ? 'selected' : '' }}>上級者</option>
+                                    @foreach(\App\Enums\ClimbingLevel::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('climbing_level', $data['climbing_level'] ?? '') === $case->value)>
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -173,7 +179,7 @@
                                     住所 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="address"
-                                       value="{{ old('address', session('guest_member.address')) }}"
+                                       value="{{ old('address', $data['address'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('address') border-red-400 @enderror">
@@ -185,7 +191,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">職業</label>
                                 <input type="text" name="occupation"
-                                       value="{{ old('occupation', session('guest_member.occupation')) }}"
+                                       value="{{ old('occupation', $data['occupation'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
@@ -201,7 +207,7 @@
                                     氏名 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="emergency_name"
-                                       value="{{ old('emergency_name', session('guest_member.emergency_name')) }}"
+                                       value="{{ old('emergency_name', $data['emergency_name'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('emergency_name') border-red-400 @enderror">
@@ -212,7 +218,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">続柄</label>
                                 <input type="text" name="emergency_relation"
-                                       value="{{ old('emergency_relation', session('guest_member.emergency_relation')) }}"
+                                       value="{{ old('emergency_relation', $data['emergency_relation'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
@@ -221,7 +227,7 @@
                                     電話番号 <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="emergency_phone" inputmode="numeric"
-                                       value="{{ old('emergency_phone', session('guest_member.emergency_phone')) }}"
+                                       value="{{ old('emergency_phone', $data['emergency_phone'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('emergency_phone') border-red-400 @enderror">
@@ -238,7 +244,7 @@
                         <div class="mb-4">
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                 <input type="checkbox" name="is_minor" value="1"
-                                       {{ old('is_minor', session('guest_member.is_minor')) ? 'checked' : '' }}
+                                       {{ old('is_minor', $data['is_minor'] ?? '') ? 'checked' : '' }}
                                        class="rounded border-gray-300 text-slate-600
                                               focus:ring-slate-500">
                                 未成年である
@@ -248,14 +254,14 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">保護者氏名</label>
                                 <input type="text" name="guardian_name"
-                                       value="{{ old('guardian_name', session('guest_member.guardian_name')) }}"
+                                       value="{{ old('guardian_name', $data['guardian_name'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">保護者電話番号</label>
                                 <input type="text" name="guardian_phone" inputmode="numeric"
-                                       value="{{ old('guardian_phone', session('guest_member.guardian_phone')) }}"
+                                       value="{{ old('guardian_phone', $data['guardian_phone'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('guardian_phone') border-red-400 @enderror">
@@ -278,7 +284,7 @@
                         {{-- チェックボックス --}}
                         <label class="flex items-center gap-2 mt-3">
                             <input type="checkbox" name="agreement" value="1"
-                                   {{ old('agreement') ? 'checked' : '' }}>
+                                   {{ old('agreement', $data['agreement'] ?? '') ? 'checked' : '' }}>
                             <span>上記の内容に同意します</span>
                         </label>
 

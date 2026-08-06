@@ -44,7 +44,7 @@
                             <div class="flex">
                                 <dt class="w-32 text-gray-500 shrink-0">性別</dt>
                                 <dd class="text-gray-800">
-                                    {{ isset($data['gender']) ? $genderLabels[$data['gender']] : '未選択' }}
+                                    {{ \App\Enums\Gender::tryFrom($data['gender'] ?? '')?->label() ?? '未選択' }}
                                 </dd>
                             </div>
                             <div class="flex">
@@ -62,7 +62,7 @@
                             <div class="flex">
                                 <dt class="w-32 text-gray-500 shrink-0">クライミングレベル</dt>
                                 <dd class="text-gray-800">
-                                    {{ isset($data['climbing_level']) ? $levelLabels[$data['climbing_level']] : '未選択' }}
+                                    {{ \App\Enums\ClimbingLevel::tryFrom($data['climbing_level'] ?? '')?->label() ?? '未選択' }}
                                 </dd>
                             </div>
                             <div class="flex md:col-span-2">

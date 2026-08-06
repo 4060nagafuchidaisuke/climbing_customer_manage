@@ -6,6 +6,7 @@ use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -39,7 +40,9 @@ class MemberController extends Controller
     public function create()
     {
         // 新規フォームデータを表示
-        return view('members.create');
+        $data = session('guest_member', []);
+
+        return view('members.create', compact('data'));
     }
 
     /**
@@ -47,20 +50,15 @@ class MemberController extends Controller
      */
     public function store(StoreMemberRequest $request)
     {
-        // 会員の作成
-        $member = Member::create($request->validated());
+        $member = DB::transaction(function () use ($request) {
+            $data = $request->validated();
+            $data['member_code'] = Member::generateMemberCode();   // ← 集約メソッド
 
-        // 会員番号作成
-        $code = str_pad($member->id, 5, '0', STR_PAD_LEFT);
-        // $code = 'M' . str_pad(Member::max('id') + 1, 6, '0', STR_PAD_LEFT);
-
-        // 作製番号の保存
-        $member->member_code = $code;
-        $member->barcode = $code;
-        $member->save();
+            return Member::create($data);
+        });
 
         // 詳細ページへリダイレクト
-        return redirect()->route('members.show', $member)->with('success', '新規作成しました');
+        return redirect()->route('members.show', $member)->with('success', '新規会員の'.$member->last_name.$member->first_name.'さんが仲間になりました');
     }
 
     /**

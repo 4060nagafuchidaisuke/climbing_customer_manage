@@ -4,15 +4,22 @@
     bgSize="55%"
 >
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-xl font-bold text-gray-800 tracking-wide">来退店受付</h2>
-            <span class="text-sm text-gray-500" id="clock"></span>
+        <div class="relative flex items-center">
+            <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
+                来店・退店受付
+            </h2>
+            <span class="ml-auto text-sm text-gray-500">
+                {{ now()->isoFormat('YYYY年M月D日（ddd）HH:mm') }} 現在
+            </span>
         </div>
     </x-slot>
-
+{{-- <div style="position:fixed;top:0;left:0;background:red;color:#fff;z-index:9999;font-size:24px;padding:4px">
+    幅: <span id="__w"></span>px
+</div> --}}
+<script>document.getElementById('__w').textContent = window.innerWidth;</script>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div id="checkin-root" data-has-result="{{ session('result_status') || session('checkin_error') ? '1' : '' }}">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
 
                 {{-- ── 左カラム：来退店 ＋ お知らせ ── --}}
                 <div class="space-y-5">

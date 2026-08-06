@@ -6,14 +6,14 @@
     <x-slot name="header">
         <div class="relative flex items-center">
             <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
-                在店中メンバー
+                本日の来店メンバー
             </h2>
             <span class="ml-auto text-sm text-gray-500">
                 {{ now()->isoFormat('YYYY年M月D日（ddd）HH:mm') }} 現在
             </span>
         
             <span class="ml-2 bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
-                {{ $activeVisits->count() }}名
+                {{ $visits->total() }}名
             </span>
         </div>
     </x-slot>
@@ -28,10 +28,10 @@
         @endif
 
         <div class="bg-white/80 backdrop-blur-sm rounded-xl shadow overflow-hidden">
-            @if($activeVisits->isEmpty())
+            @if($visits->isEmpty())
                 <div class="text-center py-16 text-gray-400">
                     <p class="text-5xl mb-4">🧗</p>
-                    <p class="text-lg">現在在店中の会員はいません</p>
+                    <p class="text-lg">本日の来店はまだありません</p>
                 </div>
             @else
                 <table class="w-full text-sm">
@@ -41,6 +41,7 @@
                             <th class="px-6 py-3">カナ</th>
                             <th class="px-6 py-3">プラン</th>
                             <th class="px-6 py-3">入店時刻</th>
+                            <th class="px-6 py-3">退店時刻</th>
                             <th class="px-6 py-3">滞在時間</th>
                             <th class="px-6 py-3">前回来店日時</th>
                             <th class="px-6 py-3"></th>
@@ -48,7 +49,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @foreach($activeVisits as $visit)
+                        @foreach($visits as $visit)
                             <tr class="hover:bg-gray-50">
                                 {{--会員名--}}
                                 <td class="px-6 py-4 font-medium text-gray-900">
@@ -73,6 +74,11 @@
                                     {{ $visit->check_in_at->format('H:i') }}
                                 </td>
 
+                                {{--退店時間 --}}
+                                <td class="px-6 py-4 text-gray-600">
+                                    {{ $visit->check_out_at?->format('H:i') }}
+                                </td>
+
                                 {{--滞在時間--}}
                                 <td class="px-6 py-4 text-gray-600">
                                     {{ $visit->check_in_at->diffForHumans(now(), true) }}
@@ -83,17 +89,6 @@
                                     {{ $visit->member->previousVisit?->check_in_at?->format('Y/m/d H:i') ?? '初来店' }}
                                 </td>
 
-                                {{-- 退店指示ボタン --}}
-                                <td class="px-6 py-4 text-right">
-                                    <form action="{{ route('visits.checkout', $visit) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white text-xs font-medium px-4 py-2 rounded-lg transition">
-                                            退店
-                                        </button>
-                                    </form>
-                                </td>
 
                                 {{--詳細--}}
                                 <td class="px-4 py-3 text-right">
@@ -106,6 +101,9 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="mt-4">
+                    {{ $visits->links() }}
+                </div>
             @endif
         </div>
     </div>

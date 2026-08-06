@@ -45,7 +45,17 @@ function startCamera() {
     }, (decoded) => {
         document.getElementById('barcode').value = decoded;
         stopCamera().then(() => document.getElementById('checkin-form').submit());
-    }, () => {}).catch(() => { alert('カメラを許可してください'); stopCamera(); });
+    }, () => {})
+    .catch((err) => {
+        console.error(err);
+        alert(
+            "カメラ起動失敗\n\n" +
+            "name : " + err.name + "\n" +
+            "message : " + err.message
+        );
+
+        stopCamera();
+    });
 }
 async function stopCamera() {
     if (scanner) { await scanner.stop().catch(()=>{}); scanner = null; }

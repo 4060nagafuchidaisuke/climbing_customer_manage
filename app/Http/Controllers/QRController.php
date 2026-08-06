@@ -10,7 +10,10 @@ class QRController extends Controller
     public function show()
     {
         // 15分間だけ有効な、署名入りのフォームURLを生成
-        $url = URL::temporarySignedRoute('register.guest.form', now()->addMinutes(15));
+        // $url = URL::temporarySignedRoute('register.guest.form', now()->addMinutes(15));
+
+        // 署名入りのフォームURLを生成
+        $url = URL::signedRoute('register.guest.form');
 
         // URLをQRコード画像（SVG）に変換
         $qrCode = QrCode::size(300)->generate($url);

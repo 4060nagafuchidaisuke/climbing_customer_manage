@@ -28,6 +28,7 @@ class UpdateMemberRequest extends FormRequest
     {
         return [
             // 必須項目
+            'member_code' => ['required', 'regex:/^\d{5}$/', Rule::unique('members', 'member_code')->ignore($this->route('member'))],
             'last_name' => ['required', 'string', 'max:50'],
             'first_name' => ['required', 'string', 'max:50'],
             'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
@@ -67,6 +68,7 @@ class UpdateMemberRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'member_code' => '会員番号',
             'last_name' => '姓',
             'first_name' => '名',
             'last_name_kana' => '姓（カナ）',

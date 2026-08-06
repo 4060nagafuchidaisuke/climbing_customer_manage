@@ -32,14 +32,17 @@
             background-size:     {{ $bgSize }};
         ">
         <div class="min-h-screen">
-            @include('layouts.navigation')
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            @unless (request()->routeIs('checkin.index'))
+                @include('layouts.navigation')
+                @isset($header)
+                    <header class="bg-white shadow">
+                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
+            @endunless
+
             <main>
                 {{ $slot }}
             </main>

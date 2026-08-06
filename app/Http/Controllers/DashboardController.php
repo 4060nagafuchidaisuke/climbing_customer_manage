@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\MemberPlan;
 use App\Models\Visit;
+use App\Services\SalesReportService;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(SalesReportService $service)
     {
         $today = Carbon::today();
 
@@ -25,15 +26,29 @@ class DashboardController extends Controller
         $monthlyVisits = Visit::whereYear('check_in_at', $today->year)->whereMonth('check_in_at', $today->month)->count();
 
         // ── 在店中一覧（入店順） ─────────────────────────
-        $activeVisits = Visit::whereNull('check_out_at')->with(['member.activePlan'])->orderBy('check_in_at', 'asc')->get();
+        $activeVisits = Visit::whereNull('check_out_at')->with(['member.activePlan'])->orderBy('check_in_at', 'asc')->limit(5)->get();
 
-        // ── 本日の入退店ログ（直近 10 件） ───────────────
-        $recentVisits = Visit::whereDate('check_in_at', $today)->with('member')->orderByDesc('check_in_at')->limit(10)->get();
+        // ── 本日の入退店ログ（直近 5 件） ───────────────
+        $recentVisits = Visit::whereDate('check_in_at', $today)->with('member.activePlan.plan')->orderByDesc('check_in_at')->limit(5)->get();
+
+        // ── 本日の総来店数） ───────────────
+        $todayVisitsTotal = Visit::whereDate('check_in_at', $today)->count();
+
+        // 本日の売上状況
+        $dailySales = $service->summary(now()->format('Y-m-d'), now()->format('Y-m-d'));
 
         return view('dashboard', compact(
-            'currentVisitors', 'todayCheckIns', 'todayCheckOuts', 'todayNewMembers',
-            'totalMembers', 'activePlanCount', 'monthlyVisits',
-            'activeVisits', 'recentVisits'
+            'currentVisitors',
+            'todayCheckIns',
+            'todayCheckOuts',
+            'todayNewMembers',
+            'totalMembers',
+            'activePlanCount',
+            'monthlyVisits',
+            'activeVisits',
+            'recentVisits',
+            'dailySales',
+            'todayVisitsTotal'
         ));
     }
 }
