@@ -272,13 +272,13 @@
                         </div>
                     </div>
 
-                    {{-- 使用同意書 --}}
+                    {{-- 免責事項 --}}
                     <div>
-                        <h3 class="font-semibold text-gray-700 mb-2">使用同意書</h3>
+                        <h3 class="font-semibold text-gray-700 mb-2">免責事項</h3>
 
-                        {{-- スクロール枠 --}}
+                        {{-- 免責事項の内容の表示 --}}
                         <div class="max-h-64 overflow-y-auto border rounded p-4 bg-white/50 text-sm text-gray-600">
-                            {{-- 同意書の本文をここに --}}
+                            {!! nl2br(e($disclaimer->content)) !!}
                         </div>
 
                         {{-- チェックボックス --}}

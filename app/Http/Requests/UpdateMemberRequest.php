@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\ClimbingLevel;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
+use App\Enums\PlanType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -45,6 +46,7 @@ class UpdateMemberRequest extends FormRequest
             'occupation' => ['nullable', 'string', 'max:100'],
             'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
             'injury_notes' => ['nullable', 'string', 'max:1000'],
+            'plan_type' => ['nullable', Rule::enum(PlanType::class)],
 
             // 注意フラグ
             'caution_flag' => ['nullable', 'boolean'],
@@ -89,6 +91,7 @@ class UpdateMemberRequest extends FormRequest
             'emergency_name' => '緊急連絡先氏名',
             'emergency_relation' => '緊急連絡先続柄',
             'emergency_phone' => '緊急連絡先電話番号',
+            'plan_type' => '利用プラン',
         ];
     }
 }

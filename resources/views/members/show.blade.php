@@ -56,13 +56,6 @@
                 </div>
             @endif
 
-            {{-- 注意メモ（caution_flag が true の場合） --}}
-            @if($member->caution_flag && $member->caution_notes)
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                    ⚠ <strong>注意事項：</strong>{{ $member->caution_notes }}
-                </div>
-            @endif
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {{-- 左カラム（基本情報・来店履歴） --}}
@@ -104,13 +97,13 @@
                                 <dd class="text-gray-800">{{ $member->climbing_level ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-gray-500">バーコード</dt>
-                                <dd class="font-mono text-gray-600">{{ $member->barcode ?? '—' }}</dd>
+                                <dt class="text-gray-500">会員番号</dt>
+                                <dd class="font-mono text-gray-600">{{ $member->member_code ?? '—' }}</dd>
                             </div>
                             @if($member->injury_notes)
                                 <div class="col-span-2">
                                     <dt class="text-gray-500">負傷・注意事項</dt>
-                                    <dd class="text-gray-800">{{ $member->injury_notes }}</dd>
+                                    <dd class="text-red-600">{{ $member->injury_notes }}</dd>
                                 </div>
                             @endif
                         </dl>
@@ -233,20 +226,20 @@
                     {{-- スタッフメモ --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">スタッフメモ</h3>
-                        @forelse($member->staffNotes as $note)
+                        @if($member->caution_notes)
                             <div class="mb-3 p-3 rounded-md
-                                {{ $note->is_alert ? 'bg-red-50 border border-red-200' : 'bg-gray-50' }}">
-                                <p class="text-sm {{ $note->is_alert ? 'text-red-700' : 'text-gray-700' }}">
-                                    @if($note->is_alert) ⚠ @endif
-                                    {{ $note->note }}
+                                {{ $member->caution_flag ? 'bg-red-50 border border-red-200' : 'bg-gray-50' }}">
+                                <p class="text-sm {{ $member->caution_flag ? 'text-red-700' : 'text-gray-700' }}">
+                                    @if($member->caution_flag) ⚠ @endif
+                                    {{ $member->caution_notes }}
                                 </p>
                                 <p class="text-xs text-gray-400 mt-1">
-                                    {{ $note->created_at->format('Y/m/d') }}
+                                    {{ $member->created_at->format('Y/m/d') }}
                                 </p>
                             </div>
-                        @empty
+                        @else
                             <p class="text-sm text-gray-400 text-center py-2">メモなし</p>
-                        @endforelse
+                        @endif
                     </div>
 
                     {{-- 誓約書 --}}

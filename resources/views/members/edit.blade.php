@@ -106,7 +106,7 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    姓（カナ）<span class="text-red-500">*</span>
+                                    姓（全角カナ）<span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="last_name_kana"
                                        value="{{ old('last_name_kana', $member->last_name_kana) }}"
@@ -120,7 +120,7 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    名（カナ）<span class="text-red-500">*</span>
+                                    名（全角カナ）<span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="first_name_kana"
                                        value="{{ old('first_name_kana', $member->first_name_kana) }}"
@@ -170,7 +170,7 @@
                                     <option value="">選択してください</option>
                                     @foreach(\App\Enums\Gender::cases() as $case)
                                         <option value="{{ $case->value }}"
-                                            @selected(old('gender', $member->gender?->value) === $case->value)> {{-- $member->gender?->valueは編集用 --}}
+                                            @selected(old('gender', $member->gender?->value) === $case->value)>
                                             {{ $case->label() }}
                                         </option>
                                     @endforeach
@@ -178,7 +178,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">電話番号（半角数字）</label>
                                 <input type="text" name="phone"
                                        value="{{ old('phone', $member->phone) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -186,7 +186,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（半角英数字）</label>
                                 <input type="email" name="email"
                                        value="{{ old('email', $member->email) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -194,7 +194,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">郵便番号</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">郵便番号（半角数字）</label>
                                 <input type="text" name="postal_code"
                                        value="{{ old('postal_code', $member->postal_code) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -209,7 +209,7 @@
                                     <option value="">選択してください</option>
                                     @foreach(\App\Enums\ClimbingLevel::cases() as $case)
                                         <option value="{{ $case->value }}"
-                                            @selected(old('climbing_level', $member->climbing_level?->value) === $case->value)> {{-- $member->climbing_level?->valueは編集用 --}}
+                                            @selected(old('climbing_level', $member->climbing_level?->value) === $case->value)>
                                             {{ $case->label() }}
                                         </option>
                                     @endforeach
@@ -253,7 +253,7 @@
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">電話番号</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">電話番号（半角数字）</label>
                                 <input type="text" name="emergency_phone"
                                        value="{{ old('emergency_phone', $member->emergency_phone) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -283,7 +283,7 @@
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">保護者電話番号</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">保護者電話番号（半角数字）</label>
                                 <input type="text" name="guardian_phone"
                                        value="{{ old('guardian_phone', $member->guardian_phone) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -292,9 +292,9 @@
                         </div>
                     </div>
 
-                    {{-- 注意フラグ --}}
+                    {{-- スタッフメモ --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
-                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">スタッフ注意事項</h3>
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">スタッフ用メモ</h3>
                         <div class="mb-4">
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                                 <input type="checkbox" name="caution_flag" value="1"
@@ -312,6 +312,39 @@
                         </div>
                     </div>
 
+                    {{-- プラン変更 --}}
+                    <div class="mt-6 bg-white/80 rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">プラン変更</h3>
+
+                        {{-- 現在のプラン --}}
+                        <p class="text-sm text-gray-600 mb-4">
+                            現在の利用タイプ：
+                            <span class="font-medium">
+                                {{ $member->activePlan?->plan->plan_type->label() ?? '（未設定）' }}
+                            </span>
+                        </p>
+                        <div class="flex gap-3 items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    利用タイプ <span class="text-red-500">*</span>
+                                </label>
+                                <select name="plan_type"
+                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+                                    <option value="">選択してください</option>
+                                    @foreach (\App\Enums\PlanType::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('plan_type', $member->activePlan?->plan->plan_type?->value) == $case->value)>
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('plan_type')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- ボタン --}}
                     <div class="flex justify-between items-center">
                         <a href="{{ route('members.show', $member) }}"
@@ -325,50 +358,8 @@
                             更新する
                         </button>
                     </div>
-
                 </div>
             </form>
-
-            {{-- プラン変更 --}}
-            <div class="mt-6 bg-white/80 rounded-lg shadow p-6">
-                <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">プラン変更</h3>
-
-                {{-- 現在のプラン --}}
-                <p class="text-sm text-gray-600 mb-4">
-                    現在の利用タイプ：
-                    <span class="font-medium">
-                        {{ $member->activePlan?->plan->plan_type->label() ?? '（未設定）' }}
-                    </span>
-                </p>
-
-                <form method="POST" action="{{ route('members.plans.store', $member) }}">
-                    @csrf
-                    <div class="flex gap-3 items-end">
-                        <div class="flex-1">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">
-                                利用タイプ <span class="text-red-500">*</span>
-                            </label>
-                            <select name="plan_type"
-                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
-                                <option value="">選択してください</option>
-                                @foreach (\App\Enums\PlanType::cases() as $case)
-                                    <option value="{{ $case->value }}"
-                                        @selected(old('plan_type') === $case->value)>
-                                        {{ $case->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('plan_type')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <button type="submit"
-                                class="px-6 py-2 bg-slate-700 text-white text-sm rounded-md hover:bg-slate-600 transition font-medium">
-                            変更する
-                        </button>
-                    </div>
-                </form>
-            </div>
         </div>
     </div>
 </x-app-layout>

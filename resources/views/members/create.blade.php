@@ -73,7 +73,7 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    姓（カナ）<span class="text-red-500">*</span>
+                                    姓（全角カナ）<span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="last_name_kana"
                                        value="{{ old('last_name_kana', $data['last_name_kana'] ?? '') }}"
@@ -87,7 +87,7 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    名（カナ）<span class="text-red-500">*</span>
+                                    名（全角カナ）<span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="first_name_kana"
                                        value="{{ old('first_name_kana', $data['first_name_kana'] ?? '') }}"
@@ -130,7 +130,7 @@
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    電話番号 <span class="text-red-500">*</span>
+                                    電話番号（半角数字） <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="phone"
                                        value="{{ old('phone', $data['phone'] ?? '') }}"
@@ -143,7 +143,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（半角英数字）</label>
                                 <input type="email" name="email"
                                        value="{{ old('email', $data['email'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -155,7 +155,7 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">郵便番号</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">郵便番号（半角数字）</label>
                                 <input type="text" name="postal_code"
                                        value="{{ old('postal_code', $data['postal_code'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
@@ -235,7 +235,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    電話番号 <span class="text-red-500">*</span>
+                                    電話番号（半角数字） <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="emergency_phone"
                                        value="{{ old('emergency_phone', $data['emergency_phone'] ?? '') }}"
@@ -299,20 +299,13 @@
                         </div>
                     </div>
 
-                     {{-- 使用同意書 --}}
+                    {{-- 免責事項 --}}
                     <div>
-                        <h3 class="font-semibold text-gray-700 mb-2">使用同意書</h3>
+                        <h3 class="font-semibold text-gray-700 mb-2">免責事項</h3>
 
-                        {{-- スクロール枠 --}}
+                        {{-- 免責事項の内容の表示 --}}
                         <div class="max-h-64 overflow-y-auto border rounded p-4 bg-white/50 text-sm text-gray-600">
-
-
-
-                            {{-- 同意書の本文をここに --}}
-
-
-
-                            
+                            {!! nl2br(e($disclaimer->content)) !!}
                         </div>
 
                         {{-- チェックボックス --}}
@@ -329,7 +322,7 @@
 
                     {{-- ボタン --}}
                     <div class="flex justify-between items-center">
-                        <a href="{{ route('members.index') }}"
+                        <a href="{{ route('register.guest.store') }}"
                            class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md
                                   hover:bg-gray-300 transition">
                             キャンセル
