@@ -129,6 +129,10 @@
                     @endif
                 </div>
             </div>
+                <a href="{{ route('dashboard') }}"
+                    class="px-4 py-2 bg-slate-50 text-gray-900 text-sm rounded-md hover:bg-slate-600 transition">
+                   ＋ ダッシュボードへ
+                </a>
         </div>
     </div>
     

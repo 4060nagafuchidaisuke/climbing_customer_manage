@@ -3,6 +3,7 @@
     bgPosition="center bottom"
     bgSize="70%"
 >
+
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">

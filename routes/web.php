@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DisclaimerController;
 use App\Http\Controllers\GuestRegistrationController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MemberPlanController;
@@ -74,6 +75,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('staffs/{id}/restore', [StaffController::class, 'restore'])->name('staffs.restore');
         Route::delete('staffs/{id}/force', [StaffController::class, 'forceDelete'])->name('staffs.force-delete');
         Route::resource('staffs', StaffController::class)->except(['show']);
+
+        // 免責事項の編集
+        Route::get('disclaimer/show', [DisclaimerController::class, 'show'])->name('disclaimer.show');
+        Route::get('disclaimer/edit', [DisclaimerController::class, 'edit'])->name('disclaimer.edit');
+        Route::put('disclaimer/update', [DisclaimerController::class, 'update'])->name('disclaimer.update');
 
         // 料金表の管理
         Route::get('plans', [PlanController::class, 'index'])->name('plans.index');

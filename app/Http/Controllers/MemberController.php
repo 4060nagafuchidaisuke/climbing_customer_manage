@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PlanType;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 use App\Models\Member;
+use App\Services\MemberPlanService;
+use DomainException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -91,10 +94,29 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMemberRequest $request, Member $member)
+    public function update(UpdateMemberRequest $request, Member $member, MemberPlanService $service)
     {
+        // UpdateMemberRequestのrules()メソッド内の項目だけ$validatedに入れる
+        $validated = $request->validated();
+
+        // plan_typeだけ分離する（）
+        unset($validated['plan_type']);
+
         // 会員情報の編集
-        $member->update($request->validated());
+        $member->update($validated);
+
+        // プラン変更：現在のプランと異なる場合のみ実行
+        $planType = $request->enum('plan_type', PlanType::class);
+        $currentPlanType = $member->activePlan?->plan->plan_type;
+
+        // プラン変更（選択されていれば既存の仕組みに委譲）
+        if ($planType !== null && $planType !== $currentPlanType) {
+            try {
+                $service->change($member, $planType);
+            } catch (DomainException $e) {
+                return back()->with('error', $e->getMessage())->withInput();
+            }
+        }
 
         return redirect()->route('members.show', $member)->with('success', '会員情報を更新しました');
     }

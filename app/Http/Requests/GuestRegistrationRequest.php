@@ -53,7 +53,7 @@ class GuestRegistrationRequest extends FormRequest
             'emergency_relation' => ['nullable', 'string', 'max:50'],
             'emergency_phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
-            // 同意書
+            // 免責事項
             'agreement' => ['accepted'],
 
         ];
@@ -83,7 +83,7 @@ class GuestRegistrationRequest extends FormRequest
             'emergency_name' => '緊急連絡先氏名',
             'emergency_relation' => '緊急連絡先続柄',
             'emergency_phone' => '緊急連絡先電話番号',
-            'agreement' => '使用同意書',
+            'agreement' => '免責事項',
         ];
     }
 
@@ -93,7 +93,7 @@ class GuestRegistrationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'agreement.accepted' => '使用同意書への同意が必要です。内容をご確認のうえチェックしてください。',
+            'agreement.accepted' => '免責事項の確認が必要です。内容をご確認のうえチェックしてください。',
             'email.unique' => 'このメールアドレスは既に登録されています。受付スタッフにお声がけください。',
             'last_name_kana.regex' => '姓（カナ）は全角カタカナで入力してください。',
             'first_name_kana.regex' => '名（カナ）は全角カタカナで入力してください。',

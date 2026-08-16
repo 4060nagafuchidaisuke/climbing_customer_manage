@@ -4,16 +4,25 @@
     bgSize="100%"
 >
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-3">
+        <div class="grid grid-cols-[auto_1fr] md:grid-cols-3 items-center gap-3 md:gap-0">
+
+            {{-- 左側：戻るボタン --}}
+            <div class="text-left">
                 <a href="{{ route('notices.index') }}"
-                   class="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
-                <h2 class="font-semibold text-xl text-gray-800">
-                    お知らせ入力編集画面
-                </h2>
+                    class="text-gray-400 hover:text-gray-600 text-sm whitespace-nowrap">← 一覧に戻る</a>
+            </div>
+
+            {{-- 中央：見出し（スマホでは残りのスペースで中央、PCでは画面全体の中央） --}}
+            <div class="text-center md:col-start-2">
+                <h2 class="font-semibold text-2xl text-gray-800">お知らせ入力編集画面</h2>
+            </div>
+
+            {{-- 右側：PC用バランサー（スマホでは非表示） --}}
+            <div class="hidden md:block">
             </div>
         </div>
     </x-slot>
+
     <div class="py-8">
         <div class="max-w-2xl mx-auto px-4">
 

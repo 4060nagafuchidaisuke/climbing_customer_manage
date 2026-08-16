@@ -29,6 +29,7 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             // 基本情報
+            'member_code' => ['required', 'regex:/^\d{5}$/', Rule::unique('members', 'member_code')->ignore($this->route('member'))],
             'last_name' => ['required', 'string', 'max:15'],
             'first_name' => ['required', 'string', 'max:15'],
             'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
@@ -71,6 +72,7 @@ class StoreMemberRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'member_code' => '会員番号',
             'last_name' => '姓',
             'first_name' => '名',
             'last_name_kana' => '姓（カナ）',
@@ -83,14 +85,14 @@ class StoreMemberRequest extends FormRequest
             'address' => '住所',
             'occupation' => '職業',
             'climbing_level' => 'クライミングレベル',
-            'injury_notes' => '怪我歴',
+            'injury_notes' => '負傷・注意事項',
             'caution_flag' => '注意フラグ',
             'caution_notes' => '注意事項',
             'is_minor' => '未成年フラグ',
             'guardian_name' => '保護者氏名',
             'guardian_phone' => '保護者連絡先',
             'emergency_name' => '緊急連絡先氏名',
-            'emergency_relation' => '続柄',
+            'emergency_relation' => '緊急連絡先続柄',
             'emergency_phone' => '緊急連絡先電話番号',
         ];
     }
