@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GuestRegistrationRequest;
-use App\Models\Member;
+use App\Services\MemberRegistrationService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class GuestRegistrationController extends Controller
 {
@@ -35,7 +34,7 @@ class GuestRegistrationController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, MemberRegistrationService $registration)
     {
         // session から回収（無ければセッション切れ）
         $data = session('guest_member');
@@ -43,37 +42,16 @@ class GuestRegistrationController extends Controller
             return redirect()->route('register.guest.expired');
         }
 
-        // agreement を除外（DBに保存しない）
-        unset($data['agreement']);
+        // 会員作成（会員＋誓約書。plan_type が無いのでプランはスキップ）
+        $member = $registration->create($data);
 
-        // ★ $member も返すように変更
-        [$member, $code] = DB::transaction(function () use ($data) {
-            $data['member_code'] = Member::generateMemberCode();
-
-            $member = Member::create($data);
-
-            $member->waivers()->create([
-                'version' => 'v1',
-                'signed_at' => now(),
-                'is_minor_signed' => ! empty($data['is_minor']),
-                'guardian_name' => $data['guardian_name'] ?? null,
-            ]);
-
-            return [$member, $data['member_code']];   // ← 配列で2つ返す
-        });
-
-        // session クリア（両フロー共通）
+        // session クリア
         session()->forget(['guest_member', 'guest_signed_url']);
 
-        // ★ 店員（ログイン中）が登録 → 会員詳細へ
-        if (auth()->check()) {
-            return redirect()->route('members.show', $member)
-                ->with('success', '新規会員の'.$member->full_name.'さんが仲間になりました');
-        }
+        // 会員番号を flash（完了画面で表示）
+        session()->flash('registered_code', $member->member_code);
 
-        // お客さん自己登録（未ログイン）→ 完了画面へ
-        session()->flash('registered_code', $code);
-
+        // お客さん用の完了画面へ
         return redirect()->route('register.guest.complete');
     }
 

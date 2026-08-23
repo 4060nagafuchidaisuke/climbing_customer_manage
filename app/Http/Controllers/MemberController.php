@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\PlanType;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
+use App\Models\Disclaimer;
 use App\Models\Member;
 use App\Services\MemberPlanService;
+use App\Services\MemberRegistrationService;
 use DomainException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -43,25 +44,45 @@ class MemberController extends Controller
     public function create()
     {
         // 新規フォームデータを表示
-        $data = session('guest_member', []);
+        $data = session('member_form', []);
+        $disclaimer = Disclaimer::latest()->first();
 
-        return view('members.create', compact('data'));
+        return view('members.create', compact('data', 'disclaimer'));
+    }
+
+    /**
+     * 店員用確認画面
+     */
+    public function confirm(StoreMemberRequest $request)
+    {
+        //
+        $validated = $request->validated();
+        session()->put('member_form', $validated);
+
+        return view('members.confirm', ['data' => $validated]);
+
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMemberRequest $request)
+    public function store(Request $request, MemberRegistrationService $registration)
     {
-        $member = DB::transaction(function () use ($request) {
-            $data = $request->validated();
-            $data['member_code'] = Member::generateMemberCode();   // ← 集約メソッド
+        $data = session('member_form');
+        if (! $data) {
+            return redirect()->route('members.create');
+        }
 
-            return Member::create($data);
-        });
+        try {
+            $member = $registration->create($data);
+        } catch (DomainException $e) {
+            return redirect()->route('members.create')->with('error', $e->getMessage());
+        }
 
-        // 詳細ページへリダイレクト
-        return redirect()->route('members.show', $member)->with('success', '新規会員の'.$member->last_name.$member->first_name.'さんが仲間になりました');
+        session()->forget('member_form');
+
+        return redirect()->route('members.show', $member)
+            ->with('success', '新規会員の'.$member->full_name.'さんが仲間になりました');
     }
 
     /**

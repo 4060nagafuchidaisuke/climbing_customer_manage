@@ -1,16 +1,21 @@
-<!DOCTYPE html>
-{{-- お客さん確認用 --}}
-    <html lang="ja">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>入力内容の確認 | HAZY BOULDER</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="bg-gray-100">
-        <div class="py-8">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+{{-- 店員が確認する画面用 --}}
+<x-app-layout
+    background="images/NewMember.webp"
+    bgPosition="center bottom"
+    bgSize="100%"
+>
+    <x-slot name="header">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <h2 class="absolute left-1/2 -translate-x-1/2 font-semibold text-xl text-gray-800">
+                    入力内容の確認 | HAZY BOULDER
+                </h2>
+            </div>
+        </div>
+    </x-slot>
 
+    <div class="py-8">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {{-- 見出し --}}
                 <h1 class="font-semibold text-xl text-gray-800 mb-2">入力内容の確認</h1>
                 <p class="text-sm text-gray-500 mb-6">以下の内容でよろしければ「この内容で登録する」を押してください。</p>
@@ -115,26 +120,20 @@
                         </dl>
                     </div>
 
-                    {{-- 注意フラグ 
-                        <div class="bg-white/80 rounded-lg shadow p-6">
-                            <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">スタッフ注意事項</h3>
-                            <div class="mb-4">
-                                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                                    <input type="checkbox" name="caution_flag" value="1"
-                                        {{ old('caution_flag', $data['caution_flag'] ?? '') ? 'checked' : '' }}
-                                        class="rounded border-gray-300 text-red-500
-                                                focus:ring-red-400">
-                                    <span class="text-red-600 font-medium">注意フラグを立てる</span>
-                                </label>
+                    {{-- 注意フラグ --}}
+                    <div class="bg-white/80 rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">スタッフ注意事項</h3>
+                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                            <div class="flex">
+                                <dt class="w-32 text-gray-500 shrink-0">注意フラグ</dt>
+                                <dd class="text-gray-800">{{ !empty($data['caution_flag']) ? 'あり' : 'なし' }}</dd>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">注意メモ</label>
-                                <textarea name="caution_notes" rows="2"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                                focus:ring-slate-500 focus:border-slate-500">{{ old('caution_notes', $data['caution_notes'] ?? '') }}</textarea>
+                            <div class="flex md:col-span-2">
+                                <dt class="w-32 text-gray-500 shrink-0">注意メモ</dt>
+                                <dd class="text-gray-800">{{ $data['caution_notes'] ?? '未入力' }}</dd>
                             </div>
-                        </div>　--}}
-
+                        </dl>
+                    </div>
                     {{-- 免責事項 --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">免責事項</h3>
@@ -146,14 +145,14 @@
                     {{-- ボタン --}}
                     <div class="flex justify-between items-center">
                         {{-- 修正する（★3：session の署名付きURLで create へ戻る） --}}
-                        <a href="{{ session('guest_signed_url') }}"
+                        <a href="{{ route('members.create') }}"
                         class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md
                                 hover:bg-gray-300 transition">
                             修正する
                         </a>
 
                         {{-- この内容で登録する（store へ POST／hidden 不要＝session から読む） --}}
-                        <form method="POST" action="{{ route('register.guest.store') }}">
+                        <form method="POST" action="{{ route('members.store') }}">
                             @csrf
                             <button type="submit"
                                     class="px-6 py-2 bg-slate-700 text-white text-sm rounded-md
@@ -165,5 +164,4 @@
                 </div>
             </div>
         </div>
-    </body>
-</html>
+</x-app-layout>

@@ -244,11 +244,11 @@
 
                     {{-- 誓約書 --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
-                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">誓約書</h3>
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">誓約書への同意の有無</h3>
                         @forelse($member->waivers as $waiver)
                             <div class="text-sm">
                                 @if($waiver->signed_at)
-                                    <span class="text-green-600 font-medium">✓ 署名済み</span>
+                                    <span class="text-green-600 font-medium">✓ 免責事項に同意済み</span>
                                     <span class="text-gray-400 text-xs ml-2">
                                         {{ $waiver->signed_at->format('Y/m/d') }}
                                     </span>
