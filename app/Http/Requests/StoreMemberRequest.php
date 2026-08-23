@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\ClimbingLevel;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
+use App\Enums\PlanType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -29,7 +30,7 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             // 基本情報
-            'member_code' => ['required', 'regex:/^\d{5}$/', Rule::unique('members', 'member_code')->ignore($this->route('member'))],
+            'member_code' => ['nullable', 'regex:/^\d{5}$/', Rule::unique('members', 'member_code')],
             'last_name' => ['required', 'string', 'max:15'],
             'first_name' => ['required', 'string', 'max:15'],
             'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
@@ -37,6 +38,7 @@ class StoreMemberRequest extends FormRequest
             'birth_date' => ['required', 'date', 'before:today'],
             'address' => ['required', 'string', 'max:255'],
             'category' => ['required', Rule::enum(MemberCategory::class)],
+            'plan_type' => ['required', Rule::enum(PlanType::class)],
 
             // 任意の項目
             'gender' => ['nullable', Rule::enum(Gender::class)],
@@ -62,6 +64,9 @@ class StoreMemberRequest extends FormRequest
             'emergency_name' => ['required', 'string', 'max:100'],
             'emergency_relation' => ['nullable', 'string', 'max:50'],
             'emergency_phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+
+            // 免責事項の同意の有無
+            'agreement' => ['accepted'],
 
         ];
     }

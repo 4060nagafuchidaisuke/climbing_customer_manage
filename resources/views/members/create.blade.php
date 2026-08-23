@@ -31,11 +31,8 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('register.guest.confirm') }}">
+            <form method="POST" action="{{ route('members.confirm') }}">
                 @csrf
-                <input type="hidden" name="signed_url" value="{{ url()->full() }}">
-                {{-- create は @method('PUT') 不要 --}}
-
                 <div class="space-y-6">
 
                     {{-- 基本情報 --}}
@@ -43,6 +40,7 @@
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">基本情報</h3>
                         <div class="grid grid-cols-2 gap-4">
 
+                            {{-- 名前の管理--}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     姓 <span class="text-red-500">*</span>
@@ -99,6 +97,7 @@
                                 @enderror
                             </div>
 
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     生年月日 <span class="text-red-500">*</span>
@@ -109,6 +108,25 @@
                                               focus:ring-slate-500 focus:border-slate-500
                                               @error('birth_date') border-red-400 @enderror">
                                 @error('birth_date')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- 年齢カテゴリ --}}
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">会員区分（一般・シニア・学生）<span class="text-red-500">*</span></label>
+                                <select name="category"
+                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
+                                            focus:ring-slate-500 focus:border-slate-500">
+                                    <option value="">選択してください</option>
+                                    @foreach(\App\Enums\MemberCategory::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('category', $data['category'] ?? '') === $case->value)>
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category')
                                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -279,6 +297,31 @@
                         </div>
                     </div>
 
+                    {{-- プランの選択 --}}
+                    <div class="mt-6 bg-white/80 rounded-lg shadow p-6">
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">プランの選択</h3>
+                        <div class="flex gap-3 items-end">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    利用タイプ <span class="text-red-500">*</span>
+                                </label>
+                                <select name="plan_type"
+                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+                                    <option value="">選択してください</option>
+                                    @foreach (\App\Enums\PlanType::cases() as $case)
+                                        <option value="{{ $case->value }}"
+                                            @selected(old('plan_type',  $data['plan_type'] ?? '') === $case->value)>
+                                            {{ $case->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('plan_type')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- 注意フラグ --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">スタッフ注意事項</h3>
@@ -301,7 +344,7 @@
 
                     {{-- 免責事項 --}}
                     <div>
-                        <h3 class="font-semibold text-gray-700 mb-2">免責事項</h3>
+                        <h3 class="font-semibold text-gray-700 mb-2">免責事項を読んでもらってください</h3>
 
                         {{-- 免責事項の内容の表示 --}}
                         <div class="max-h-64 overflow-y-auto border rounded p-4 bg-white/50 text-sm text-gray-600">
@@ -312,7 +355,7 @@
                         <label class="flex items-center gap-2 mt-3">
                             <input type="checkbox" name="agreement" value="1"
                                    {{ old('agreement', $data['agreement'] ?? '') ? 'checked' : '' }}>
-                            <span>上記の内容に同意します</span>
+                            <span>上記の内容に同意されました！</span>
                         </label>
 
                         @error('agreement')
@@ -322,7 +365,7 @@
 
                     {{-- ボタン --}}
                     <div class="flex justify-between items-center">
-                        <a href="{{ route('register.guest.store') }}"
+                        <a href="{{ route('members.index') }}"
                            class="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded-md
                                   hover:bg-gray-300 transition">
                             キャンセル

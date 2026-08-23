@@ -32,6 +32,9 @@ Route::middleware('auth')->group(function () {
     // 会員情報
     Route::resource('members', MemberController::class);
 
+    // 会員の新規登録（店員が行う）
+    Route::post('members.confirm', [MemberController::class, 'confirm'])->name('members.confirm');
+
     // 会員の新規登録
     Route::get('members/{member}/register', [MemberRegistrationController::class, 'create'])->name('members.register');
 
@@ -79,7 +82,6 @@ Route::middleware('auth')->group(function () {
         // 免責事項の編集
         Route::get('disclaimer/show', [DisclaimerController::class, 'show'])->name('disclaimer.show');
         Route::get('disclaimer/edit', [DisclaimerController::class, 'edit'])->name('disclaimer.edit');
-        Route::put('disclaimer/update', [DisclaimerController::class, 'update'])->name('disclaimer.update');
 
         // 料金表の管理
         Route::get('plans', [PlanController::class, 'index'])->name('plans.index');
@@ -95,7 +97,7 @@ Route::middleware('auth')->group(function () {
 // URLのチェック
 Route::get('/register/guest', [GuestRegistrationController::class, 'create'])->name('register.guest.form')->middleware('signed');
 
-// 確認画面へ（confirm）
+// 確認画面へ（confirm）：
 Route::post('/register/guest/confirm', [GuestRegistrationController::class, 'confirm'])->name('register.guest.confirm');
 
 // 保存処理（store）
