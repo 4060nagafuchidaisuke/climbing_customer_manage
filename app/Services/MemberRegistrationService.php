@@ -34,6 +34,7 @@ class MemberRegistrationService
     {
         return DB::transaction(function () use ($data) {
             $data['member_code'] = Member::generateMemberCode();
+            $data['registered_at'] = now();
             $member = Member::create($data);
 
             $member->waivers()->create([

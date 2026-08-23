@@ -108,7 +108,7 @@
 
                                 {{--登録日--}}
                                 <td class="px-4 py-3 text-gray-500">
-                                    {{ $member->latestVisit?->check_in_at?->format('Y/m/d') ?? '—' }}
+                                    {{ $member->registered_at?->format('Y/m/d/H:m') ?? '—' }}
                                 </td>
 
                                 {{--前回来店日--}}
