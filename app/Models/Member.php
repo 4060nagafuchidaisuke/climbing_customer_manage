@@ -42,6 +42,7 @@ class Member extends Model
         'emergency_relation',
         'emergency_phone',
         'category',
+        'registered_at'
     ];
 
     // 型指定
@@ -135,6 +136,13 @@ class Member extends Model
         return $this->activeVisit()->exists();
     }
 
+    // 会員かビジターか
+    public function getIsVisitorAttribute(): bool
+    {
+        return $this->registered_at === null;
+    }
+
+
     /**
      * Scope（）
      */
@@ -176,4 +184,15 @@ class Member extends Model
 
         return str_pad($next, 5, '0', STR_PAD_LEFT);
     }
+
+    // 会員かビジターか
+    public function scopeVisitors($q)
+    {
+        return $q->whereNull('registered_at'); 
+    }
+    public function scopeRegistered($q)
+    {
+        return $q->whereNotNull('registered_at');
+    }
+
 }
