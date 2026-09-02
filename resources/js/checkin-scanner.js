@@ -68,15 +68,36 @@ async function stopCamera() {
 }
 document.getElementById('camera-btn')?.addEventListener('click', toggleCamera);
 
-// ── 広告カルーセル ──
+// ── 広告カルーセル（無限ループ）──
 const track = document.getElementById('ad-track');
 const adCount = Number(track?.dataset.sponsorCount ?? 0);
-let adIndex = 0;
-function slideNextAd() {
-    if (adCount <= 1) return;
-    adIndex = (adIndex + 1) % adCount;
-    track.style.transform = `translateX(-${adIndex * 100}%)`;
-}
-if (adCount > 1) {
-    setInterval(slideNextAd, 5000);
+
+// 広告が2枚以上あるときだけ動かす
+if (track && adCount > 1) {
+    // ① 1枚目の複製を末尾に足す： [1][2][3] → [1][2][3][1']
+    track.appendChild(track.firstElementChild.cloneNode(true));
+
+    let adIndex = 0;
+
+    // ② 5秒ごとに1枚ぶん左へ進める
+    setInterval(() => {
+        adIndex++;
+        track.style.transition = '';  // アニメを有効に戻す（④で切っているため）
+        track.style.transform = `translateX(-${adIndex * 100}%)`;
+    }, 5000);
+
+    // ③ スライドのアニメが終わった瞬間に呼ばれる
+    track.addEventListener('transitionend', (e) => {
+        // 自分自身の transform 以外は無視する
+        if (e.target !== track || e.propertyName !== 'transform') return;
+
+        // まだクローンに到達していなければ何もしない
+        if (adIndex < adCount) return;
+
+        // ④ クローン(1')に着いた ＝ 見た目は1枚目。本物の1枚目へ瞬間移動する
+        adIndex = 0;
+        track.style.transition = 'none';          // アニメを一時的に切る
+        track.style.transform = 'translateX(0)';  // 瞬間移動
+        void track.offsetHeight;                  // 強制リフロー（後述）
+    });
 }

@@ -15,7 +15,7 @@ class Member extends Model
 {
     use HasFactory;
 
-    // fillable：外から書き換えられたら困るものを保護
+    // fillable：一括代入(mass assignment)で書き込みを許可するカラムのホワイトリスト
     protected $fillable = [
         'member_code',
         'barcode',
@@ -42,7 +42,7 @@ class Member extends Model
         'emergency_relation',
         'emergency_phone',
         'category',
-        'registered_at'
+        'registered_at',
     ];
 
     // 型指定
@@ -142,7 +142,6 @@ class Member extends Model
         return $this->registered_at === null;
     }
 
-
     /**
      * Scope（）
      */
@@ -188,11 +187,11 @@ class Member extends Model
     // 会員かビジターか
     public function scopeVisitors($q)
     {
-        return $q->whereNull('registered_at'); 
+        return $q->whereNull('registered_at');
     }
+
     public function scopeRegistered($q)
     {
         return $q->whereNotNull('registered_at');
     }
-
 }

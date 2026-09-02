@@ -18,14 +18,7 @@ class CheckinController extends Controller
         $notices = Notice::active()->get();
         $sponsors = Sponsor::where('is_active', true)->orderBy('sort_order')->get();
 
-        // Blade に渡す前にコントローラーで整形する
-        $sponsorData = $sponsors->map(fn ($s) => [
-            'url' => $s->image_url,
-            'link' => $s->link_url,
-            'seconds' => $s->display_seconds,
-        ]);
-
-        return view('checkin.index', compact('notices', 'sponsors', 'sponsorData'));
+        return view('checkin.index', compact('notices', 'sponsors'));
     }
 
     public function process(Request $request)
