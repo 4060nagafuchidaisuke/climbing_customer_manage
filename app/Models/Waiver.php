@@ -12,7 +12,7 @@ class Waiver extends Model
 {
     use HasFactory;
 
-    // fillable：外から書き換えられたら困るものを保護
+    // fillable：一括代入(mass assignment)で書き込みを許可するカラムのホワイトリスト
     protected $fillable = [
         'member_id',
         'version',

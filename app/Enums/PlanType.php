@@ -15,8 +15,8 @@ enum PlanType: string
     public function label(): string
     {
         return match ($this) {
-            self::VISITOR_1DAY =>'ビジター1日利用料',
-            self::VISITOR_MINUTS_120 =>'ビジター120分利用料',
+            self::VISITOR_1DAY => 'ビジター1日利用料',
+            self::VISITOR_MINUTS_120 => 'ビジター120分利用料',
             self::ONE_DAY => '1日利用料',
             self::MINUTES_120 => '120分利用料',
             self::MONTHLY => '月パス',

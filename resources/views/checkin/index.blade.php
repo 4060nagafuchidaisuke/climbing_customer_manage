@@ -113,11 +113,10 @@
                             <div id="ad-track" class="flex h-full transition-transform duration-700 ease-in-out" data-sponsor-count="{{ $sponsors->count() }}" >
                                 @foreach ($sponsors as $sponsor)
                                     {{-- 各画像：窓と同じ幅(w-full)を持つ。flex-shrink-0 で縮まない --}}
-                                    <a href="{{ $sponsor->link_url ?? '#' }}" target="_blank" rel="noopener"
-                                    class="flex-shrink-0 w-full h-full flex items-center justify-center">
-                                        <img src="{{ $sponsor->image_url }}" alt="広告"
+                                    <div class="flex-shrink-0 w-full h-full flex items-center justify-center">
+                                        <img src="{{ $sponsor->media_url }}" alt="広告"
                                             class="h-full w-full object-contain">
-                                    </a>
+                                    </div>
                                 @endforeach
                             </div>
                         </div>

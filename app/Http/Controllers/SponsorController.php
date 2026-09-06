@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SponsorMediaType;
 use App\Models\Sponsor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -37,7 +38,6 @@ class SponsorController extends Controller
         $request->validate([
             'title' => 'required|string|max:100',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'link_url' => 'nullable|url',
             'display_seconds' => 'required|integer|min:1|max:60',
             'sort_order' => 'required|integer|min:0',
         ]);
@@ -47,8 +47,8 @@ class SponsorController extends Controller
 
         Sponsor::create([
             'title' => $request->title,
-            'image_path' => $path,
-            'link_url' => $request->link_url,
+            'media_path' => $path,
+            'media_type' => SponsorMediaType::IMAGE,
             'display_seconds' => $request->display_seconds,
             'sort_order' => $request->sort_order,
         ]);

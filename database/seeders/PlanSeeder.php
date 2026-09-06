@@ -40,16 +40,16 @@ class PlanSeeder extends Seeder
 
             foreach ($tiers as $i => $tier) {
                 Plan::updateOrCreate(
-                [
-                    'price_tier' => $tier->value,
-                    'plan_type' => $planType->value,
-                ],
-                [
-                    'name' => $tier->label().' '.$planType->label(),
-                    'price' => $prices[$i],
-                    'is_active' => true,
-                    'sort_order' => $sort++,
-                ]);
+                    [
+                        'price_tier' => $tier->value,
+                        'plan_type' => $planType->value,
+                    ],
+                    [
+                        'name' => $tier->label().' '.$planType->label(),
+                        'price' => $prices[$i],
+                        'is_active' => true,
+                        'sort_order' => $sort++,
+                    ]);
             }
         }
     }
