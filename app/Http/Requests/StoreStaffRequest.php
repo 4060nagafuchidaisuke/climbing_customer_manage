@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\MemberCategory;
 use App\Enums\StaffRole;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -29,7 +28,6 @@ class StoreStaffRequest extends FormRequest
             'password' => ['required', 'confirmed', Password::defaults()],
             'role' => ['required', Rule::enum(StaffRole::class)],
             'is_active' => ['nullable', 'boolean'],
-            'category' => ['required', Rule::enum(MemberCategory::class)],
         ];
     }
 

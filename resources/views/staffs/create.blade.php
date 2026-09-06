@@ -45,9 +45,9 @@
 
                 <div>
                     <label class="block text-base font-semibold text-gray-800 mb-2">住所</label>
-                    <input type="text" name="addrss" value="{{ old('address') }}"
+                    <input type="text" name="address" value="{{ old('address') }}"
                            class="w-full rounded-md border-gray-300 shadow-sm text-sm">
-                    @error('addrss')
+                    @error('address')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>

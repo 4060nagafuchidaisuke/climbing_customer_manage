@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateStaffRequest;
 use App\Models\Staff;
 use App\Services\StaffService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -54,8 +55,12 @@ class StaffController extends Controller
     public function update(UpdateStaffRequest $request, Staff $staff): RedirectResponse
     {
         $this->authorize('update', $staff);
+
+        /** @var Staff $currentUser */
+        $currentUser = $request->user();
+
         try {
-            $this->staffService->update($staff, $request->validated(), auth()->user());
+            $this->staffService->update($staff, $request->validated(), $currentUser);
 
             return redirect()->route('staffs.index')->with('success', 'スタッフ情報を更新しました');
         } catch (RuntimeException $e) {
@@ -65,11 +70,15 @@ class StaffController extends Controller
     }
 
     // スタッフの削除
-    public function destroy(Staff $staff): RedirectResponse
+    public function destroy(Request $request, Staff $staff): RedirectResponse
     {
         $this->authorize('delete', $staff);
+
+        /** @var Staff $currentUser */
+        $currentUser = $request->user();
+
         try {
-            $this->staffService->delete($staff, auth()->user());
+            $this->staffService->delete($staff, $currentUser);
         } catch (RuntimeException $e) {
             return redirect()->route('staffs.index')->with('error', $e->getMessage());
         }
