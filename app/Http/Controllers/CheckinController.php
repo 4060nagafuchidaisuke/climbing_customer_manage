@@ -10,7 +10,7 @@ use RuntimeException;
 
 class CheckinController extends Controller
 {
-    // Laravel の DI コンテナが自動でインジェクトしてくれる
+    // Laravel の DI コンテナが自動でインジェクト
     public function __construct(private CheckinService $checkinService) {}
 
     public function index()
