@@ -51,7 +51,8 @@ class UpdateMemberRequest extends FormRequest
             // 任意項目
             'gender' => ['nullable', Rule::enum(Gender::class)],
             'phone' => ['nullable', 'string', 'max:20'],
-            'email' => ['nullable', 'email', 'max:255'],
+            // SNS アカウント名も入れられるよう 'email' 形式チェックは外し、文字列としてだけ検証する
+            'email' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:10'],
             'address' => ['nullable', 'string', 'max:255'],
             'occupation' => ['nullable', 'string', 'max:100'],

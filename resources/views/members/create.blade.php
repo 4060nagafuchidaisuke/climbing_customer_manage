@@ -174,8 +174,9 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（半角英数字）</label>
-                                <input type="email" name="email"
+                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（SNSアカウントでも可）</label>
+                                {{-- SNS アカウント名も受け付けるため type="email" にしない（ブラウザ側で @ 必須になるのを避ける） --}}
+                                <input type="text" name="email"
                                        value="{{ old('email', $data['email'] ?? '') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500

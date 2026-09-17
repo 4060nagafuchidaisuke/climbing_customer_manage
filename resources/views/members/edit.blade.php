@@ -162,6 +162,7 @@
                                 </select>
                             </div>
 
+                            {{-- 性別の選択 --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">性別</label>
                                 <select name="gender"
@@ -177,6 +178,7 @@
                                 </select>
                             </div>
 
+                            {{-- 電話番号の入力 --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">電話番号（半角数字）</label>
                                 <input type="text" name="phone"
@@ -185,14 +187,16 @@
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
 
+                            {{-- e-mailもしくはSNSアカウント --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（半角英数字）</label>
-                                <input type="email" name="email"
+                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（SNSアカウントでも可）</label>
+                                <input type="text" name="email"
                                        value="{{ old('email', $member->email) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
 
+                            {{-- 郵便番号 --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">郵便番号（半角数字）</label>
                                 <input type="text" name="postal_code"
@@ -201,6 +205,7 @@
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
 
+                            {{-- 登攀レベル --}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">クライミングレベル</label>
                                 <select name="climbing_level"
