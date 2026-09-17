@@ -26,7 +26,10 @@
                         <div class="bg-white/80 rounded-lg shadow p-6">
                             <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">基本情報</h3>
                             <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-
+                                <div class="flex">
+                                    <dt class="w-32 text-gray-500 shrink-0">会員番号</dt>
+                                    <dd class="text-gray-800">{{ $data['member_code'] ?? '自動発番' }}</dd>
+                                </div>
                                 <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">姓</dt>
                                     <dd class="text-gray-800">{{ $data['last_name'] }}</dd>

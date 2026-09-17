@@ -20,6 +20,17 @@ class UpdateMemberRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $code = $this->input('member_code');
+
+        if ($this->filled('member_code') && ctype_digit($code)) {
+            $this->merge([
+                'member_code' => str_pad($code, 5, '0', STR_PAD_LEFT),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

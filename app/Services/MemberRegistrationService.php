@@ -33,7 +33,9 @@ class MemberRegistrationService
     public function create(array $data): Member
     {
         return DB::transaction(function () use ($data) {
-            $data['member_code'] = Member::generateMemberCode();
+            if (empty($data['member_code'] ?? null)) {
+                $data['member_code'] = Member::generateMemberCode();
+            }
             $data['registered_at'] = now();
             $member = Member::create($data);
 
