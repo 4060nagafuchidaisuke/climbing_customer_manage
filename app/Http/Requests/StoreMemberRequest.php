@@ -127,6 +127,7 @@ class StoreMemberRequest extends FormRequest
             'emergency_phone.regex' => '緊急連絡先電話番号は半角数字（ハイフンなし）で入力してください。',
             'guardian_phone.regex' => '保護者電話番号は半角数字（ハイフンなし）で入力してください。',
             'postal_code.regex' => '郵便番号は半角数字（ハイフンなし）で入力してください。',
+            'member_code.regex' => '会員番号は半角数字で入力してください。',
         ];
     }
 }

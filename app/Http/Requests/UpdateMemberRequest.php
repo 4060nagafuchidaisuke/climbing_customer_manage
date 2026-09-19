@@ -20,6 +20,9 @@ class UpdateMemberRequest extends FormRequest
         return true;
     }
 
+    /**
+     * 自動で5桁に変換
+     */
     protected function prepareForValidation(): void
     {
         $code = $this->input('member_code');
@@ -104,6 +107,16 @@ class UpdateMemberRequest extends FormRequest
             'emergency_relation' => '緊急連絡先続柄',
             'emergency_phone' => '緊急連絡先電話番号',
             'plan_type' => '利用プラン',
+        ];
+    }
+
+    /**
+     * 入力時のメッセージの日本語化
+     */
+    public function messages(): array
+    {
+        return [
+            'member_code.regex' => '会員番号は5桁以内の半角数字で入力してください。',
         ];
     }
 }
