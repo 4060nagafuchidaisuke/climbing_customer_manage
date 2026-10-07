@@ -21,9 +21,9 @@ class CheckinService
      */
     public function process(string $barcode): array
     {
-        $member = Member::where('barcode', $barcode)
-            ->orWhere('member_code', $barcode)
-            ->first();
+        $memberCode = Member::normalizeMemberCode($barcode);
+
+        $member = Member::where('member_code', $memberCode)->first(); // 正規化された会員番号を検索
 
         if (! $member) {
             throw new RuntimeException("会員が見つかりません：{$barcode}");
