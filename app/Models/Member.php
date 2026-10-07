@@ -157,14 +157,6 @@ class Member extends Model
         return $query->whereHas('activeVisit');
     }
 
-    // バーコード or 会員番号で検索（受付用）
-    public function scopeFindByCode(Builder $query, string $code)
-    {
-        return $query->where(function ($q) use ($code) {
-            $q->where('barcode', $code)->orWhere('member_code', $code);
-        });
-    }
-
     // 会員番号の自動採番と変更
     protected static function booted(): void
     {
@@ -174,6 +166,17 @@ class Member extends Model
                 $member->member_code = str_pad($next, 5, '0', STR_PAD_LEFT);
             }
         });
+    }
+
+    // 自動で5桁の数字に変換
+    public static function normalizeMemberCode(string $code): string
+    {
+        if (filled($code) && ctype_digit($code)) { // 空白（filled）ではない且つ半角数字（ctype_digit）
+            return str_pad($code, 5, '0', STR_PAD_LEFT);
+        }
+
+        //
+        return $code;
     }
 
     public static function generateMemberCode(): string
