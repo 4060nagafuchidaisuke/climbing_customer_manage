@@ -162,8 +162,7 @@ class Member extends Model
     {
         static::creating(function (Member $member) {
             if (empty($member->member_code)) {
-                $next = (int) static::max('member_code') + 1;
-                $member->member_code = str_pad($next, 5, '0', STR_PAD_LEFT);
+                $member->member_code = Member::generateMemberCode();
             }
         });
     }
