@@ -81,8 +81,12 @@
                                 <dd class="text-gray-800">{{ $member->phone ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-gray-500">メールアドレス</dt>
+                                <dt class="text-gray-500">メールアドレス・SNSアカウント名</dt>
                                 <dd class="text-gray-800">{{ $member->email ?? '—' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-gray-500">SNS</dt>
+                                <dd class="text-gray-800">{{ $member->contact_type ?? '—' }}</dd>
                             </div>
                             <div>
                                 <dt class="text-gray-500">郵便番号</dt>

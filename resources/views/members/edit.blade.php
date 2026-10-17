@@ -60,7 +60,7 @@
 
                     {{-- 基本情報 --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
-                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">基本情報</h3>
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">★基本情報</h3>
                         <div class="grid grid-cols-2 gap-4">
 
                             {{-- 会員番号の編集--}}
@@ -187,13 +187,40 @@
                                               focus:ring-slate-500 focus:border-slate-500">
                             </div>
 
-                            {{-- e-mailもしくはSNSアカウント --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス（SNSアカウントでも可）</label>
-                                <input type="text" name="email"
-                                       value="{{ old('email', $member->email) }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                              focus:ring-slate-500 focus:border-slate-500">
+                            {{--メール・SNS--}}
+                            <div class="col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">●メールアドレス、SNSアカウント●</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">メールアドレス、もしくはお持ちのSNSアカウント名</label>
+                                        <input type="text" name="email"
+                                            value="{{ old('email', $member->email) }}"
+                                            class="w-full rounded-md border-gray-300 shadow-sm text-sm
+                                                    focus:ring-slate-500 focus:border-slate-500
+                                                    @error('email') border-red-400 @enderror">
+                                        @error('email')
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">左のアドレス欄に入力したSNSの種類</label>
+                                        <select name="contact_type"
+                                                class="w-full rounded-md border-gray-300 shadow-sm text-sm
+                                                    focus:ring-slate-500 focus:border-slate-500">
+                                            <option value="">選択してください</option>
+                                            @foreach(\App\Enums\ContactType::cases() as $case)
+                                                <option value="{{ $case->value }}"
+                                                    @selected(old('contact_type', $member->contact_type?->value) === $case->value)>
+                                                    {{ $case->label() }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('contact_type')
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             {{-- 郵便番号 --}}
