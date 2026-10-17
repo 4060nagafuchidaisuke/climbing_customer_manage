@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\ClimbingLevel;
+use App\Enums\ContactType;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
 use App\Enums\PlanType;
@@ -54,8 +55,10 @@ class StoreMemberRequest extends FormRequest
             // 任意の項目
             'gender' => ['nullable', Rule::enum(Gender::class)],
             'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+
             // SNS アカウント名も入れられるよう 'email' 形式チェックは外し、文字列としてだけ検証する
             'email' => ['nullable', 'string', 'max:255', 'unique:members,email'],
+            'contact_type' => ['nullable', Rule::enum(ContactType::class), 'required_with:email'],
             'postal_code' => ['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
             'occupation' => ['nullable', 'string', 'max:100'],
 
@@ -98,6 +101,7 @@ class StoreMemberRequest extends FormRequest
             'gender' => '性別',
             'phone' => '電話番号',
             'email' => 'メールアドレス',
+            'contact_type' => 'SNSの種類',
             'postal_code' => '郵便番号',
             'address' => '住所',
             'occupation' => '職業',

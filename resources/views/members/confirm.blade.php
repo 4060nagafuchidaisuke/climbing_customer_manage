@@ -65,6 +65,12 @@
                                     <dd class="text-gray-800">{{ $data['email'] ?? '未入力' }}</dd>
                                 </div>
                                 <div class="flex">
+                                    <dt class="w-32 text-gray-500 shrink-0">SNSの種類</dt>
+                                    <dd class="text-gray-800">
+                                        {{ \App\Enums\ContactType::tryFrom($data['contact_type'] ?? '')?->label() ?? '未選択' }}
+                                    </dd>
+                                </div>
+                                <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">郵便番号</dt>
                                     <dd class="text-gray-800">{{ $data['postal_code'] ?? '未入力' }}</dd>
                                 </div>

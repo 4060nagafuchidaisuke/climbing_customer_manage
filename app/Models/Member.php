@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ClimbingLevel;
+use App\Enums\ContactType;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +28,7 @@ class Member extends Model
         'gender',
         'phone',
         'email',
+        'contact_type',
         'postal_code',
         'address',
         'occupation',
@@ -52,6 +54,7 @@ class Member extends Model
         'is_minor' => 'boolean',
         'gender' => Gender::class,
         'category' => MemberCategory::class,
+        'contact_type' => ContactType::class,
         'climbing_level' => ClimbingLevel::class,
         'registered_at' => 'datetime',
     ];
