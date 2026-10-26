@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
         // 免責事項の編集
         Route::get('disclaimer/show', [DisclaimerController::class, 'show'])->name('disclaimer.show');
         Route::get('disclaimer/edit', [DisclaimerController::class, 'edit'])->name('disclaimer.edit');
+        Route::put('disclaimer/{disclaimer}', [DisclaimerController::class, 'update'])->name('disclaimer.update');
 
         // 料金表の管理
         Route::get('plans', [PlanController::class, 'index'])->name('plans.index');
