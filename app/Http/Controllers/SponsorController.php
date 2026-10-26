@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SponsorMediaType;
+use App\Http\Requests\StoreSponsorRequest;
 use App\Models\Sponsor;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class SponsorController extends Controller
@@ -32,25 +32,33 @@ class SponsorController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    // 登録作業を行う
+    public function store(StoreSponsorRequest $request)
     {
-        //
-        $request->validate([
-            'title' => 'required|string|max:100',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'display_seconds' => 'required|integer|min:1|max:60',
-            'sort_order' => 'required|integer|min:0',
-        ]);
+        // 画像か動画かを判定する
+        $file = $request->file('media');
+        $mime = $file->getMimeType(); // 'image/png' や 'video/mp4' のような文字列を返す
+
+        // mediaTypeに判定結果を入れる
+        if (str_starts_with($mime, 'video/')) {
+            $mediaType = SponsorMediaType::VIDEO;
+        } else {
+            $mediaType = SponsorMediaType::IMAGE;
+        }
 
         // 画像を storage/app/public/sponsors/ に保存
-        $path = $request->file('image')->store('sponsors', 'public');
+        $path = $file->store('sponsors', 'public');
 
         Sponsor::create([
             'title' => $request->title,
-            'media_path' => $path,
-            'media_type' => SponsorMediaType::IMAGE,
             'display_seconds' => $request->display_seconds,
             'sort_order' => $request->sort_order,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'media_path' => $path,
+            'media_type' => $mediaType,
+            'is_active' => $request->boolean('is_active'),
+
         ]);
 
         return redirect()->route('sponsors.index')->with('success', '広告を登録しました');
@@ -62,7 +70,7 @@ class SponsorController extends Controller
     public function destroy(Sponsor $sponsor)
     {
         //
-        Storage::disk('public')->delete($sponsor->image_path);
+        Storage::disk('public')->delete($sponsor->media_path);
         $sponsor->delete();
 
         return redirect()->route('sponsors.index')->with('success', '広告を削除しました');

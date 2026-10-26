@@ -1,7 +1,7 @@
 <x-app-layout 
     background="images/Reception.webp"
     bgPosition="center bottom"
-    bgSize="55%"
+    bgSize="110%"
 >
     <x-slot name="header">
         <div class="relative flex items-center">
@@ -109,13 +109,18 @@
                         <div class="relative h-full bg-gray-900 overflow-hidden">
                             <p class="absolute top-2 right-3 text-xs text-gray-400 z-10">Sponsored</p>
 
-                            {{-- トラック：画像を横並びにした帯。これを動かす --}}
-                            <div id="ad-track" class="flex h-full transition-transform duration-700 ease-in-out" data-sponsor-count="{{ $sponsors->count() }}" >
+                            {{-- トラック：全スライドを同じ場所に重ねる土台 --}}
+                            <div id="ad-track" class="relative h-full" data-sponsor-count="{{ $sponsors->count() }}">
                                 @foreach ($sponsors as $sponsor)
-                                    {{-- 各画像：窓と同じ幅(w-full)を持つ。flex-shrink-0 で縮まない --}}
-                                    <div class="flex-shrink-0 w-full h-full flex items-center justify-center">
-                                        <img src="{{ $sponsor->media_url }}" alt="広告"
-                                            class="h-full w-full object-contain">
+                                    {{-- 各スライド：absolute inset-0 で重ね、最初は透明(opacity-0)。表示はJSで切り替える --}}
+                                    <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-700 opacity-0">
+                                        @if($sponsor->media_type === \App\Enums\SponsorMediaType::IMAGE)
+                                            <img src="{{ $sponsor->media_url }}" alt="画像広告"
+                                                class="h-full w-full object-contain">
+                                        @elseif($sponsor->media_type === \App\Enums\SponsorMediaType::VIDEO)
+                                            <video autoplay muted loop playsinline src="{{ $sponsor->media_url }}"
+                                                class="h-full w-full object-contain"></video>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>
@@ -128,11 +133,11 @@
                     @endif
                 </div>
             </div>
-                <a href="{{ route('dashboard') }}"
-                    class="px-4 py-2 bg-slate-50 text-gray-900 text-sm rounded-md hover:bg-slate-600 transition">
-                   ＋ ダッシュボードへ
-                </a>
         </div>
+         <a href="{{ route('dashboard') }}"
+                    class="px-4 py-2 bg-transparent text-gray-900 text-sm rounded-md hover:underline transition">
+                   ＋ ダッシュボードへ
+        </a>
     </div>
     
      @push('scripts')
