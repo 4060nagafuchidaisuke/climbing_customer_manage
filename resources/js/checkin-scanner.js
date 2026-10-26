@@ -68,36 +68,37 @@ async function stopCamera() {
 }
 document.getElementById('camera-btn')?.addEventListener('click', toggleCamera);
 
-// ── 広告カルーセル（無限ループ）──
+// ── 広告カルーセル（フェード切り替え）──
 const track = document.getElementById('ad-track');
-const adCount = Number(track?.dataset.sponsorCount ?? 0);
+const slides = track ? Array.from(track.children) : [];
 
-// 広告が2枚以上あるときだけ動かす
-if (track && adCount > 1) {
-    // ① 1枚目の複製を末尾に足す： [1][2][3] → [1][2][3][1']
-    track.appendChild(track.firstElementChild.cloneNode(true));
+if (slides.length > 0) {
+    let current = 0;
 
-    let adIndex = 0;
+    // index 番目のスライドだけを表示し、動画は頭から再生する
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            const isActive = i === index;
+            slide.classList.toggle('opacity-0', !isActive); // 表示中のスライドだけ透明を外す
 
-    // ② 5秒ごとに1枚ぶん左へ進める
-    setInterval(() => {
-        adIndex++;
-        track.style.transition = '';  // アニメを有効に戻す（④で切っているため）
-        track.style.transform = `translateX(-${adIndex * 100}%)`;
-    }, 5000);
+            const video = slide.querySelector('video');
+            if (!video) return;
+            if (isActive) {
+                video.currentTime = 0;
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        });
+    }
 
-    // ③ スライドのアニメが終わった瞬間に呼ばれる
-    track.addEventListener('transitionend', (e) => {
-        // 自分自身の transform 以外は無視する
-        if (e.target !== track || e.propertyName !== 'transform') return;
+    showSlide(0);
 
-        // まだクローンに到達していなければ何もしない
-        if (adIndex < adCount) return;
-
-        // ④ クローン(1')に着いた ＝ 見た目は1枚目。本物の1枚目へ瞬間移動する
-        adIndex = 0;
-        track.style.transition = 'none';          // アニメを一時的に切る
-        track.style.transform = 'translateX(0)';  // 瞬間移動
-        void track.offsetHeight;                  // 強制リフロー（後述）
-    });
+    // 2枚以上のときだけ、5秒ごとに次へ（最後の次は最初に戻る）
+    if (slides.length > 1) {
+        setInterval(() => {
+            current = (current + 1) % slides.length;
+            showSlide(current);
+        }, 5000);
+    }
 }

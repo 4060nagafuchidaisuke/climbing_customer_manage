@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
         Route::get('plans/{plan}/edit', [PlanController::class, 'edit'])->name('plans.edit');
         Route::put('plans/{plan}', [PlanController::class, 'update'])->name('plans.update');
 
-        // スポンサー
+        // スポンサーの広告管理画面
         Route::resource('sponsors', SponsorController::class)->except(['show', 'edit', 'update']);
     });
 });
