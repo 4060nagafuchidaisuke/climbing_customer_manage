@@ -52,7 +52,7 @@
                             <x-dropdown align="left" width="48">
                                 <x-slot name="trigger">
                                     <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium transition duration-150
-                                        {{ request()->routeIs('staffs.*', 'notices.*', 'sponsors.*', 'plans.*')
+                                        {{ request()->routeIs('staffs.*', 'notices.*', 'sponsors.*', 'plans.*', 'forms-import.*')
                                             ? 'bg-slate-600 text-white'
                                             : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                                         管理
@@ -70,6 +70,7 @@
                                     <x-dropdown-link :href="route('sales.index')">集計（日次集計・月報etc）</x-dropdown-link>
                                     <x-dropdown-link :href="route('plans.index')">料金設定</x-dropdown-link>
                                     <x-dropdown-link :href="route('disclaimer.show')">免責事項の編集</x-dropdown-link>
+                                    <x-dropdown-link :href="route('forms-import.create')">Formsの会員取り込み</x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>
                         </div>
