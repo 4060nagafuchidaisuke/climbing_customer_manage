@@ -13,7 +13,8 @@
         "laravel/framework": "^13.0",
         "laravel/reverb": "^1.0",
         "laravel/tinker": "^3.0",
-        "simplesoftwareio/simple-qrcode": "^4.2"
+        "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/simple-excel": "^3.11"
     },
     "require-dev": {
         "askdkc/breezejp": "^2.5",

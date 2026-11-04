@@ -3,6 +3,7 @@
 use App\Http\Controllers\CheckinController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DisclaimerController;
+use App\Http\Controllers\FormsImportController;
 use App\Http\Controllers\GuestRegistrationController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MemberPlanController;
@@ -91,6 +92,13 @@ Route::middleware('auth')->group(function () {
 
         // スポンサーの広告管理画面
         Route::resource('sponsors', SponsorController::class)->except(['show', 'edit', 'update']);
+
+        // Microsoft Forms の会員データ取り込み
+        // ※ members/import にすると members/{member}（会員詳細）に先に一致するため、別の URL にしている
+        Route::get('forms-import', [FormsImportController::class, 'create'])->name('forms-import.create');
+        Route::post('forms-import', [FormsImportController::class, 'store'])->name('forms-import.store');
+        Route::post('forms-import/confirm', [FormsImportController::class, 'confirm'])->name('forms-import.confirm');
+        Route::delete('forms-import/pending', [FormsImportController::class, 'cancel'])->name('forms-import.cancel');
     });
 });
 

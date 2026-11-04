@@ -20,6 +20,7 @@ class Member extends Model
     protected $fillable = [
         'member_code',
         'barcode',
+        'forms_response_id',
         'last_name',
         'first_name',
         'last_name_kana',
