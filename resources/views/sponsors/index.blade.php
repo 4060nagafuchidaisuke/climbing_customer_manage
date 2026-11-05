@@ -18,6 +18,13 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+            {{-- 成功メッセージ（登録・削除のあと） --}}
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             {{-- テーブル --}}
             <div class="bg-white shadow rounded-lg overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -26,11 +33,8 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイトル（スポンサー名）</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メディアのプレビュー</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">表示秒数</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">表示順</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">掲載期間</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">公開状態</th>
-                            {-- <th class="px-4 py-3"></th> --}
-                            <th class="px-4 py-3"></th>
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -57,11 +61,6 @@
                                 {{-- 表示秒数 --}}
                                 <td class="px-4 py-3 text-gray-500">
                                     {{ $sponsor->display_seconds}}
-                                </td>
-
-                                {{-- 表示順 --}}
-                                <td class="px-4 py-3">
-                                    {{ $sponsor->sort_order}}
                                 </td>
 
                                 {{-- 掲載期間 --}}
@@ -106,7 +105,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-10 text-center text-gray-400">
+                                <td colspan="6" class="px-4 py-10 text-center text-gray-400">
                                     ❕広告が登録されていません❕
                                 </td>
                             </tr>

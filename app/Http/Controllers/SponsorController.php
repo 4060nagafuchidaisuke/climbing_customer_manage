@@ -15,7 +15,7 @@ class SponsorController extends Controller
     public function index()
     {
         //
-        $sponsors = Sponsor::orderBy('sort_order')->get();
+        $sponsors = Sponsor::ordered()->get();
 
         return view('sponsors.index', compact('sponsors'));
     }
@@ -52,7 +52,7 @@ class SponsorController extends Controller
         Sponsor::create([
             'title' => $request->title,
             'display_seconds' => $request->display_seconds,
-            'sort_order' => $request->sort_order,
+            'sort_order' => 0, // 画面からは入力しない（並び順は登録順）。カラムが NOT NULL なので固定値を入れる
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'media_path' => $path,
@@ -60,6 +60,14 @@ class SponsorController extends Controller
             'is_active' => $request->boolean('is_active'),
 
         ]);
+
+        // JS（sponsor-form.js）から送られたときは、移動先の URL を返して JS に画面遷移させる
+        // メッセージは flash に入れておき、遷移先の一覧画面で1回だけ表示する
+        if ($request->expectsJson()) {
+            session()->flash('success', '広告を登録しました');
+
+            return response()->json(['redirect' => route('sponsors.index')]);
+        }
 
         return redirect()->route('sponsors.index')->with('success', '広告を登録しました');
     }

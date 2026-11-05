@@ -26,9 +26,8 @@ class StoreSponsorRequest extends FormRequest
             //
             'title' => ['required', 'string', 'max:100'],
             'display_seconds' => ['required', 'integer', 'min:1', 'max:60'],
-            'sort_order' => ['required', 'integer', 'min:0'],
             'start_date' => ['nullable', 'date'],
-            'media' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm', 'max:204800'],
+            'media' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm', 'max:51200'], // 50MB（PHP の上限 100M より小さくして、必ず日本語エラーが出るようにする）
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'is_active' => ['nullable', 'boolean'],
         ];
@@ -43,11 +42,21 @@ class StoreSponsorRequest extends FormRequest
 
             'title' => 'スポンサー名',
             'display_seconds' => '表示秒数',
-            'sort_order' => '表示順',
             'start_date' => '開始日',
             'media' => '画像・動画',
             'end_date' => '終了日',
             'is_active' => '公開中',
+        ];
+    }
+
+    /**
+     * 標準訳だと「51200 KB」と出て分かりにくいメッセージだけ上書きする
+     */
+    public function messages(): array
+    {
+        return [
+            'media.max' => '画像・動画は50MB以下のファイルを選んでください。',
+            'media.mimetypes' => '画像・動画は JPEG / PNG / WebP / MP4 / MOV / AVI / WebM のいずれかを選んでください。',
         ];
     }
 }

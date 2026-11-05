@@ -113,7 +113,9 @@
                             <div id="ad-track" class="relative h-full" data-sponsor-count="{{ $sponsors->count() }}">
                                 @foreach ($sponsors as $sponsor)
                                     {{-- 各スライド：absolute inset-0 で重ね、最初は透明(opacity-0)。表示はJSで切り替える --}}
-                                    <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-700 opacity-0">
+                                    {{-- data-seconds：画像を表示する秒数（動画は最後まで再生するので使わない） --}}
+                                    <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-700 opacity-0"
+                                        data-seconds="{{ $sponsor->display_seconds }}">
                                         @if($sponsor->media_type === \App\Enums\SponsorMediaType::IMAGE)
                                             <img src="{{ $sponsor->media_url }}" alt="画像広告"
                                                 class="h-full w-full object-contain">

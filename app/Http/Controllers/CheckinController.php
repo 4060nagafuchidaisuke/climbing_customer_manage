@@ -16,7 +16,7 @@ class CheckinController extends Controller
     public function index()
     {
         $notices = Notice::active()->get();
-        $sponsors = Sponsor::where('is_active', true)->orderBy('sort_order')->get();
+        $sponsors = Sponsor::visible()->ordered()->limit(Sponsor::CHECKIN_LIMIT)->get();
 
         return view('checkin.index', compact('notices', 'sponsors'));
     }
