@@ -8,7 +8,7 @@ export default defineConfig({
     
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/guest-complete.js', 'resources/js/checkin-scanner.js'],
+            input: ['resources/css/app.css', 'resources/js/app.js', 'resources/js/guest-complete.js', 'resources/js/checkin-scanner.js', 'resources/js/sponsor-form.js'],
             refresh: true,
         }),
     ],
