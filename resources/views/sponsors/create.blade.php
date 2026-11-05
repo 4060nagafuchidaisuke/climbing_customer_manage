@@ -34,63 +34,16 @@
                 <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">★スポンサー名の入力（<span class="text-red-500">*</span>は必須入力項目です）</h3>
                 {{-- 本数は Sponsor::CHECKIN_LIMIT と連動（受付の処理と文言がずれないように） --}}
                 <p class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md text-amber-800 text-sm">
-                    受付画面で再生される動画・静止画は、公開中かつ掲載期間内のもののうち、登録が古い順に<strong>上位{{ \App\Models\Sponsor::CHECKIN_LIMIT }}つまで</strong>です。
+                    受付画面で再生される動画・静止画は、公開中かつ掲載期間内のもののうち、一覧の並び順で<strong>上位{{ \App\Models\Sponsor::CHECKIN_LIMIT }}つまで</strong>です。新しく登録した広告は一覧の一番下に加わります。
                 </p>
                     <div class="grid grid-cols-2 gap-4">
                         {{-- スポンサー登録 --}}
                         <div class="col-span-2">
-                            {{-- スポンサー名 --}}
                             {{-- id / data-max-mb は sponsor-form.js が使う。ページを読み込み直さずに送るので、エラーでもファイル選択が消えない --}}
                             <form id="sponsor-form" method="POST" action="{{ route('sponsors.store') }}" enctype="multipart/form-data"
                                   data-max-mb="50">
                             @csrf
-                                {{-- 各項目のエラー：data-error-for の <p> に JS が書き込む。空のときは empty:hidden で隠れる --}}
-                                {{-- ファイルの選択 --}}
-                                <label class="block text-sm font-medium text-gray-700 mb-1">画像・動画</label>
-                                <input type="file" name="media"
-                                        accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/x-msvideo,video/webm">
-                                <p class="text-gray-500 text-xs mt-1">50MBまで（画像：JPEG / PNG / WebP、動画：MP4 / MOV / AVI / WebM）</p>
-                                <p data-error-for="media" class="text-red-500 text-xs mt-1 empty:hidden">@error('media'){{ $message }}@enderror</p>
-
-                                {{-- スポンサー名 --}}
-                                <label class="block text-sm font-medium text-gray-700 mb-1">登録スポンサー名</label>
-                                <input type="text" name="title"
-                                        value="{{ old('title') }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                                focus:ring-slate-500 focus:border-slate-500">
-                                <p data-error-for="title" class="text-red-500 text-xs mt-1 empty:hidden">@error('title'){{ $message }}@enderror</p>
-
-                                {{-- 表示秒数 --}}
-                                <label class="block text-sm font-medium text-gray-700 mb-1">表示秒数<span class="text-gray-500 text-xs">（画像のみ。動画は最後まで再生します）</span></label>
-                                <input type="number" name="display_seconds"
-                                        value="{{ old('display_seconds', 5) }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                                focus:ring-slate-500 focus:border-slate-500">
-                                <p data-error-for="display_seconds" class="text-red-500 text-xs mt-1 empty:hidden">@error('display_seconds'){{ $message }}@enderror</p>
-
-                                {{-- 開始日 --}}
-                                <label class="block text-sm font-medium text-gray-700 mb-1">開始日</label>
-                                <input type="date" name="start_date"
-                                        value="{{ old('start_date') }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                                focus:ring-slate-500 focus:border-slate-500">
-                                <p data-error-for="start_date" class="text-red-500 text-xs mt-1 empty:hidden">@error('start_date'){{ $message }}@enderror</p>
-
-                                {{-- 終了日 --}}
-                                <label class="block text-sm font-medium text-gray-700 mb-1">終了日</label>
-                                <input type="date" name="end_date"
-                                        value="{{ old('end_date') }}"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                                focus:ring-slate-500 focus:border-slate-500">
-                                <p data-error-for="end_date" class="text-red-500 text-xs mt-1 empty:hidden">@error('end_date'){{ $message }}@enderror</p>
-
-                                {{-- 公開中かどうか --}}
-                                <label class="block text-sm font-medium text-gray-700 mb-1">公開</label>
-                                <input type="checkbox" name="is_active" value="1"
-                                        @checked(old('is_active'))
-                                        class="rounded-md border-gray-300 shadow-sm text-sm
-                                                focus:ring-slate-500 focus:border-slate-500">
-                                <p data-error-for="is_active" class="text-red-500 text-xs mt-1 empty:hidden">@error('is_active'){{ $message }}@enderror</p>
+                                @include('sponsors._form')
 
                                 <div class="mt-6 flex justify-center">
                                     <button type="submit"

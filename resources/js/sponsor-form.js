@@ -9,6 +9,7 @@ if (form) {
     const summary = document.getElementById('error-summary');
     const summaryList = summary?.querySelector('ul');
     const submitButton = form.querySelector('button[type="submit"]');
+    const submitLabel = submitButton?.textContent.trim() ?? ''; // 「登録」「更新」など、画面ごとの元の文字
     const fileInput = form.querySelector('input[name="media"]');
     const maxMb = Number(form.dataset.maxMb) || 50;
     const sizeMessage = `画像・動画は${maxMb}MB以下のファイルを選んでください。`;
@@ -40,7 +41,7 @@ if (form) {
     function setSending(sending) {
         if (!submitButton) return;
         submitButton.disabled = sending; // 送信中は押せなくして二重登録を防ぐ
-        submitButton.textContent = sending ? '送信中…' : '登録';
+        submitButton.textContent = sending ? '送信中…' : submitLabel;
     }
 
     // 50MB を超えるファイルは、選んだ時点でエラーを出す
