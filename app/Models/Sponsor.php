@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sponsor extends Model
 {
-    // 受付画面で再生する広告の最大数（登録が古い順に、この数まで流す）
+    // 受付画面で再生する広告の最大数（並び順の上から、この数まで流す）
     public const CHECKIN_LIMIT = 5;
 
     // スポンサー表示
@@ -61,10 +61,17 @@ class Sponsor extends Model
             });
     }
 
-    // 並び順：登録が古い順（新しい広告は最後に加わる）
-    // sort_order カラムは残しているが、画面からは入力できないので並び順には使わない
+    // 並び順：sort_order の小さい順。同じ番号なら登録が古い順
+    // sort_order は一覧画面の ↑↓ ボタン（SponsorService::move）で入れ替える。新規登録は最後に加わる
     public function scopeOrdered(Builder $query): Builder
     {
-        return $query->orderBy('id');
+        return $query->orderBy('sort_order')->orderBy('id');
+    }
+
+    // 受付画面で再生する広告：表示できるもののうち、並び順の上位 CHECKIN_LIMIT 件
+    // 受付画面（CheckinController）と一覧の「再生中」表示（SponsorController）で同じ条件を使う
+    public function scopeForCheckin(Builder $query): Builder
+    {
+        return $query->visible()->ordered()->limit(self::CHECKIN_LIMIT);
     }
 }

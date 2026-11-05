@@ -91,7 +91,8 @@ Route::middleware('auth')->group(function () {
         Route::put('plans/{plan}', [PlanController::class, 'update'])->name('plans.update');
 
         // スポンサーの広告管理画面
-        Route::resource('sponsors', SponsorController::class)->except(['show', 'edit', 'update']);
+        Route::post('sponsors/{sponsor}/move', [SponsorController::class, 'move'])->name('sponsors.move'); // 一覧の ↑↓ ボタン
+        Route::resource('sponsors', SponsorController::class)->except(['show']);
 
         // Microsoft Forms の会員データ取り込み
         // ※ members/import にすると members/{member}（会員詳細）に先に一致するため、別の URL にしている

@@ -18,7 +18,7 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- 成功メッセージ（登録・削除のあと） --}}
+            {{-- 成功メッセージ（登録・更新・削除のあと） --}}
             @if(session('success'))
                 <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
                     {{ session('success') }}
@@ -30,17 +30,37 @@
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">再生順</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイトル（スポンサー名）</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">メディアのプレビュー</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">表示秒数</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">掲載期間</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">公開状態</th>
                             <th class="px-4 py-3"></th>
+                            <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @forelse($sponsors as $sponsor)
                             <tr class="hover:bg-gray-50 transition">
+
+                                {{-- 再生順：番号と ↑↓ ボタン（先頭の ↑・末尾の ↓ は押せない） --}}
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <span class="inline-block w-6 text-gray-700 font-medium">{{ $loop->iteration }}</span>
+                                    @foreach(['up' => '↑', 'down' => '↓'] as $direction => $arrow)
+                                        <form action="{{ route('sponsors.move', $sponsor) }}" method="POST" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="direction" value="{{ $direction }}">
+                                            <button type="submit"
+                                                    @disabled($direction === 'up' ? $loop->parent->first : $loop->parent->last)
+                                                    title="{{ $direction === 'up' ? '1つ上へ' : '1つ下へ' }}"
+                                                    class="px-2 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-100
+                                                           disabled:opacity-30 disabled:cursor-not-allowed">
+                                                {{ $arrow }}
+                                            </button>
+                                        </form>
+                                    @endforeach
+                                </td>
 
                                 {{--タイトル（スポンサー名）--}}
                                 <td class="px-4 py-3  text-gray-600">
@@ -72,23 +92,26 @@
                                 <td class="px-4 py-3 text-gray-500">
                                     @if($sponsor->is_active)
                                         <p class="text-blue-700 font-medium text-sm mb-2">公開中</p>
+                                        {{-- 再生中：受付画面で今流れている（Sponsor::forCheckin と同じ条件） --}}
+                                        {{-- 待機中：公開中だが、掲載期間外か上位 CHECKIN_LIMIT の外 --}}
+                                        @if($playingIds->contains($sponsor->id))
+                                            <span class="inline-block px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs">▶ 受付で再生中</span>
+                                        @else
+                                            <span class="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs"
+                                                  title="掲載期間外か、上位{{ \App\Models\Sponsor::CHECKIN_LIMIT }}つの外です">待機中</span>
+                                        @endif
                                     @else
                                         <p class="text-red-700 font-medium text-sm mb-2">非公開</p>
                                     @endif
                                 </td>
 
-                                {{-- 編集ボタン 
-                                <td class="px-6 py-4 text-right">
-                                    <form action="{{ route('sponsors.edit', $sponsor) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('EDIT')
-                                            <button type="submit"
-                                                onclick="return confirm('「{{ $sponsor->title }}」を削除しますか？')"
-                                                class="text-red-600 hover:text-red-800 text-xs font-medium">
-                                                登録内容の変更→
-                                            </button>
-                                    </form>
-                                </td>--}}
+                                {{-- 編集ボタン（画面を開くだけなので、フォームではなくリンク） --}}
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <a href="{{ route('sponsors.edit', $sponsor) }}"
+                                       class="text-slate-700 hover:text-slate-900 text-xs font-medium">
+                                        登録内容の変更→
+                                    </a>
+                                </td>
 
                                 {{-- 削除ボタン --}}
                                 <td class="px-6 py-4 text-right">
@@ -105,7 +128,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-4 py-10 text-center text-gray-400">
+                                <td colspan="8" class="px-4 py-10 text-center text-gray-400">
                                     ❕広告が登録されていません❕
                                 </td>
                             </tr>
