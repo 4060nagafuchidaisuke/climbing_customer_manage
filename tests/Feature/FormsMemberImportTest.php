@@ -8,6 +8,7 @@ use App\Models\Staff;
 use App\Services\FormsMemberImportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use Tests\TestCase;
@@ -140,6 +141,38 @@ class FormsMemberImportTest extends TestCase
 
         $this->assertSame(1, $result->imported);
         $this->assertSame(0, Member::count());
+    }
+
+    public function test_行数が増えても取り込み済みの確認は1回の問い合わせで済む(): void
+    {
+        $this->import([$this->formsRow(['ID' => '1']), $this->formsRow(['ID' => '2'])]);
+
+        // 取り込み済み2件 ＋ 新しい48件 ＋ ファイル内で重複した1件
+        $rows = array_map(fn ($id) => $this->formsRow(['ID' => (string) $id]), range(1, 50));
+        $rows[] = $this->formsRow(['ID' => '50']);
+
+        DB::enableQueryLog();
+        $result = $this->import($rows, dryRun: true);
+
+        $this->assertCount(1, DB::getQueryLog()); // 行ごとに問い合わせていたときは51回
+        $this->assertSame(48, $result->imported);
+        $this->assertSame(3, $result->alreadyImported);
+    }
+
+    public function test_画面に前回までの取り込み状況を出す(): void
+    {
+        $admin = Staff::factory()->admin()->create();
+
+        $this->actingAs($admin)
+            ->get(route('forms-import.create'))
+            ->assertSee('まだありません');
+
+        // 回答IDは文字列で保存しているが、"9" ではなく数字として大きい "10" を出す
+        $this->import([$this->formsRow(['ID' => '9']), $this->formsRow(['ID' => '10'])]);
+
+        $this->get(route('forms-import.create'))
+            ->assertSee('回答ID 10 まで')
+            ->assertSee('合計 2人');
     }
 
     public function test_必要な列がないファイルは1行も取り込まない(): void

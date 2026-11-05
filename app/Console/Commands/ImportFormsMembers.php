@@ -32,8 +32,8 @@ class ImportFormsMembers extends Command
         $result = $service->import($path, $dryRun);
 
         $this->newLine();
-        $this->info(($dryRun ? '取り込める件数' : '取り込んだ件数')."：{$result->imported}件");
-        $this->line("取り込み済みのため飛ばした件数：{$result->alreadyImported}件");
+        $this->info(($dryRun ? '新しく登録できる件数' : '新しく登録した件数')."：{$result->imported}件");
+        $this->line("前回までに取り込み済みのため飛ばした件数：{$result->alreadyImported}件（上書きはしていません）");
 
         if ($result->warnings !== []) {
             $this->newLine();

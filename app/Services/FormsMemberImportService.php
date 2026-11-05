@@ -48,8 +48,13 @@ class FormsMemberImportService
             return $result;
         }
 
-        // 同じファイルの中で同じIDが2回出てきたときのために覚えておく
-        $seenIds = [];
+        // 取り込み済みの回答IDを、最初に1回の問い合わせでまとめて読む
+        // （1行ごとに DB へ問い合わせると、400行なら400回になって遅いため）
+        // キーに回答IDを入れておくと、isset() で一瞬で「取り込み済みか」を調べられる
+        $knownIds = Member::whereNotNull('forms_response_id')
+            ->pluck('forms_response_id')
+            ->flip()
+            ->all();
 
         foreach ($reader->getRows() as $index => $row) {
             $rowNumber = $index + 2; // 1行目は見出し
@@ -61,10 +66,32 @@ class FormsMemberImportService
                 continue;
             }
 
-            $this->importRow($data, $rowNumber, $seenIds, $result);
+            $this->importRow($data, $rowNumber, $knownIds, $result);
         }
 
         return $result;
+    }
+
+    // 前回までの取り込み状況（画面に「前回はどこまで取り込んだか」を出すため）。まだ1件もなければ null
+    // 取り込み記録用のテーブルは作らず、取り込んだ会員のデータから計算する
+    public function lastImportSummary(): ?array
+    {
+        $imported = Member::whereNotNull('forms_response_id');
+
+        $count = (clone $imported)->count();
+        if ($count === 0) {
+            return null;
+        }
+
+        return [
+            'count' => $count,
+            // max() は文字列で返るので、画面で書式を整えられるように日時にする
+            'last_imported_at' => CarbonImmutable::parse((clone $imported)->max('created_at')),
+            // 回答IDは文字列で保存しているので、数字として比べないと "9" > "10" になってしまう
+            'last_response_id' => (clone $imported)
+                ->orderByRaw('CAST(forms_response_id AS UNSIGNED) DESC')
+                ->value('forms_response_id'),
+        ];
     }
 
     // 1行分を「Forms の列見出し」から「このクラスのキー」に置き換える
@@ -78,14 +105,14 @@ class FormsMemberImportService
         return $data;
     }
 
-    private function importRow(array $data, int $rowNumber, array &$seenIds, FormsMemberImportResult $result): void
+    // $knownIds：取り込み済みの回答ID（DB にあるもの ＋ このファイルの前の行で取り込んだもの）
+    private function importRow(array $data, int $rowNumber, array &$knownIds, FormsMemberImportResult $result): void
     {
         $responseId = $this->toText($data['forms_response_id']);
 
-        // 取り込み済み（DB にある or このファイルの前の行にある）なら飛ばす
+        // 取り込み済みなら飛ばす
         // アプリで直した内容を Forms の古い内容で上書きしないため、更新もしない
-        if (filled($responseId)
-            && (isset($seenIds[$responseId]) || Member::where('forms_response_id', $responseId)->exists())) {
+        if (filled($responseId) && isset($knownIds[$responseId])) {
             $result->alreadyImported++;
 
             return;
@@ -147,7 +174,8 @@ class FormsMemberImportService
             $result->addWarning($rowNumber, '免責事項に同意していません（来店時にアプリで同意をもらってください）');
         }
 
-        $seenIds[$responseId] = true;
+        // このファイルの後ろの行に同じIDがあっても、二重に取り込まないように覚えておく
+        $knownIds[$responseId] = true;
         $result->imported++;
 
         if ($result->dryRun) {

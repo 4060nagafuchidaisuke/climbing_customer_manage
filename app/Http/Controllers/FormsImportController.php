@@ -32,8 +32,9 @@ class FormsImportController extends Controller
         $pending = $this->pendingFile();
         // 預かり中ならそのチェック結果、そうでなければ直前の取り込み結果を出す
         $result = $pending['result'] ?? session('import_result');
+        $lastImport = $this->service->lastImportSummary();
 
-        return view('forms_import.create', compact('result', 'pending'));
+        return view('forms_import.create', compact('result', 'pending', 'lastImport'));
     }
 
     public function store(ImportFormsMembersRequest $request)
