@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Enums\ClimbingExperience;
+use App\Enums\ClimbingLevel;
+use App\Enums\ResidenceArea;
 use App\Enums\StaffRole;
 use App\Models\Member;
 use App\Models\Staff;
@@ -17,18 +20,21 @@ class FormsMemberImportTest extends TestCase
 {
     use RefreshDatabase;
 
-    // ダミーの Forms 回答（1行分）。必要な列だけ上書きして使う
+    // ダミーの Forms 回答（1行分）。お店の「HAZY BOULDER 会員登録」Forms と同じ列。必要な列だけ上書きして使う
     private function formsRow(array $overrides = []): array
     {
         return array_merge([
             'ID' => '1',
             '完了時刻' => '2026/4/1 10:30:00',
-            'お名前' => '山田 太郎',
-            '住所' => '東京都千代田区1-1-1',
-            '電話番号' => '090-1234-5678',
-            '緊急連絡先' => '03-1234-5678',
-            '緊急連絡先のお名前' => '山田 花子',
-            '免責事項の確認' => '同意します',
+            'Q1：氏名（フルネーム）' => '山田 太郎',
+            'Q1-2：氏名（フリガナ）' => 'ヤマダ タロウ',
+            'Q1-3：保護者氏名' => '',
+            'Q2：電話番号' => '090-1234-5678',
+            'Q3:緊急連絡先' => '03-1234-5678',
+            'Q4:年齢区分' => '18歳以上;',
+            'Q5:お住まい' => '佐賀県内;',
+            'Q6:クライミング経験' => '経験あり（1年以内）;',
+            'Q7:利用規約・同意事項' => '上記内容に同意;',
         ], $overrides);
     }
 
@@ -46,31 +52,73 @@ class FormsMemberImportTest extends TestCase
         return app(FormsMemberImportService::class)->import($this->makeFile($rows), $dryRun);
     }
 
-    public function test_回答を会員として取り込み、免責同意も登録する(): void
+    public function test_回答を会員として取り込み、回答_i_dを会員番号にする(): void
     {
-        $result = $this->import([$this->formsRow()]);
+        $result = $this->import([$this->formsRow(['ID' => '123'])]);
 
         $this->assertSame(1, $result->imported);
         $this->assertSame([], $result->errors);
+        $this->assertSame([], $result->warnings);
 
-        $member = Member::where('forms_response_id', '1')->firstOrFail();
+        $member = Member::where('forms_response_id', '123')->firstOrFail();
+        $this->assertSame('00123', $member->member_code); // カードの番号「123」と一致する
         $this->assertSame('山田', $member->last_name);
         $this->assertSame('太郎', $member->first_name);
-        $this->assertNull($member->last_name_kana);
+        $this->assertSame('ヤマダ', $member->last_name_kana);
+        $this->assertSame('タロウ', $member->first_name_kana);
         $this->assertSame('09012345678', $member->phone);
         $this->assertSame('0312345678', $member->emergency_phone);
-        $this->assertSame('山田 花子', $member->emergency_name);
+        $this->assertFalse($member->is_minor);
+        $this->assertSame(ResidenceArea::SAGA_INSIDE, $member->residence_area);
+        $this->assertSame(ClimbingExperience::WITHIN_ONE_YEAR, $member->climbing_experience);
+        $this->assertSame(ClimbingLevel::BEGINNER, $member->climbing_level); // 経験からの初期値
+        $this->assertNull($member->address);
+        $this->assertNull($member->category);
         $this->assertSame('2026-04-01 10:30:00', $member->registered_at->format('Y-m-d H:i:s'));
-        $this->assertNotNull($member->member_code);
 
         $waiver = $member->waivers()->sole();
         $this->assertSame(FormsMemberImportService::WAIVER_VERSION, $waiver->version);
     }
 
+    public function test_列見出しの全角半角の違いは気にせず読める(): void
+    {
+        // Q1・Q2 は全角コロン、Q3 以降は半角コロンと混ざっているが、逆の書き方でも読めるようにする
+        $row = $this->formsRow();
+        $renamed = [];
+        foreach ($row as $header => $value) {
+            $renamed[strtr($header, ['：' => ':', ':' => '：', '（' => '(', '）' => ')'])] = $value;
+        }
+
+        $result = $this->import([$renamed]);
+
+        $this->assertSame(1, $result->imported);
+    }
+
+    public function test_18歳未満の人は未成年にし、保護者氏名も保存する(): void
+    {
+        $this->import([
+            $this->formsRow(['Q4:年齢区分' => '18歳未満;', 'Q1-3：保護者氏名' => '山田 花子']),
+        ]);
+
+        $member = Member::sole();
+        $this->assertTrue($member->is_minor);
+        $this->assertSame('山田 花子', $member->guardian_name);
+        $this->assertTrue($member->waivers()->sole()->is_minor_signed);
+    }
+
+    public function test_ひらがなのフリガナはカタカナにそろえる(): void
+    {
+        $this->import([$this->formsRow(['Q1-2：氏名（フリガナ）' => 'やまだ　たろう'])]);
+
+        $member = Member::sole();
+        $this->assertSame('ヤマダ', $member->last_name_kana);
+        $this->assertSame('タロウ', $member->first_name_kana);
+    }
+
     public function test_電話番号は全角や先頭の0が消えたものもそろえる(): void
     {
         $this->import([
-            $this->formsRow(['ID' => '1', '電話番号' => '０９０ー１２３４ー５６７８', '緊急連絡先' => 9012345678]),
+            $this->formsRow(['Q2：電話番号' => '０９０ー１２３４ー５６７８', 'Q3:緊急連絡先' => 9012345678]),
         ]);
 
         $member = Member::sole();
@@ -81,25 +129,37 @@ class FormsMemberImportTest extends TestCase
     public function test_取り込み済みの_i_dは飛ばし、上書きもしない(): void
     {
         $this->import([$this->formsRow()]);
-        Member::sole()->update(['address' => 'アプリで直した住所']);
+        Member::sole()->update(['phone' => '08000000000']);
 
         $result = $this->import([
-            $this->formsRow(['住所' => 'Formsの古い住所']),
-            $this->formsRow(['ID' => '2', 'お名前' => '佐藤 次郎']),
+            $this->formsRow(['Q2：電話番号' => '090-9999-9999']),
+            $this->formsRow(['ID' => '2', 'Q1：氏名（フルネーム）' => '佐藤 次郎']),
         ]);
 
         $this->assertSame(1, $result->imported);
         $this->assertSame(1, $result->alreadyImported);
         $this->assertSame(2, Member::count());
-        $this->assertSame('アプリで直した住所', Member::where('forms_response_id', '1')->value('address'));
+        $this->assertSame('08000000000', Member::where('forms_response_id', '1')->value('phone'));
     }
 
-    public function test_必須項目が空の行は取り込まず、行番号つきでエラーにする(): void
+    public function test_会員番号がほかの会員とぶつかる行は取り込まない(): void
+    {
+        // 取り込みより先に、アプリで 00005 番の会員が登録されていた
+        // （MemberFactory は作成後に会員番号を ID から振り直すので、作ったあとで設定する）
+        Member::factory()->create()->update(['member_code' => '00005']);
+
+        $result = $this->import([$this->formsRow(['ID' => '5'])]);
+
+        $this->assertSame(0, $result->imported);
+        $this->assertStringContainsString('00005', $result->errors[2][0]);
+    }
+
+    public function test_氏名や電話番号が空の行は取り込まず、行番号つきでエラーにする(): void
     {
         $result = $this->import([
             $this->formsRow(['ID' => '1']),
-            $this->formsRow(['ID' => '2', '電話番号' => '']),
-            $this->formsRow(['ID' => '3', '緊急連絡先' => '']),
+            $this->formsRow(['ID' => '2', 'Q2：電話番号' => '']),
+            $this->formsRow(['ID' => '3', 'Q1：氏名（フルネーム）' => '']),
         ]);
 
         $this->assertSame(1, $result->imported);
@@ -107,25 +167,45 @@ class FormsMemberImportTest extends TestCase
         $this->assertSame(1, Member::count());
     }
 
-    public function test_ひらがなで始まる値も壊さずに取り込み、免責「いいえ」は未同意にする(): void
+    public function test_緊急連絡先や選択肢が空でも取り込み、要確認にする(): void
+    {
+        // カードを発行済みの会員なので、選択肢が読めないくらいでは取り込みを止めない
+        $result = $this->import([
+            $this->formsRow([
+                'Q3:緊急連絡先' => '',
+                'Q4:年齢区分' => '',
+                'Q5:お住まい' => '',
+                'Q6:クライミング経験' => '',
+            ]),
+        ]);
+
+        $this->assertSame(1, $result->imported);
+        $this->assertCount(4, $result->warnings[2]);
+
+        $member = Member::sole();
+        $this->assertNull($member->emergency_phone);
+        $this->assertNull($member->residence_area);
+        $this->assertNull($member->climbing_experience);
+    }
+
+    public function test_ひらがなで始まる値も壊さずに取り込み、規約「いいえ」は未同意にする(): void
     {
         // ひらがな・カタカナは UTF-8 で先頭が全角スペースと同じバイト（E3）なので、trim() だと壊れる
         $result = $this->import([
-            $this->formsRow(['お名前' => '　さくら　はなこ　', '住所' => 'さいたま市', '免責事項の確認' => 'いいえ']),
+            $this->formsRow(['Q1：氏名（フルネーム）' => '　さくら　はなこ　', 'Q7:利用規約・同意事項' => 'いいえ']),
         ]);
 
         $member = Member::sole();
         $this->assertSame('さくら', $member->last_name);
         $this->assertSame('はなこ', $member->first_name);
-        $this->assertSame('さいたま市', $member->address);
         $this->assertSame(0, $member->waivers()->count());
         $this->assertCount(1, $result->warnings[2]);
     }
 
-    public function test_名前にスペースがない人と免責未同意の人は警告つきで取り込む(): void
+    public function test_名前にスペースがない人と規約未同意の人は警告つきで取り込む(): void
     {
         $result = $this->import([
-            $this->formsRow(['お名前' => '山田太郎', '免責事項の確認' => '']),
+            $this->formsRow(['Q1：氏名（フルネーム）' => '山田太郎', 'Q7:利用規約・同意事項' => '']),
         ]);
 
         $member = Member::sole();
@@ -143,7 +223,7 @@ class FormsMemberImportTest extends TestCase
         $this->assertSame(0, Member::count());
     }
 
-    public function test_行数が増えても取り込み済みの確認は1回の問い合わせで済む(): void
+    public function test_行数が増えても取り込み済みの確認は最初の問い合わせだけで済む(): void
     {
         $this->import([$this->formsRow(['ID' => '1']), $this->formsRow(['ID' => '2'])]);
 
@@ -154,7 +234,8 @@ class FormsMemberImportTest extends TestCase
         DB::enableQueryLog();
         $result = $this->import($rows, dryRun: true);
 
-        $this->assertCount(1, DB::getQueryLog()); // 行ごとに問い合わせていたときは51回
+        // 取り込み済みの回答IDと、使用中の会員番号の2回だけ（行ごとに問い合わせていたときは51回）
+        $this->assertCount(2, DB::getQueryLog());
         $this->assertSame(48, $result->imported);
         $this->assertSame(3, $result->alreadyImported);
     }
@@ -178,7 +259,7 @@ class FormsMemberImportTest extends TestCase
     public function test_必要な列がないファイルは1行も取り込まない(): void
     {
         $row = $this->formsRow();
-        unset($row['電話番号']);
+        unset($row['Q2：電話番号']);
 
         $result = $this->import([$row]);
 

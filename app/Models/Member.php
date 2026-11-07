@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\ClimbingExperience;
 use App\Enums\ClimbingLevel;
 use App\Enums\ContactType;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
+use App\Enums\ResidenceArea;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,9 +34,11 @@ class Member extends Model
         'contact_type',
         'postal_code',
         'address',
+        'residence_area',
         'occupation',
         'photo_path',
         'climbing_level',
+        'climbing_experience',
         'injury_notes',
         'caution_flag',
         'caution_notes',
@@ -57,6 +61,8 @@ class Member extends Model
         'category' => MemberCategory::class,
         'contact_type' => ContactType::class,
         'climbing_level' => ClimbingLevel::class,
+        'climbing_experience' => ClimbingExperience::class,
+        'residence_area' => ResidenceArea::class,
         'registered_at' => 'datetime',
     ];
 
@@ -185,7 +191,11 @@ class Member extends Model
     public static function generateMemberCode(): string
     {
         // FOR UPDATE で現存の最大値をロックして読む（呼び出し側がトランザクション内である前提）
-        $next = (int) static::lockForUpdate()->max('member_code') + 1;
+        // 開始番号（config/members.php）より小さい番号は振らない（発行済みのカードとぶつけないため）
+        $next = max(
+            (int) static::lockForUpdate()->max('member_code') + 1,
+            config('members.member_code_start'),
+        );
 
         return str_pad($next, 5, '0', STR_PAD_LEFT);
     }

@@ -135,7 +135,7 @@
                             {{-- 生年月日--}}
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    生年月日 <span class="text-red-500">*</span>
+                                    生年月日
                                 </label>
                                 <input type="date" name="birth_date"
                                        value="{{ old('birth_date', $member->birth_date?->format('Y-m-d')) }}"
@@ -149,7 +149,7 @@
 
                             {{-- 年齢カテゴリ --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">会員区分（一般・シニア・学生）<span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">会員区分（一般・シニア・学生）<span class="text-xs text-gray-500">※利用タイプを選ぶときは必須</span></label>
                                 <select name="category"
                                         class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
                                     <option value="">選択してください</option>
@@ -160,6 +160,9 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('category')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             {{-- 性別の選択 --}}
@@ -180,12 +183,24 @@
 
                             {{-- 電話番号の入力 --}}
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">電話番号（半角数字）</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">電話番号（半角数字） <span class="text-red-500">*</span></label>
                                 <input type="text" name="phone"
                                        value="{{ old('phone', $member->phone) }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                              focus:ring-slate-500 focus:border-slate-500">
+                                              focus:ring-slate-500 focus:border-slate-500
+                                              @error('phone') border-red-400 @enderror">
+                                @error('phone')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
+
+                            {{-- お店の Forms に合わせた必須項目（年齢区分・お住まい・クライミング経験） --}}
+                            <x-member.radio-group class="col-span-2" name="is_minor" label="年齢区分"
+                                :options="['1' => '18歳未満', '0' => '18歳以上']" :value="$member->is_minor" />
+                            <x-member.radio-group class="col-span-2" name="residence_area" label="お住まい"
+                                :options="\App\Enums\ResidenceArea::options()" :value="$member->residence_area" />
+                            <x-member.radio-group class="col-span-2" name="climbing_experience" label="クライミング経験"
+                                :options="\App\Enums\ClimbingExperience::options()" :value="$member->climbing_experience" />
 
                             {{--メール・SNS--}}
                             <div class="col-span-2">
@@ -296,16 +311,8 @@
 
                     {{-- 未成年・保護者情報 --}}
                     <div class="bg-white/80 rounded-lg shadow p-6">
-                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">未成年・保護者情報</h3>
-                        <div class="mb-4">
-                            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                                <input type="checkbox" name="is_minor" value="1"
-                                       {{ old('is_minor', $member->is_minor) ? 'checked' : '' }}
-                                       class="rounded border-gray-300 text-slate-600
-                                              focus:ring-slate-500">
-                                未成年である
-                            </label>
-                        </div>
+                        {{-- 未成年かどうかは基本情報の「年齢区分」で選ぶ --}}
+                        <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">保護者情報（18歳未満の方のみ）</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">保護者氏名</label>
@@ -358,7 +365,7 @@
                         <div class="flex gap-3 items-end">
                             <div class="flex-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    利用タイプ <span class="text-red-500">*</span>
+                                    利用タイプ <span class="text-xs text-gray-500">※選ぶ場合は会員区分も必須</span>
                                 </label>
                                 <select name="plan_type"
                                         class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">

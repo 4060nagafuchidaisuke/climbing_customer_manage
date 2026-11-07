@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ClimbingExperience;
 use App\Enums\ClimbingLevel;
 use App\Enums\ContactType;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
 use App\Enums\PlanType;
+use App\Enums\ResidenceArea;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -41,20 +43,25 @@ class StoreMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 基本情報
+            // 必須項目はお店の会員登録 Forms に合わせる
+            // （氏名・フリガナ・電話番号・年齢区分・お住まい・クライミング経験・規約同意）
             'member_code' => ['nullable', 'regex:/^\d{5}$/', Rule::unique('members', 'member_code')],
             'last_name' => ['required', 'string', 'max:15'],
             'first_name' => ['required', 'string', 'max:15'],
             'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
-            'birth_date' => ['required', 'date', 'before:today'],
-            'address' => ['required', 'string', 'max:255'],
-            'category' => ['required', Rule::enum(MemberCategory::class)],
-            'plan_type' => ['required', Rule::enum(PlanType::class)],
+            'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'residence_area' => ['required', Rule::enum(ResidenceArea::class)],
+            'climbing_experience' => ['required', Rule::enum(ClimbingExperience::class)],
+
+            // 料金は会員区分で決まるので、プランを選ぶときだけ会員区分を必須にする
+            'category' => ['nullable', 'required_with:plan_type', Rule::enum(MemberCategory::class)],
+            'plan_type' => ['nullable', Rule::enum(PlanType::class)],
 
             // 任意の項目
+            'birth_date' => ['nullable', 'date', 'before:today'],
+            'address' => ['nullable', 'string', 'max:255'],
             'gender' => ['nullable', Rule::enum(Gender::class)],
-            'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
             // SNS アカウント名も入れられるよう 'email' 形式チェックは外し、文字列としてだけ検証する
             'email' => ['nullable', 'string', 'max:255', 'unique:members,email'],
@@ -70,15 +77,15 @@ class StoreMemberRequest extends FormRequest
             'caution_flag' => ['nullable', 'boolean'],
             'caution_notes' => ['nullable', 'string', 'max:1000'],
 
-            // 未成年フラグ・保護者情報
-            'is_minor' => ['nullable', 'boolean'],
+            // 年齢区分（必須：18歳未満なら 1、18歳以上なら 0）・保護者情報
+            'is_minor' => ['required', 'boolean'],
             'guardian_name' => ['nullable', 'string', 'max:100'],
             'guardian_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
-            // 緊急連絡先
-            'emergency_name' => ['required', 'string', 'max:100'],
+            // 緊急連絡先（Forms では任意）
+            'emergency_name' => ['nullable', 'string', 'max:100'],
             'emergency_relation' => ['nullable', 'string', 'max:50'],
-            'emergency_phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'emergency_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
             // 免責事項の同意の有無
             'agreement' => ['accepted'],
@@ -104,12 +111,16 @@ class StoreMemberRequest extends FormRequest
             'contact_type' => 'SNSの種類',
             'postal_code' => '郵便番号',
             'address' => '住所',
+            'residence_area' => 'お住まい',
             'occupation' => '職業',
             'climbing_level' => 'クライミングレベル',
+            'climbing_experience' => 'クライミング経験',
             'injury_notes' => '負傷・注意事項',
             'caution_flag' => '注意フラグ',
             'caution_notes' => '注意事項',
-            'is_minor' => '未成年フラグ',
+            'is_minor' => '年齢区分',
+            'category' => '会員区分',
+            'plan_type' => '利用タイプ',
             'guardian_name' => '保護者氏名',
             'guardian_phone' => '保護者連絡先',
             'emergency_name' => '緊急連絡先氏名',
@@ -132,6 +143,7 @@ class StoreMemberRequest extends FormRequest
             'guardian_phone.regex' => '保護者電話番号は半角数字（ハイフンなし）で入力してください。',
             'postal_code.regex' => '郵便番号は半角数字（ハイフンなし）で入力してください。',
             'member_code.regex' => '会員番号は5桁以内の半角数字で入力してください。',
+            'category.required_with' => '利用タイプを選ぶ場合は、料金を決めるために会員区分も選んでください。',
         ];
     }
 }

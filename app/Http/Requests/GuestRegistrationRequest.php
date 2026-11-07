@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ClimbingExperience;
 use App\Enums\ClimbingLevel;
 use App\Enums\Gender;
+use App\Enums\ResidenceArea;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -27,31 +29,34 @@ class GuestRegistrationRequest extends FormRequest
     {
         return [
             // お客さん入力内容
-            // 基本情報
+            // 必須項目はお店の会員登録 Forms に合わせる
+            // （氏名・フリガナ・電話番号・年齢区分・お住まい・クライミング経験・規約同意）
             'last_name' => ['required', 'string', 'max:15'],
             'first_name' => ['required', 'string', 'max:15'],
             'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
-            'birth_date' => ['required', 'date', 'before:today'],
-            'address' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'residence_area' => ['required', Rule::enum(ResidenceArea::class)],
+            'climbing_experience' => ['required', Rule::enum(ClimbingExperience::class)],
 
             // 任意の項目
+            'birth_date' => ['nullable', 'date', 'before:today'],
+            'address' => ['nullable', 'string', 'max:255'],
             'gender' => ['nullable', Rule::enum(Gender::class)],
-            'phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
             'email' => ['nullable', 'email', 'max:255', 'unique:members,email'],
             'postal_code' => ['nullable', 'string', 'max:10', 'regex:/\A[0-9]+\z/'],
             'occupation' => ['nullable', 'string', 'max:100'],
             'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
 
-            // 未成年フラグ（必須）・保護者情報
-            'is_minor' => ['nullable', 'boolean'],
+            // 年齢区分（必須：18歳未満なら 1、18歳以上なら 0）・保護者情報
+            'is_minor' => ['required', 'boolean'],
             'guardian_name' => ['nullable', 'string', 'max:100'],
             'guardian_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
-            // 緊急連絡先（必須）
-            'emergency_name' => ['required', 'string', 'max:100'],
+            // 緊急連絡先（Forms では任意）
+            'emergency_name' => ['nullable', 'string', 'max:100'],
             'emergency_relation' => ['nullable', 'string', 'max:50'],
-            'emergency_phone' => ['required', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
+            'emergency_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
 
             // 免責事項
             'agreement' => ['accepted'],
@@ -72,12 +77,14 @@ class GuestRegistrationRequest extends FormRequest
             'birth_date' => '生年月日',
             'gender' => '性別',
             'address' => '住所',
+            'residence_area' => 'お住まい',
             'phone' => '電話番号',
             'email' => 'メールアドレス',
             'postal_code' => '郵便番号',
             'occupation' => '職業',
             'climbing_level' => 'クライミングレベル',
-            'is_minor' => '未成年',
+            'climbing_experience' => 'クライミング経験',
+            'is_minor' => '年齢区分',
             'guardian_name' => '保護者氏名',
             'guardian_phone' => '保護者電話番号',
             'emergency_name' => '緊急連絡先氏名',
