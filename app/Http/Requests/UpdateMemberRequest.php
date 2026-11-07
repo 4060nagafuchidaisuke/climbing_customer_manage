@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ClimbingExperience;
 use App\Enums\ClimbingLevel;
 use App\Enums\ContactType;
 use App\Enums\Gender;
 use App\Enums\MemberCategory;
 use App\Enums\PlanType;
+use App\Enums\ResidenceArea;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -43,18 +45,22 @@ class UpdateMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 必須項目
+            // 必須項目（会員番号 ＋ お店の会員登録 Forms の必須項目）
             'member_code' => ['required', 'regex:/^\d{5}$/', Rule::unique('members', 'member_code')->ignore($this->route('member'))],
             'last_name' => ['required', 'string', 'max:50'],
             'first_name' => ['required', 'string', 'max:50'],
             'last_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
             'first_name_kana' => ['required', 'string', 'max:25', 'regex:/\A[ァ-ヶー・]+\z/u'],
-            'birth_date' => ['required', 'date', 'before:today'],
-            'category' => ['required', Rule::enum(MemberCategory::class)],
+            'phone' => ['required', 'string', 'max:20'],
+            'residence_area' => ['required', Rule::enum(ResidenceArea::class)],
+            'climbing_experience' => ['required', Rule::enum(ClimbingExperience::class)],
+
+            // 料金は会員区分で決まるので、プランを選ぶときだけ会員区分を必須にする
+            'category' => ['nullable', 'required_with:plan_type', Rule::enum(MemberCategory::class)],
 
             // 任意項目
+            'birth_date' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', Rule::enum(Gender::class)],
-            'phone' => ['nullable', 'string', 'max:20'],
 
             // SNS アカウント名も入れられるよう 'email' 形式チェックは外し、文字列としてだけ検証する
             'email' => ['nullable', 'string', 'max:255'],
@@ -70,8 +76,8 @@ class UpdateMemberRequest extends FormRequest
             'caution_flag' => ['nullable', 'boolean'],
             'caution_notes' => ['nullable', 'string', 'max:1000'],
 
-            // 未成年フラグ・保護者情報
-            'is_minor' => ['nullable', 'boolean'],
+            // 年齢区分（必須：18歳未満なら 1、18歳以上なら 0）・保護者情報
+            'is_minor' => ['required', 'boolean'],
             'guardian_name' => ['nullable', 'string', 'max:100'],
             'guardian_phone' => ['nullable', 'string', 'max:20'],
 
@@ -101,7 +107,10 @@ class UpdateMemberRequest extends FormRequest
             'contact_type' => 'SNSの種類',
             'postal_code' => '郵便番号',
             'address' => '住所',
+            'residence_area' => 'お住まい',
             'climbing_level' => 'クライミングレベル',
+            'climbing_experience' => 'クライミング経験',
+            'is_minor' => '年齢区分',
             'occupation' => '職業',
             'injury_notes' => '負傷・注意事項',
             'caution_notes' => '注意メモ',
@@ -121,6 +130,7 @@ class UpdateMemberRequest extends FormRequest
     {
         return [
             'member_code.regex' => '会員番号は5桁以内の半角数字で入力してください。',
+            'category.required_with' => '利用タイプを選ぶ場合は、料金を決めるために会員区分も選んでください。',
         ];
     }
 }

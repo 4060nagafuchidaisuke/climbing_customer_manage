@@ -33,7 +33,7 @@
                 
                 {{-- カテゴリーの選択 --}}
                 <select name="category">
-                    <option value="">選択してください</option>
+                    <option value="">会員区分（任意・あとで会員編集から設定できます）</option>
                     @foreach (\App\Enums\MemberCategory::cases() as $case)
                         <option value="{{ $case->value }}" @selected(old('category') == $case->value)>{{ $case->label() }}</option>
                     @endforeach

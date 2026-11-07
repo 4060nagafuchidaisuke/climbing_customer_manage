@@ -27,7 +27,8 @@ class RegisterMemberRequest extends FormRequest
         return [
 
             // 正会員化フォームの入力検証
-            'category' => ['required', Rule::enum(MemberCategory::class)],
+            // 会員区分はお店の Forms に合わせて任意（未設定のままだとプランは登録できない）
+            'category' => ['nullable', Rule::enum(MemberCategory::class)],
 
             'payment_received' => ['accepted'],
         ];
@@ -39,7 +40,6 @@ class RegisterMemberRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'category.required' => '会員区分を選択してください。',
             'payment_received.accepted' => '¥1,000の受領を確認してください。',
         ];
     }

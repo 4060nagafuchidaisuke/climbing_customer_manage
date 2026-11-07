@@ -97,8 +97,16 @@
                                 <dd class="text-gray-800">{{ $member->address ?? '—' }}</dd>
                             </div>
                             <div>
-                                <dt class="text-gray-500">クライミングレベル</dt>
-                                <dd class="text-gray-800">{{ $member->climbing_level ?? '—' }}</dd>
+                                <dt class="text-gray-500">お住まい</dt>
+                                <dd class="text-gray-800">{{ $member->residence_area?->label() ?? '—' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-gray-500">クライミング経験（本人申告）</dt>
+                                <dd class="text-gray-800">{{ $member->climbing_experience?->label() ?? '—' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-gray-500">クライミングレベル（スタッフ判断）</dt>
+                                <dd class="text-gray-800">{{ $member->climbing_level?->label() ?? '—' }}</dd>
                             </div>
                             <div>
                                 <dt class="text-gray-500">会員番号</dt>

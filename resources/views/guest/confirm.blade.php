@@ -40,7 +40,7 @@
                                 </div>
                                 <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">生年月日</dt>
-                                    <dd class="text-gray-800">{{ $data['birth_date'] }}</dd>
+                                    <dd class="text-gray-800">{{ $data['birth_date'] ?? '未入力' }}</dd>
                                 </div>
                                 <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">性別</dt>
@@ -53,6 +53,14 @@
                                     <dd class="text-gray-800">{{ $data['phone'] }}</dd>
                                 </div>
                                 <div class="flex">
+                                    <dt class="w-32 text-gray-500 shrink-0">お住まい</dt>
+                                    <dd class="text-gray-800">{{ \App\Enums\ResidenceArea::tryFrom($data['residence_area'] ?? '')?->label() ?? '未選択' }}</dd>
+                                </div>
+                                <div class="flex">
+                                    <dt class="w-32 text-gray-500 shrink-0">クライミング経験</dt>
+                                    <dd class="text-gray-800">{{ \App\Enums\ClimbingExperience::tryFrom($data['climbing_experience'] ?? '')?->label() ?? '未選択' }}</dd>
+                                </div>
+                                <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">メールアドレス</dt>
                                     <dd class="text-gray-800">{{ $data['email'] ?? '未入力' }}</dd>
                                 </div>
@@ -60,15 +68,9 @@
                                     <dt class="w-32 text-gray-500 shrink-0">郵便番号</dt>
                                     <dd class="text-gray-800">{{ $data['postal_code'] ?? '未入力' }}</dd>
                                 </div>
-                                <div class="flex">
-                                    <dt class="w-32 text-gray-500 shrink-0">クライミングレベル</dt>
-                                    <dd class="text-gray-800">
-                                        {{ \App\Enums\ClimbingLevel::tryFrom($data['climbing_level'] ?? '')?->label() ?? '未選択' }}
-                                    </dd>
-                                </div>
                                 <div class="flex md:col-span-2">
                                     <dt class="w-32 text-gray-500 shrink-0">住所</dt>
-                                    <dd class="text-gray-800">{{ $data['address'] }}</dd>
+                                    <dd class="text-gray-800">{{ $data['address'] ?? '未入力' }}</dd>
                                 </div>
                                 <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">職業</dt>
@@ -83,7 +85,7 @@
                         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                             <div class="flex">
                                 <dt class="w-32 text-gray-500 shrink-0 mr-2">氏名</dt>
-                                <dd class="text-gray-800">{{ $data['emergency_name'] }}</dd>
+                                <dd class="text-gray-800">{{ $data['emergency_name'] ?? '未入力' }}</dd>
                             </div>
                             <div class="flex">
                                 <dt class="w-32 text-gray-500 shrink-0 mr-2">続柄</dt>
@@ -91,7 +93,7 @@
                             </div>
                             <div class="flex">
                                 <dt class="w-32 text-gray-500 shrink-0 mr-2">電話番号</dt>
-                                <dd class="text-gray-800">{{ $data['emergency_phone'] }}</dd>
+                                <dd class="text-gray-800">{{ $data['emergency_phone'] ?? '未入力' }}</dd>
                             </div>
                         </dl>
                     </div>
@@ -101,8 +103,8 @@
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">未成年・保護者情報</h3>
                         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                             <div class="flex">
-                                <dt class="w-32 text-gray-500 shrink-0 mr-2">未成年</dt>
-                                <dd class="text-gray-800">{{ !empty($data['is_minor']) ? 'はい' : 'いいえ' }}</dd>
+                                <dt class="w-32 text-gray-500 shrink-0 mr-2">年齢区分</dt>
+                                <dd class="text-gray-800">{{ !empty($data['is_minor']) ? '18歳未満' : '18歳以上' }}</dd>
                             </div>
                             <div class="flex">
                                 <dt class="w-32 text-gray-500 shrink-0 mr-2">保護者氏名</dt>

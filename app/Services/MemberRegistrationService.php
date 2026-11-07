@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ClimbingExperience;
 use App\Enums\MemberCategory;
 use App\Enums\PlanType;
 use App\Models\Member;
@@ -10,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 class MemberRegistrationService
 {
     // ビジターさんの正会員化
-    public function register(Member $member, MemberCategory $category): void
+    // 会員区分は任意（null なら未設定のまま。プランを登録する前に会員編集で設定する）
+    public function register(Member $member, ?MemberCategory $category): void
     {
         // 本登録が完了していた場合
         if ($member->registered_at !== null) {
@@ -37,6 +39,12 @@ class MemberRegistrationService
                 $data['member_code'] = Member::generateMemberCode();
             }
             $data['registered_at'] = now();
+
+            // レベルが選ばれていなければ、クライミング経験から初期値を入れる（スタッフがあとで変えられる）
+            if (empty($data['climbing_level']) && ! empty($data['climbing_experience'])) {
+                $data['climbing_level'] = ClimbingExperience::from($data['climbing_experience'])->initialLevel();
+            }
+
             $member = Member::create($data);
 
             $member->waivers()->create([
