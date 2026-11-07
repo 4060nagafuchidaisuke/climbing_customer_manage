@@ -24,6 +24,18 @@
                 </div>
             @endif
 
+            {{-- 前回までの取り込み状況（今回何人増えたかを確かめる目安） --}}
+            <div class="bg-white/90 rounded-lg shadow px-6 py-4 text-sm text-gray-700">
+                @if($lastImport)
+                    <span class="font-semibold">前回までの取り込み：</span>
+                    {{ $lastImport['last_imported_at']->format('Y/m/d H:i') }}
+                    ／ 回答ID {{ $lastImport['last_response_id'] }} まで
+                    ／ 合計 {{ $lastImport['count'] }}人
+                @else
+                    <span class="font-semibold">前回までの取り込み：</span>まだありません
+                @endif
+            </div>
+
             {{-- 取り込み結果 --}}
             @if($result)
                 <div class="bg-white/90 rounded-lg shadow p-6">
@@ -32,8 +44,8 @@
                     </h3>
 
                     <ul class="text-sm text-gray-700 space-y-1 mb-4">
-                        <li>{{ $result['dry_run'] ? '取り込める件数' : '取り込んだ件数' }}：<span class="font-bold">{{ $result['imported'] }}件</span></li>
-                        <li>取り込み済みのため飛ばした件数：{{ $result['already_imported'] }}件</li>
+                        <li>{{ $result['dry_run'] ? '新しく登録できる件数' : '新しく登録した件数' }}：<span class="font-bold">{{ $result['imported'] }}件</span></li>
+                        <li>前回までに取り込み済みのため飛ばした件数：{{ $result['already_imported'] }}件（上書きはしていません）</li>
                         <li>取り込めなかった行：<span class="{{ $result['errors'] ? 'text-red-600 font-bold' : '' }}">{{ count($result['errors']) }}行</span></li>
                         <li>要確認の行：{{ count($result['warnings']) }}行</li>
                     </ul>
