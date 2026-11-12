@@ -11,25 +11,28 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Spatie\SimpleExcel\SimpleExcelReader;
 
-// Microsoft Forms から書き出したファイル（xlsx / csv）を members に取り込む
+// Google フォームの回答（スプレッドシートから書き出した xlsx / csv）を members に取り込む
 // Artisan コマンド（初回の一括取り込み）と管理画面（定期的な取り込み）の両方から呼ぶ
+//
+// お店では「何番目の回答か」（スプレッドシートの2行目が1番）を会員番号としてカードを発行している。
+// 回答IDの列はないので、行の順番から回答番号（forms_response_id）と会員番号（member_code）を決める。
+// 並べ替えや行の削除で順番がずれると別人の番号になるため、取り込み済みの行のタイムスタンプを毎回照合する。
 class FormsMemberImportService
 {
-    // Forms の列見出し => このクラスで使うキー
-    // お店の「HAZY BOULDER 会員登録」Forms の質問名（2026-11 時点）。質問名が変わったらここを直す
-    // 全角／半角のコロン・カッコ・空白の違いは normalizeHeader() でそろえてから比べる
+    // フォームの列見出し => このクラスで使うキー
+    // お店の「HAZY BOULDER 会員登録」フォームの質問名（2026-11 時点）
+    // 「Q1:」のような質問番号で列を見分けるので、質問の文言が少し変わっても読める（columnKey() を参照）
     public const COLUMNS = [
-        'ID' => 'forms_response_id',
-        '完了時刻' => 'completed_at',
-        'Q1：氏名（フルネーム）' => 'name',
-        'Q1-2：氏名（フリガナ）' => 'kana',
-        'Q1-3：保護者氏名' => 'guardian_name',
-        'Q2：電話番号' => 'phone',
+        'タイムスタンプ' => 'completed_at',
+        'Q1:氏名（フルネーム）' => 'name',
+        'Q1-2:氏名（フリガナ）' => 'kana',
+        'Q1-3:保護者氏名' => 'guardian_name',
+        'Q2:電話番号' => 'phone',
         'Q3:緊急連絡先' => 'emergency_phone',
         'Q4:年齢区分' => 'age_group',
         'Q5:お住まい' => 'residence_area',
         'Q6:クライミング経験' => 'climbing_experience',
-        'Q7:利用規約・同意事項' => 'waiver',
+        'Q7:利用規約・同意' => 'waiver',
     ];
 
     // Q4 年齢区分の回答 => is_minor
@@ -38,7 +41,7 @@ class FormsMemberImportService
         '18歳以上' => false,
     ];
 
-    // Forms 経由の免責同意を、アプリで同意したもの（v1）と区別するためのバージョン名
+    // フォーム経由の免責同意を、アプリで同意したもの（v1）と区別するためのバージョン名
     public const WAIVER_VERSION = 'forms';
 
     // 免責の回答が「同意していない」とみなす言葉
@@ -52,16 +55,16 @@ class FormsMemberImportService
             ->trimHeaderRow()
             ->preserveEmptyRows(); // 空行も読む（行番号をファイルとそろえるため）
 
-        // ファイルの列見出しを「そろえた見出し => 実際の見出し」で引けるようにする
+        // ファイルの列見出しを「見分けるためのキー => 実際の見出し」で引けるようにする
         $headers = [];
         foreach ($reader->getHeaders() ?? [] as $header) {
-            $headers[$this->normalizeHeader($header)] = $header;
+            $headers[$this->columnKey($header)] = $header;
         }
 
         // 必要な列がそろっていなければ、1行も読まずに終える
         $missing = array_filter(
             array_keys(self::COLUMNS),
-            fn ($header) => ! isset($headers[$this->normalizeHeader($header)]),
+            fn ($header) => ! isset($headers[$this->columnKey($header)]),
         );
         if ($missing !== []) {
             $result->addError(1, '必要な列が見つかりません：'.implode('、', $missing));
@@ -69,32 +72,76 @@ class FormsMemberImportService
             return $result;
         }
 
-        // 取り込み済みの回答IDと、使用中の会員番号を、最初にまとめて読む
+        // 取り込み済みの回答番号（=> 入会日時）と、使用中の会員番号を、最初にまとめて読む
         // （1行ごとに DB へ問い合わせると、400行なら400回になって遅いため）
         // キーに値を入れておくと、isset() で一瞬で調べられる
-        $knownIds = Member::whereNotNull('forms_response_id')
-            ->pluck('forms_response_id')
-            ->flip()
+        $importedAt = Member::whereNotNull('forms_response_id')
+            ->pluck('registered_at', 'forms_response_id')
             ->all();
         $usedCodes = Member::whereNotNull('member_code')
             ->pluck('member_code')
             ->flip()
             ->all();
 
+        // 行番号 => 1行分のデータ（完全な空行は除く）
+        $rows = [];
         foreach ($reader->getRows() as $index => $row) {
-            $rowNumber = $index + 2; // 1行目は見出し
-
             $data = $this->mapRow($row, $headers);
 
-            // 完全な空行は黙って飛ばす
-            if (collect($data)->filter(fn ($v) => filled($v))->isEmpty()) {
-                continue;
+            if (collect($data)->filter(fn ($v) => filled($v))->isNotEmpty()) {
+                $rows[$index + 2] = $data; // 1行目は見出し
             }
+        }
 
+        // 先に、取り込み済みの行が前回と同じ順番に並んでいるかを確かめる
+        // ずれていたら、別人に会員番号を振ってしまうので1行も取り込まない
+        if (! $this->verifyOrder($rows, $importedAt, $result)) {
+            return $result;
+        }
+
+        $knownIds = array_fill_keys(array_keys($importedAt), true);
+        foreach ($rows as $rowNumber => $data) {
             $this->importRow($data, $rowNumber, $knownIds, $usedCodes, $result);
         }
 
         return $result;
+    }
+
+    // 行番号から回答番号（何番目の回答か）を出す。2行目が1番
+    private function responseNumber(int $rowNumber): string
+    {
+        return (string) ($rowNumber - 1);
+    }
+
+    // 取り込み済みの回答番号の行について、タイムスタンプが DB の入会日時と一致するかを確かめる
+    // （氏名はスタッフがアプリで直すことがあるので照合に使わない。入会日時は編集画面から変えられない）
+    private function verifyOrder(array $rows, array $importedAt, FormsMemberImportResult $result): bool
+    {
+        $mismatched = [];
+        foreach ($rows as $rowNumber => $data) {
+            $number = $this->responseNumber($rowNumber);
+            // 未取り込みの行（入会日時が空の会員も、照合できないので対象外）
+            if (! isset($importedAt[$number])) {
+                continue;
+            }
+
+            $timestamp = $this->toDateTime($data['completed_at']);
+            if ($timestamp === null || $timestamp->format('Y-m-d H:i:s') !== $importedAt[$number]->format('Y-m-d H:i:s')) {
+                $mismatched[] = $rowNumber;
+            }
+        }
+
+        if ($mismatched === []) {
+            return true;
+        }
+
+        $result->addError(
+            $mismatched[0],
+            '前回までに取り込んだ回答と並び順が合いません（'.count($mismatched).'行）。'
+            .'スプレッドシートで並べ替えや行の削除をしていないか確認してください。会員番号がずれるのを防ぐため、1行も取り込んでいません。'
+        );
+
+        return false;
     }
 
     // 前回までの取り込み状況（画面に「前回はどこまで取り込んだか」を出すため）。まだ1件もなければ null
@@ -112,7 +159,7 @@ class FormsMemberImportService
             'count' => $count,
             // max() は文字列で返るので、画面で書式を整えられるように日時にする
             'last_imported_at' => CarbonImmutable::parse((clone $imported)->max('created_at')),
-            // 回答IDは文字列で保存しているので、数字として比べないと "9" > "10" になってしまう
+            // 回答番号は文字列で保存しているので、数字として比べないと "9" > "10" になってしまう
             'last_response_id' => (clone $imported)
                 ->orderByRaw('CAST(forms_response_id AS UNSIGNED) DESC')
                 ->value('forms_response_id'),
@@ -127,26 +174,37 @@ class FormsMemberImportService
         return preg_replace('/[\s　]+/u', '', mb_convert_kana($header, 'as'));
     }
 
-    // 1行分を「Forms の列見出し」から「このクラスのキー」に置き換える
+    // 列を見分けるためのキー
+    // 「Q7:利用規約・同意」→「Q7:」のように、質問番号があれば質問番号だけで見分ける
+    // （オーナーが質問の文言を直しても取り込みが止まらないように。「Q1:」と「Q1-2:」は別のキーになる）
+    // 質問番号がない列（タイムスタンプ）は見出し全体で見分ける
+    private function columnKey(string $header): string
+    {
+        $normalized = $this->normalizeHeader($header);
+
+        return preg_match('/\AQ[0-9-]+:/', $normalized, $matches) ? $matches[0] : $normalized;
+    }
+
+    // 1行分を「フォームの列見出し」から「このクラスのキー」に置き換える
     private function mapRow(array $row, array $headers): array
     {
         $data = [];
         foreach (self::COLUMNS as $header => $key) {
-            $data[$key] = $row[$headers[$this->normalizeHeader($header)]] ?? null;
+            $data[$key] = $row[$headers[$this->columnKey($header)]] ?? null;
         }
 
         return $data;
     }
 
-    // $knownIds：取り込み済みの回答ID（DB にあるもの ＋ このファイルの前の行で取り込んだもの）
+    // $knownIds：取り込み済みの回答番号（DB にあるもの ＋ このファイルの前の行で取り込んだもの）
     // $usedCodes：使用中の会員番号（同上）
     private function importRow(array $data, int $rowNumber, array &$knownIds, array &$usedCodes, FormsMemberImportResult $result): void
     {
-        $responseId = $this->toText($data['forms_response_id']);
+        $responseId = $this->responseNumber($rowNumber);
 
         // 取り込み済みなら飛ばす
-        // アプリで直した内容を Forms の古い内容で上書きしないため、更新もしない
-        if (filled($responseId) && isset($knownIds[$responseId])) {
+        // アプリで直した内容をフォームの古い内容で上書きしないため、更新もしない
+        if (isset($knownIds[$responseId])) {
             $result->alreadyImported++;
 
             return;
@@ -160,7 +218,7 @@ class FormsMemberImportService
 
         $attributes = [
             'forms_response_id' => $responseId,
-            // お店では Forms の回答ID＝会員番号としてカードを発行している
+            // お店では「何番目の回答か」＝会員番号としてカードを発行している
             'member_code' => $this->toMemberCode($responseId),
             'last_name' => $lastName,
             'first_name' => $firstName,
@@ -186,10 +244,10 @@ class FormsMemberImportService
             'emergency_phone' => ['nullable', 'string', 'max:20', 'regex:/\A[0-9]+\z/'],
             'guardian_name' => ['nullable', 'string', 'max:100'],
         ], [
-            'member_code.regex' => 'IDが会員番号（5桁以内の数字）になっていません。',
+            'member_code.regex' => '回答番号が会員番号の上限（99999）を超えています。',
         ], [
-            'forms_response_id' => 'ID',
-            'member_code' => '会員番号（ID）',
+            'forms_response_id' => '回答番号',
+            'member_code' => '会員番号',
             'last_name' => '氏名（姓）',
             'first_name' => '氏名（名）',
             'last_name_kana' => 'フリガナ（姓）',
@@ -240,7 +298,7 @@ class FormsMemberImportService
         }
         if ($attributes['registered_at'] === null) {
             $attributes['registered_at'] = now();
-            $result->addWarning($rowNumber, '完了時刻が読めないため、入会日を今日にしました');
+            $result->addWarning($rowNumber, 'タイムスタンプが読めないため、入会日を今日にしました');
         }
 
         $agreed = $this->isWaiverAgreed($data['waiver']);
@@ -251,7 +309,7 @@ class FormsMemberImportService
         // レベルはスタッフが判断する項目。初期値だけ経験から入れる
         $attributes['climbing_level'] = $attributes['climbing_experience']?->initialLevel();
 
-        // このファイルの後ろの行に同じIDや会員番号があっても、二重に取り込まないように覚えておく
+        // 取り込んだ回答番号と会員番号を覚えておく（使用中の番号として扱うため）
         $knownIds[$responseId] = true;
         $usedCodes[$attributes['member_code']] = true;
         $result->imported++;
@@ -274,7 +332,7 @@ class FormsMemberImportService
         });
     }
 
-    // 回答ID（例：123）を会員番号の形（00123）にする。数字でなければそのまま返し、バリデーションで弾く
+    // 回答番号（例：123）を会員番号の形（00123）にする。数字でなければそのまま返し、バリデーションで弾く
     private function toMemberCode(?string $responseId): ?string
     {
         if ($responseId === null || ! ctype_digit($responseId)) {
@@ -365,7 +423,7 @@ class FormsMemberImportService
         return $text === '' ? null : $text;
     }
 
-    // 完了時刻を日時にする（日付セル・Excel のシリアル値・文字列のどれでも受け付ける）
+    // タイムスタンプを日時にする（日付セル・Excel のシリアル値・文字列のどれでも受け付ける）
     private function toDateTime(mixed $value): ?CarbonImmutable
     {
         if ($value instanceof DateTimeInterface) {
