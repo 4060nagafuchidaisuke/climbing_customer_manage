@@ -5,7 +5,7 @@
 >
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 text-center">
-            Microsoft Forms の会員データ取り込み
+            Google フォームの会員データ取り込み
         </h2>
     </x-slot>
 
@@ -29,7 +29,7 @@
                 @if($lastImport)
                     <span class="font-semibold">前回までの取り込み：</span>
                     {{ $lastImport['last_imported_at']->format('Y/m/d H:i') }}
-                    ／ 回答ID {{ $lastImport['last_response_id'] }} まで
+                    ／ {{ $lastImport['last_response_id'] }}件目の回答まで
                     ／ 合計 {{ $lastImport['count'] }}人
                 @else
                     <span class="font-semibold">前回までの取り込み：</span>まだありません
@@ -51,7 +51,7 @@
                     </ul>
 
                     @if($result['errors'])
-                        <p class="text-red-700 font-medium text-sm mb-1">取り込めなかった行（Forms の内容を直すか、来店時にアプリで登録してください）</p>
+                        <p class="text-red-700 font-medium text-sm mb-1">取り込めなかった行（フォームの回答を直すか、来店時にアプリで登録してください）</p>
                         <table class="w-full text-sm mb-4 border">
                             <thead class="bg-red-50">
                                 <tr><th class="px-2 py-1 w-16 text-left">行</th><th class="px-2 py-1 text-left">理由</th></tr>
@@ -120,10 +120,12 @@
                 <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">★取り込むファイルの選択</h3>
 
                 <ol class="text-sm text-gray-600 list-decimal list-inside space-y-1 mb-4">
-                    <li>Microsoft Forms の「回答」タブから Excel をダウンロードします。</li>
-                    <li>ダウンロードしたファイル（.xlsx）をそのまま選んでください。</li>
+                    <li>Google フォームの「回答」タブ →「スプレッドシートで表示」を開きます。</li>
+                    <li>スプレッドシートの「ファイル」→「ダウンロード」→「Microsoft Excel (.xlsx)」でダウンロードします。</li>
+                    <li>ダウンロードしたファイルを<span class="font-semibold">そのまま</span>選んでください（Excel で開いて保存し直さないでください）。</li>
                     <li>まず「チェックのみ」で確認し、結果を見てから「この内容で取り込む」を押してください。</li>
                     <li>一度取り込んだ回答は、何度アップロードしても二重には登録されません。</li>
+                    <li class="text-red-600">何番目の回答かが会員番号になるので、スプレッドシートの並べ替えや行の削除はしないでください。</li>
                 </ol>
 
                 <form method="POST" action="{{ route('forms-import.store') }}" enctype="multipart/form-data">

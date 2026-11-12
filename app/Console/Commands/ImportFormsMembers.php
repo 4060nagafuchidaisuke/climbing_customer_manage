@@ -9,10 +9,10 @@ use Illuminate\Console\Command;
 class ImportFormsMembers extends Command
 {
     protected $signature = 'members:import
-                            {path : Forms から書き出した xlsx / csv のパス}
+                            {path : Google フォームの回答スプレッドシートから書き出した xlsx / csv のパス}
                             {--dry-run : DB に保存せず、チェックだけ行う}';
 
-    protected $description = 'Microsoft Forms の回答を会員として取り込む';
+    protected $description = 'Google フォームの回答を会員として取り込む';
 
     public function handle(FormsMemberImportService $service): int
     {

@@ -7,7 +7,7 @@ use App\Services\FormsMemberImportService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-// Microsoft Forms の回答を管理画面から取り込む（管理者のみ）
+// Google フォームの回答を管理画面から取り込む（管理者のみ）
 //
 // 「チェックのみ」で確認 →「この内容で取り込む」で本番、という2段階で使う。
 // ブラウザは画面を移動するとファイル選択欄を空に戻すため、チェックしたファイルはサーバーで一時的に預かる。

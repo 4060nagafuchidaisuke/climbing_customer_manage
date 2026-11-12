@@ -70,7 +70,7 @@
                                     <x-dropdown-link :href="route('sales.index')">集計（日次集計・月報etc）</x-dropdown-link>
                                     <x-dropdown-link :href="route('plans.index')">料金設定</x-dropdown-link>
                                     <x-dropdown-link :href="route('disclaimer.show')">免責事項の編集</x-dropdown-link>
-                                    <x-dropdown-link :href="route('forms-import.create')">Formsの会員取り込み</x-dropdown-link>
+                                    <x-dropdown-link :href="route('forms-import.create')">Googleフォームの会員取り込み</x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>
                         </div>
