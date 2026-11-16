@@ -12,6 +12,9 @@ class MemberPlan extends Model
 {
     use HasFactory;
 
+    // 期間パスの期限が近いとみなす日数（残り3日以内）。受付で更新の声かけをする目安
+    public const EXPIRING_SOON_DAYS = 3;
+
     // fillable：一括代入(mass assignment)で書き込みを許可するカラムのホワイトリスト
     protected $fillable = [
         'member_id',
@@ -55,11 +58,30 @@ class MemberPlan extends Model
         if ($this->cancelled_at !== null) {
             return PlanStatus::CANCELLED;
         }
-        if ($this->end_date !== null && $this->end_date->isPast()) {
+        // 終了日の当日までは使える（scopeActive と同じ基準。翌日から期限切れ）
+        if ($this->end_date !== null && $this->end_date->lt(today())) {
             return PlanStatus::EXPIRED;
         }
 
         return PlanStatus::ACTIVE;
+    }
+
+    // 期間パスの残り日数（終了日の当日は 0、期限切れはマイナス）。期間のないプランは null
+    public function daysLeft(): ?int
+    {
+        if ($this->end_date === null) {
+            return null;
+        }
+
+        return (int) today()->diffInDays($this->end_date, false);
+    }
+
+    // もうすぐ期限（残り EXPIRING_SOON_DAYS 日以内）か
+    public function isExpiringSoon(): bool
+    {
+        $daysLeft = $this->daysLeft();
+
+        return $daysLeft !== null && $daysLeft >= 0 && $daysLeft <= self::EXPIRING_SOON_DAYS;
     }
 
     // 契約が有効かどうか
