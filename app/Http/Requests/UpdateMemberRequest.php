@@ -9,6 +9,7 @@ use App\Enums\Gender;
 use App\Enums\MemberCategory;
 use App\Enums\PlanType;
 use App\Enums\ResidenceArea;
+use App\Rules\PlanMatchesRegistrationFee;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -70,7 +71,10 @@ class UpdateMemberRequest extends FormRequest
             'occupation' => ['nullable', 'string', 'max:100'],
             'climbing_level' => ['nullable', Rule::enum(ClimbingLevel::class)],
             'injury_notes' => ['nullable', 'string', 'max:1000'],
-            'plan_type' => ['nullable', Rule::enum(PlanType::class)],
+
+            // 会員（登録料支払い済み）か、ビジターか。選べるプランが変わるので、プランを選ぶときは必須
+            'registration_fee_paid' => ['nullable', 'required_with:plan_type', 'boolean'],
+            'plan_type' => ['nullable', Rule::enum(PlanType::class), new PlanMatchesRegistrationFee],
 
             // 注意フラグ
             'caution_flag' => ['nullable', 'boolean'],
@@ -119,6 +123,7 @@ class UpdateMemberRequest extends FormRequest
             'emergency_name' => '緊急連絡先氏名',
             'emergency_relation' => '緊急連絡先続柄',
             'emergency_phone' => '緊急連絡先電話番号',
+            'registration_fee_paid' => '会員／ビジター',
             'plan_type' => '利用プラン',
         ];
     }
@@ -131,6 +136,7 @@ class UpdateMemberRequest extends FormRequest
         return [
             'member_code.regex' => '会員番号は5桁以内の半角数字で入力してください。',
             'category.required_with' => '利用タイプを選ぶ場合は、料金を決めるために会員区分も選んでください。',
+            'registration_fee_paid.required_with' => '利用タイプを選ぶ場合は、「会員（登録料支払い済み）」か「ビジター」かも選んでください。',
         ];
     }
 }

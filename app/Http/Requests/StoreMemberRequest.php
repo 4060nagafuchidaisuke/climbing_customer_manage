@@ -9,6 +9,7 @@ use App\Enums\Gender;
 use App\Enums\MemberCategory;
 use App\Enums\PlanType;
 use App\Enums\ResidenceArea;
+use App\Rules\PlanMatchesRegistrationFee;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -56,7 +57,10 @@ class StoreMemberRequest extends FormRequest
 
             // 料金は会員区分で決まるので、プランを選ぶときだけ会員区分を必須にする
             'category' => ['nullable', 'required_with:plan_type', Rule::enum(MemberCategory::class)],
-            'plan_type' => ['nullable', Rule::enum(PlanType::class)],
+
+            // 会員（登録料支払い済み）か、ビジターか。選べるプランが変わるので、プランを選ぶときは必須
+            'registration_fee_paid' => ['nullable', 'required_with:plan_type', 'boolean'],
+            'plan_type' => ['nullable', Rule::enum(PlanType::class), new PlanMatchesRegistrationFee],
 
             // 任意の項目
             'birth_date' => ['nullable', 'date', 'before:today'],
@@ -120,6 +124,7 @@ class StoreMemberRequest extends FormRequest
             'caution_notes' => '注意事項',
             'is_minor' => '年齢区分',
             'category' => '会員区分',
+            'registration_fee_paid' => '会員／ビジター',
             'plan_type' => '利用タイプ',
             'guardian_name' => '保護者氏名',
             'guardian_phone' => '保護者連絡先',
@@ -144,6 +149,7 @@ class StoreMemberRequest extends FormRequest
             'postal_code.regex' => '郵便番号は半角数字（ハイフンなし）で入力してください。',
             'member_code.regex' => '会員番号は5桁以内の半角数字で入力してください。',
             'category.required_with' => '利用タイプを選ぶ場合は、料金を決めるために会員区分も選んでください。',
+            'registration_fee_paid.required_with' => '利用タイプを選ぶ場合は、「会員（登録料支払い済み）」か「ビジター」かも選んでください。',
         ];
     }
 }

@@ -49,6 +49,7 @@ class Member extends Model
         'emergency_relation',
         'emergency_phone',
         'category',
+        'registration_fee_paid',
         'registered_at',
     ];
 
@@ -57,6 +58,7 @@ class Member extends Model
         'birth_date' => 'date',
         'caution_flag' => 'boolean',
         'is_minor' => 'boolean',
+        'registration_fee_paid' => 'boolean', // null（未設定）は null のまま
         'gender' => Gender::class,
         'category' => MemberCategory::class,
         'contact_type' => ContactType::class,
@@ -144,6 +146,16 @@ class Member extends Model
     public function isStaying(): bool
     {
         return $this->activeVisit()->exists();
+    }
+
+    // 登録料を払った会員か、ビジターか（画面表示用）
+    public function registrationFeeLabel(): string
+    {
+        return match ($this->registration_fee_paid) {
+            true => '会員（登録料支払い済み）',
+            false => 'ビジター',
+            null => '未設定',
+        };
     }
 
     // 会員かビジターか

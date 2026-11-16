@@ -25,6 +25,9 @@ class MemberRegistrationService
         // registered_at に now() をセット
         $member->registered_at = now();
 
+        // この画面では登録料（¥1,000）の受領を確認しているので、支払い済みにする
+        $member->registration_fee_paid = true;
+
         // DBに保存
         $member->save();
     }
