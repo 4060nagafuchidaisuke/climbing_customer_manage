@@ -320,9 +320,9 @@ class FormsMemberImportTest extends TestCase
     }
 
     // 画面から「チェックのみ」でアップロードする
-    private function uploadForCheck(Staff $admin): void
+    private function uploadForCheck(Staff $admin, ?array $rows = null): void
     {
-        $file = new UploadedFile($this->makeFile([$this->formsRow()]), 'forms.xlsx', null, null, true);
+        $file = new UploadedFile($this->makeFile($rows ?? [$this->formsRow()]), 'forms.xlsx', null, null, true);
 
         $this->actingAs($admin)
             ->post(route('forms-import.store'), ['file' => $file, 'dry_run' => '1'])
@@ -361,6 +361,20 @@ class FormsMemberImportTest extends TestCase
             ->assertSee('取り込み結果')
             ->assertSee('★取り込むファイルの選択')
             ->assertDontSee(route('forms-import.confirm')); // 説明文にもボタン名が出るので、送信先で確認する
+    }
+
+    public function test_登録できる行が0件なら取り込むボタンは出さず、選び直しだけにする(): void
+    {
+        Storage::fake('local');
+        $admin = Staff::factory()->admin()->create();
+
+        // 見出しが1行目にない（＝必要な列が1つも見つからない）ファイル
+        $this->uploadForCheck($admin, [['メモ' => 'タイトル行']]);
+
+        $this->get(route('forms-import.create'))
+            ->assertSee('新しく登録できる行がありません')
+            ->assertSee('ファイルを選び直す')
+            ->assertDontSee(route('forms-import.confirm'));
     }
 
     public function test_取り消すとファイルを消して何も登録しない(): void

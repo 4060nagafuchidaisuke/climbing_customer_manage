@@ -89,7 +89,12 @@
                         <div class="mt-6 pt-4 border-t text-center">
                             <p class="text-sm text-gray-700 mb-3">
                                 チェックしたファイル：<span class="font-medium">{{ $pending['name'] }}</span><br>
-                                <span class="text-xs text-gray-500">取り込めなかった行は登録されません。ファイルは1時間たつと自動で削除されます。</span>
+                                @if($result['imported'] > 0)
+                                    <span class="text-xs text-gray-500">取り込めなかった行は登録されません。ファイルは1時間たつと自動で削除されます。</span>
+                                @else
+                                    {{-- 登録できる行がないのに「取り込む」を押せると、何か登録されたように見えてまぎらわしいので出さない --}}
+                                    <span class="text-sm font-bold text-red-700">新しく登録できる行がありません。内容を確かめて、ファイルを選び直してください。</span>
+                                @endif
                             </p>
                             <div class="flex justify-center gap-3">
                                 <form method="POST" action="{{ route('forms-import.cancel') }}">
@@ -97,17 +102,19 @@
                                     @method('DELETE')
                                     <button type="submit"
                                             class="px-6 py-2 bg-white border border-gray-300 text-gray-700 text-lg rounded-md hover:bg-gray-50 transition">
-                                        取り消す
+                                        {{ $result['imported'] > 0 ? '取り消す' : 'ファイルを選び直す' }}
                                     </button>
                                 </form>
-                                <form method="POST" action="{{ route('forms-import.confirm') }}"
-                                      onsubmit="return confirm('{{ $result['imported'] }}件を会員として登録します。よろしいですか？');">
-                                    @csrf
-                                    <button type="submit"
-                                            class="px-6 py-2 bg-slate-700 text-white text-lg rounded-md hover:bg-slate-600 transition">
-                                        この内容で取り込む
-                                    </button>
-                                </form>
+                                @if($result['imported'] > 0)
+                                    <form method="POST" action="{{ route('forms-import.confirm') }}"
+                                          onsubmit="return confirm('{{ $result['imported'] }}件を会員として登録します。よろしいですか？');">
+                                        @csrf
+                                        <button type="submit"
+                                                class="px-6 py-2 bg-slate-700 text-white text-lg rounded-md hover:bg-slate-600 transition">
+                                            この内容で取り込む
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     @endif
