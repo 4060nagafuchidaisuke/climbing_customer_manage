@@ -1,12 +1,13 @@
 {{--
     会員登録・編集画面の「プランの選択」
     先に「会員（登録料支払い済み）／ビジター」を選び、その人が選べる利用タイプだけをプルダウンに出す
-    使い方：<x-member.plan-select :paid="true/false/null" :plan-type="現在のプランの値 or null" />
+    使い方：<x-member.plan-select :paid="true/false/null" :plan-type="現在のプランの値 or null" :category="会員区分 or null" />
+    料金は「利用タイプ × 会員区分」で決まるので、会員区分もこの中（利用タイプの下）に出す
 
     プルダウンは会員用とビジター用の2つをサーバーで作っておき、選んだ方だけを表示・送信する
     （見えていない方は disabled にするので送信されない）
 --}}
-@props(['paid' => null, 'planType' => null])
+@props(['paid' => null, 'planType' => null, 'category' => null])
 
 @php
     // 会員かビジターかは '1' / '0' / ''（未選択）の文字列にそろえる（Alpine.js とラジオの value に合わせる）
@@ -16,6 +17,7 @@
         default => (string) $currentPaid,
     };
     $currentPlan = (string) old('plan_type', $planType);
+    $currentCategory = old('category', $category instanceof \BackedEnum ? $category->value : $category);
 
     $groups = [
         '1' => \App\Enums\PlanType::optionsFor(true),
@@ -72,6 +74,23 @@
     </select>
 
     @error('plan_type')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+
+    {{-- 会員区分（料金の区分）。利用タイプと合わせて料金が決まるので、すぐ下に置く --}}
+    <label class="block text-sm font-medium text-gray-700 mt-4 mb-1">
+        会員区分（一般・シニア・学生） <span class="text-xs text-gray-500">※利用タイプを選ぶときは必須</span>
+    </label>
+    <select name="category"
+            class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+        <option value="">選択してください</option>
+        @foreach (\App\Enums\MemberCategory::cases() as $case)
+            <option value="{{ $case->value }}" @selected($currentCategory === $case->value)>
+                {{ $case->label() }}
+            </option>
+        @endforeach
+    </select>
+    @error('category')
         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
     @enderror
 </div>

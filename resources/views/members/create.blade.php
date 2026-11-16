@@ -126,24 +126,7 @@
                                 @enderror
                             </div>
 
-                            {{-- 年齢カテゴリ --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">会員区分（一般・シニア・学生）<span class="text-xs text-gray-500">※利用タイプを選ぶときは必須</span></label>
-                                <select name="category"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm
-                                            focus:ring-slate-500 focus:border-slate-500">
-                                    <option value="">選択してください</option>
-                                    @foreach(\App\Enums\MemberCategory::cases() as $case)
-                                        <option value="{{ $case->value }}"
-                                            @selected(old('category', $data['category'] ?? '') === $case->value)>
-                                            {{ $case->label() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('category')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            {{-- 会員区分は料金を決めるものなので、「プランの選択」の中（利用タイプの下）に置いている --}}
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">性別</label>
@@ -340,7 +323,8 @@
                         <h3 class="font-semibold text-gray-700 mb-4 pb-2 border-b">プランの選択</h3>
                         {{-- 会員かビジターかを選ぶと、選べる利用タイプだけがプルダウンに出る --}}
                         <x-member.plan-select :paid="$data['registration_fee_paid'] ?? null"
-                                              :plan-type="$data['plan_type'] ?? null" />
+                                              :plan-type="$data['plan_type'] ?? null"
+                                              :category="$data['category'] ?? null" />
                     </div>
 
                     {{-- 注意フラグ --}}

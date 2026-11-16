@@ -66,6 +66,24 @@ class MemberPlanVisitorTest extends TestCase
             ->assertSee('先に「会員」か「ビジター」を選んでください');
     }
 
+    public function test_会員区分は登録画面と編集画面で利用タイプの下に出る(): void
+    {
+        $member = app(MemberRegistrationService::class)->create($this->formData(['category' => 'senior']));
+
+        $this->actingAs($this->admin());
+        foreach ([route('members.create'), route('members.edit', $member)] as $url) {
+            $html = $this->get($url)->assertOk()->getContent();
+
+            // 会員区分のプルダウンは1つだけで、利用タイプより後ろにある
+            $this->assertSame(1, substr_count($html, 'name="category"'));
+            $this->assertGreaterThan(strpos($html, 'name="plan_type"'), strpos($html, 'name="category"'));
+        }
+
+        // 編集画面では今の会員区分が選ばれている
+        $this->get(route('members.edit', $member))
+            ->assertSee('value="senior" selected', false);
+    }
+
     public function test_ビジターで登録すると記録され、確認画面にも出る(): void
     {
         $data = $this->formData([
