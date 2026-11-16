@@ -25,6 +25,39 @@ enum PlanType: string
         };
     }
 
+    // ビジター（登録料を払っていない人）向けのプランか
+    public function isForVisitor(): bool
+    {
+        return match ($this) {
+            self::VISITOR_1DAY,
+            self::VISITOR_MINUTS_120 => true,
+            default => false,
+        };
+    }
+
+    // 「会員／ビジター」を選んだあとのプルダウンに出す名前（ビジターかどうかは上で選んでいるので付けない）
+    public function shortLabel(): string
+    {
+        return match ($this) {
+            self::VISITOR_1DAY => '1日利用料',
+            self::VISITOR_MINUTS_120 => '120分利用料',
+            default => $this->label(),
+        };
+    }
+
+    // 会員（true）／ビジター（false）が選べるプランを [値 => 表示名] で返す
+    public static function optionsFor(bool $registrationFeePaid): array
+    {
+        $options = [];
+        foreach (self::cases() as $case) {
+            if ($case->isForVisitor() !== $registrationFeePaid) {
+                $options[$case->value] = $case->shortLabel();
+            }
+        }
+
+        return $options;
+    }
+
     public function isPeriodPass(): bool
     {
         return match ($this) {

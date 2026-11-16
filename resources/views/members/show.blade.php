@@ -112,6 +112,10 @@
                                 <dt class="text-gray-500">会員番号</dt>
                                 <dd class="font-mono text-gray-600">{{ $member->member_code ?? '—' }}</dd>
                             </div>
+                            <div>
+                                <dt class="text-gray-500">会員／ビジター</dt>
+                                <dd class="text-gray-800">{{ $member->registrationFeeLabel() }}</dd>
+                            </div>
                             @if($member->injury_notes)
                                 <div class="col-span-2">
                                     <dt class="text-gray-500">負傷・注意事項</dt>

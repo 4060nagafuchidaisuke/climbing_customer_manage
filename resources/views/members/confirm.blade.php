@@ -69,6 +69,20 @@
                                     <dd class="text-gray-800">{{ \App\Enums\ClimbingExperience::tryFrom($data['climbing_experience'] ?? '')?->label() ?? '未選択' }}</dd>
                                 </div>
                                 <div class="flex">
+                                    <dt class="w-32 text-gray-500 shrink-0">会員／ビジター</dt>
+                                    <dd class="text-gray-800">
+                                        {{ match ((string) ($data['registration_fee_paid'] ?? '')) {
+                                            '1' => '会員（登録料支払い済み）',
+                                            '0' => 'ビジター',
+                                            default => '未設定',
+                                        } }}
+                                    </dd>
+                                </div>
+                                <div class="flex">
+                                    <dt class="w-32 text-gray-500 shrink-0">利用タイプ</dt>
+                                    <dd class="text-gray-800">{{ \App\Enums\PlanType::tryFrom($data['plan_type'] ?? '')?->shortLabel() ?? '選択なし' }}</dd>
+                                </div>
+                                <div class="flex">
                                     <dt class="w-32 text-gray-500 shrink-0">メールアドレス</dt>
                                     <dd class="text-gray-800">{{ $data['email'] ?? '未入力' }}</dd>
                                 </div>

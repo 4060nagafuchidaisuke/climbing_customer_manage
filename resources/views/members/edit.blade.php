@@ -147,23 +147,7 @@
                                 @enderror
                             </div>
 
-                            {{-- 年齢カテゴリ --}}
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">会員区分（一般・シニア・学生）<span class="text-xs text-gray-500">※利用タイプを選ぶときは必須</span></label>
-                                <select name="category"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
-                                    <option value="">選択してください</option>
-                                    @foreach (\App\Enums\MemberCategory::cases() as $case)
-                                        <option value="{{ $case->value }}"
-                                            @selected(old('category', $member->category?->value) === $case->value)>
-                                            {{ $case->label() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('category')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
+                            {{-- 会員区分は料金を決めるものなので、「プラン変更」の中（利用タイプの下）に置いている --}}
 
                             {{-- 性別の選択 --}}
                             <div>
@@ -362,26 +346,12 @@
                                 {{ $member->activePlan?->plan->plan_type->label() ?? '（未設定）' }}
                             </span>
                         </p>
-                        <div class="flex gap-3 items-end">
-                            <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">
-                                    利用タイプ <span class="text-xs text-gray-500">※選ぶ場合は会員区分も必須</span>
-                                </label>
-                                <select name="plan_type"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
-                                    <option value="">選択してください</option>
-                                    @foreach (\App\Enums\PlanType::cases() as $case)
-                                        <option value="{{ $case->value }}"
-                                            @selected(old('plan_type', $member->activePlan?->plan->plan_type?->value) == $case->value)>
-                                            {{ $case->label() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('plan_type')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
+                        {{-- 会員かビジターかを選ぶと、選べる利用タイプだけがプルダウンに出る
+                             未設定の人でも、今のプランがあればそのプランから会員／ビジターを決めて表示する --}}
+                        @php($currentPlanType = $member->activePlan?->plan->plan_type)
+                        <x-member.plan-select :paid="$member->registration_fee_paid ?? ($currentPlanType ? ! $currentPlanType->isForVisitor() : null)"
+                                              :plan-type="$currentPlanType?->value"
+                                              :category="$member->category" />
                     </div>
 
                     {{-- ボタン --}}
