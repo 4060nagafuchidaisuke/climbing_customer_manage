@@ -32,6 +32,11 @@ mkdir -p "$BACKUP_DIR"
 # ---- dump → 仮ファイル ----
 TMP="$BACKUP_DIR/hazy_${STAMP}.sql.gz.tmp"
 FINAL="$BACKUP_DIR/hazy_${STAMP}.sql.gz"
+# 同じ「分」のバックアップがすでにあれば、上書きしないよう秒まで付ける
+# （restore_db.sh は戻す直前に自動でバックアップするので、同じ分に2つできることがある）
+if [ -e "$FINAL" ]; then
+  FINAL="$BACKUP_DIR/hazy_${STAMP}$(date +%S).sql.gz"
+fi
 
 cd "$PROJECT_DIR" || { log "プロジェクトフォルダに入れず中止"; exit 1; }
 
