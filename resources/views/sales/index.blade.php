@@ -76,9 +76,10 @@
                         @forelse ($daily as $row)
                             <tr>
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('sales.details', ['date' => $row->start_date->format('Y-m-d')]) }}"
+                                    {{-- 支払日ごとの売上（paid_date は 'Y-m-d' の文字列） --}}
+                                    <a href="{{ route('sales.details', ['date' => $row->paid_date]) }}"
                                     class="text-sky-600 hover:underline">
-                                        {{ $row->start_date->format('Y/m/d') }}
+                                        {{ \Illuminate\Support\Carbon::parse($row->paid_date)->format('Y/m/d') }}
                                     </a>
                                 </td>
                                 <td class="px-6 py-4 text-right">¥{{ number_format($row->total) }}</td>

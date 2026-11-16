@@ -25,7 +25,26 @@
     ];
 @endphp
 
-<div x-data="{ paid: @js($currentPaid) }" {{ $attributes }}>
+{{-- 会員／ビジターや利用タイプを最初の状態から変えたら plan-selection-changed イベントで知らせる
+     （編集画面の「継続」ボタンは、別のプランを選んでいる間は押せないようにする） --}}
+<div x-data="{
+        paid: @js($currentPaid),
+        plan: @js($currentPlan),
+        initialPaid: @js($currentPaid),
+        initialPlan: @js($currentPlan),
+        notify() {
+            $dispatch('plan-selection-changed', { changed: this.paid !== this.initialPaid || this.plan !== this.initialPlan });
+        },
+    }"
+    x-init="
+        $watch('paid', () => $nextTick(() => {
+            const select = $root.querySelector(`select[data-group='${paid}']`);
+            plan = select ? select.value : '';
+            notify();
+        }));
+        $watch('plan', () => notify());
+    "
+    {{ $attributes }}>
     <span class="block text-sm font-medium text-gray-700 mb-1">
         会員／ビジター <span class="text-xs text-gray-500">※利用タイプを選ぶ場合は必須</span>
     </span>
@@ -53,7 +72,8 @@
 
     {{-- 会員用・ビジター用 --}}
     @foreach ($groups as $groupPaid => $options)
-        <select name="plan_type"
+        <select name="plan_type" data-group="{{ $groupPaid }}"
+                @change="plan = $event.target.value"
                 x-show="paid === '{{ $groupPaid }}'"
                 :disabled="paid !== '{{ $groupPaid }}'"
                 @if ($currentPaid !== (string) $groupPaid) style="display: none" disabled @endif

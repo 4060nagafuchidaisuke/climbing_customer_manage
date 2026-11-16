@@ -343,9 +343,72 @@
                         <p class="text-sm text-gray-600 mb-4">
                             現在の利用タイプ：
                             <span class="font-medium">
-                                {{ $member->activePlan?->plan->plan_type->label() ?? '（未設定）' }}
+                                {{ ($currentPass ?? $member->activePlan)?->plan->plan_type->label() ?? '（未設定）' }}
                             </span>
+                            <x-plan.expiry-badge :member-plan="$currentPass" class="ml-1" />
                         </p>
+
+                        {{-- 今の期間パス：開始日・終了日の修正と、同じパスでの継続 --}}
+                        @if ($currentPass)
+                            <div class="mb-6 p-4 rounded-md bg-gray-50 border border-gray-200 space-y-4">
+
+                                {{-- 開始日・終了日（開始日を変えると終了日を自動で計算し直す。終了日はそのあと自由に直せる） --}}
+                                @php
+                                    $passStart = old('plan_start_date', $currentPass->start_date->format('Y-m-d'));
+                                    $passEnd = old('plan_end_date', $currentPass->end_date->format('Y-m-d'));
+                                @endphp
+                                <div x-data="{
+                                        start: @js($passStart),
+                                        end: @js($passEnd),
+                                        days: {{ $currentPass->plan->plan_type->durationDays() }},
+                                        recalc() {
+                                            if (! this.start) return;
+                                            const d = new Date(this.start + 'T00:00:00');
+                                            d.setDate(d.getDate() + this.days);
+                                            const pad = (n) => String(n).padStart(2, '0');
+                                            this.end = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+                                        },
+                                    }">
+                                    <span class="block text-sm font-medium text-gray-700 mb-1">今のパスの期間</span>
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <input type="date" name="plan_start_date" value="{{ $passStart }}" x-model="start" @change="recalc()"
+                                               class="rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+                                        <span class="text-gray-500">〜</span>
+                                        <input type="date" name="plan_end_date" value="{{ $passEnd }}" x-model="end"
+                                               class="rounded-md border-gray-300 shadow-sm text-sm focus:ring-slate-500 focus:border-slate-500">
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        開始日を変えると終了日を自動で計算し直します。終了日はそのあと自由に直せます。「更新する」で保存します。
+                                    </p>
+                                    @error('plan_start_date')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                    @error('plan_end_date')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- 継続（同じパスのみ。下のプルダウンで別のプランを選んでいる間は押せない） --}}
+                                @if ($renewal)
+                                    <div x-data="{ changed: false }" @plan-selection-changed.window="changed = $event.detail.changed"
+                                         class="pt-4 border-t border-gray-200">
+                                        <button type="submit" form="renew-form" :disabled="changed"
+                                                onclick="return confirm('{{ $renewal['plan']->plan_type->label() }}を継続します（¥{{ number_format($renewal['plan']->price) }} を受け取りましたか？）。よろしいですか？');"
+                                                class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-md hover:bg-emerald-500 transition
+                                                       disabled:bg-gray-300 disabled:cursor-not-allowed">
+                                            {{ $renewal['plan']->plan_type->label() }}を継続する（¥{{ number_format($renewal['plan']->price) }}）
+                                        </button>
+                                        <p class="text-xs text-gray-600 mt-2">
+                                            継続後の期間：{{ $renewal['start_date']->format('Y/m/d') }} 〜 {{ $renewal['end_date']->format('Y/m/d') }}
+                                            （まだ期間内なら今の終了日の翌日から、期限切れなら今日から）
+                                        </p>
+                                        <p x-show="changed" style="display: none" class="text-xs text-amber-700 mt-1">
+                                            下で別のプランを選んでいるため、継続はできません。別のプランに変えるときは「更新する」を押してください。
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
                         {{-- 会員かビジターかを選ぶと、選べる利用タイプだけがプルダウンに出る
                              未設定の人でも、今のプランがあればそのプランから会員／ビジターを決めて表示する --}}
                         @php($currentPlanType = $member->activePlan?->plan->plan_type)
@@ -369,6 +432,13 @@
                     </div>
                 </div>
             </form>
+
+            {{-- 継続ボタン用のフォーム（編集フォームの中にフォームは入れられないので外に置き、ボタンから form="renew-form" で送る） --}}
+            @if ($renewal)
+                <form id="renew-form" method="POST" action="{{ route('members.plans.renew', $member) }}">
+                    @csrf
+                </form>
+            @endif
         </div>
     </div>
 </x-app-layout>

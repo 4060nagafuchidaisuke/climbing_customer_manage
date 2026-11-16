@@ -76,6 +76,10 @@ class UpdateMemberRequest extends FormRequest
             'registration_fee_paid' => ['nullable', 'required_with:plan_type', 'boolean'],
             'plan_type' => ['nullable', Rule::enum(PlanType::class), new PlanMatchesRegistrationFee],
 
+            // 今の期間パスの開始日・終了日（スタッフが直せる）
+            'plan_start_date' => ['nullable', 'date', 'required_with:plan_end_date'],
+            'plan_end_date' => ['nullable', 'date', 'required_with:plan_start_date', 'after_or_equal:plan_start_date'],
+
             // 注意フラグ
             'caution_flag' => ['nullable', 'boolean'],
             'caution_notes' => ['nullable', 'string', 'max:1000'],
@@ -125,6 +129,8 @@ class UpdateMemberRequest extends FormRequest
             'emergency_phone' => '緊急連絡先電話番号',
             'registration_fee_paid' => '会員／ビジター',
             'plan_type' => '利用プラン',
+            'plan_start_date' => 'パスの開始日',
+            'plan_end_date' => 'パスの終了日',
         ];
     }
 
@@ -137,6 +143,7 @@ class UpdateMemberRequest extends FormRequest
             'member_code.regex' => '会員番号は5桁以内の半角数字で入力してください。',
             'category.required_with' => '利用タイプを選ぶ場合は、料金を決めるために会員区分も選んでください。',
             'registration_fee_paid.required_with' => '利用タイプを選ぶ場合は、「会員（登録料支払い済み）」か「ビジター」かも選んでください。',
+            'plan_end_date.after_or_equal' => 'パスの終了日は、開始日と同じ日かそれより後にしてください。',
         ];
     }
 }

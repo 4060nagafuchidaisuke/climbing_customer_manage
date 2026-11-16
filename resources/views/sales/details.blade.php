@@ -19,7 +19,8 @@ background="images/Profile_Details_.webp"
                         <th class="px-6 py-3 text-left">会員</th>
                         <th class="px-6 py-3 text-left">プラン</th>
                         <th class="px-6 py-3 text-right">金額</th>
-                        <th class="px-6 py-3 text-left">契約日</th>
+                        <th class="px-6 py-3 text-left">支払日</th>
+                        <th class="px-6 py-3 text-left">利用期間</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -28,10 +29,13 @@ background="images/Profile_Details_.webp"
                             <td class="px-6 py-4">{{ $mp->member->full_name }}</td>
                             <td class="px-6 py-4">{{ $mp->plan->plan_type->label() }}</td>
                             <td class="px-6 py-4 text-right">¥{{ number_format($mp->price_paid) }}</td>
-                            <td class="px-6 py-4">{{ $mp->start_date->format('Y/m/d') }}</td>
+                            <td class="px-6 py-4">{{ $mp->paid_at?->format('Y/m/d H:i') }}</td>
+                            <td class="px-6 py-4 text-gray-600">
+                                {{ $mp->start_date->format('Y/m/d') }}{{ $mp->end_date ? ' 〜 '.$mp->end_date->format('Y/m/d') : '' }}
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">明細なし</td></tr>
+                        <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">明細なし</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -106,10 +106,17 @@ class MemberController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Member $member)
+    public function edit(Member $member, MemberPlanService $service)
     {
+        // 今の期間パス（開始日・終了日を直せる）と、継続したときの期間・料金
+        $currentPass = $member->latestPlan()->with('plan')->first();
+        if (! $currentPass?->plan->plan_type->isPeriodPass()) {
+            $currentPass = null;
+        }
+        $renewal = $service->renewalPreview($member);
+
         // 編集フォーム
-        return view('members.edit', compact('member'));
+        return view('members.edit', compact('member', 'currentPass', 'renewal'));
     }
 
     /**
@@ -120,8 +127,8 @@ class MemberController extends Controller
         // UpdateMemberRequestのrules()メソッド内の項目だけ$validatedに入れる
         $validated = $request->validated();
 
-        // plan_typeだけ分離する（）
-        unset($validated['plan_type']);
+        // プランに関わる項目は会員情報とは別に扱うので分離する
+        unset($validated['plan_type'], $validated['plan_start_date'], $validated['plan_end_date']);
 
         // 会員情報の編集
         $member->update($validated);
@@ -129,9 +136,15 @@ class MemberController extends Controller
         // プラン変更：現在のプランと異なる場合のみ実行
         $planType = $request->enum('plan_type', PlanType::class);
         $currentPlanType = $member->activePlan?->plan->plan_type;
+        $changesPlan = $planType !== null && $planType !== $currentPlanType;
+
+        // 今の期間パスの開始日・終了日の修正（別のプランに変えるときは新しいプランになるので直さない）
+        if (! $changesPlan && $request->filled(['plan_start_date', 'plan_end_date'])) {
+            $service->updateCurrentDates($member, $request->input('plan_start_date'), $request->input('plan_end_date'));
+        }
 
         // プラン変更（選択されていれば既存の仕組みに委譲）
-        if ($planType !== null && $planType !== $currentPlanType) {
+        if ($changesPlan) {
             try {
                 $service->change($member, $planType);
             } catch (DomainException $e) {

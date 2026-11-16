@@ -45,6 +45,9 @@ Route::middleware('auth')->group(function () {
     // 会員のプラン変更
     Route::post('members/{member}/plans', [MemberPlanController::class, 'store'])->name('members.plans.store');
 
+    // 期間パスの継続（同じパスで次の期間を作る）
+    Route::post('members/{member}/plans/renew', [MemberPlanController::class, 'renew'])->name('members.plans.renew');
+
     // 来退店受付
     Route::post('/checkin/search', [VisitController::class, 'search'])->name('visits.search');
 

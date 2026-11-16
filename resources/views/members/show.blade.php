@@ -232,6 +232,9 @@
                                 </div>
                                 <div class="text-xs text-gray-600 mt-1">
                                     ¥{{ number_format($plan->price_paid) }}
+                                    @if ($plan->paid_at)
+                                        <span class="text-gray-500">（{{ $plan->paid_at->format('Y/m/d') }} 支払い）</span>
+                                    @endif
                                 </div>
                             </div>
                         @empty
