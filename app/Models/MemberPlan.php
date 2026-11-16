@@ -20,6 +20,7 @@ class MemberPlan extends Model
         'member_id',
         'plan_id',
         'price_paid',
+        'paid_at',
         'start_date',
         'end_date',
         'cancelled_at',
@@ -27,10 +28,19 @@ class MemberPlan extends Model
 
     // 型指定
     protected $casts = [
+        'paid_at' => 'datetime',
         'start_date' => 'date',
         'end_date' => 'date',
         'cancelled_at' => 'datetime',
     ];
+
+    // 支払日の指定がなければ、作成した時点を支払日にする（プランは支払いと同時に作るため）
+    protected static function booted(): void
+    {
+        static::creating(function (MemberPlan $memberPlan) {
+            $memberPlan->paid_at ??= now();
+        });
+    }
 
     /**
      * リレーション設定

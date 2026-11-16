@@ -65,6 +65,14 @@ class MemberPlanFactory extends Factory
         });
     }
 
+    // 支払日は、指定がなければ開始日と同じ日にする（ダミーデータの売上が開始日の日に出るように）
+    public function configure(): static
+    {
+        return $this->afterMaking(function (MemberPlan $memberPlan) {
+            $memberPlan->paid_at ??= $memberPlan->start_date;
+        });
+    }
+
     public function cancelled(): static
     {
         return $this->state(['cancelled_at' => now()]);
