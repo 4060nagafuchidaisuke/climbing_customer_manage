@@ -65,8 +65,12 @@
                                 </td>
 
                                 {{--プラン--}}
+                                {{-- 期間パスは期限の状態も出す（期限切れでもプラン名を出すため latestPlan を使う） --}}
                                 <td class="px-6 py-4 text-gray-600">
-                                    {{ $visit->member->activePlan?->plan->plan_type->label() ?? '－' }}
+                                    {{ $visit->member->latestPlan?->plan->plan_type->label() ?? '－' }}
+                                    <div class="mt-1">
+                                        <x-plan.expiry-badge :member-plan="$visit->member->latestPlan" />
+                                    </div>
                                 </td>
 
                                 {{--入店時間 --}}

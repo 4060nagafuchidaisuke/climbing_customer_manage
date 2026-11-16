@@ -85,6 +85,16 @@
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ $visit->member->full_name }}
                                     </p>
+
+                                    {{-- プラン（期間パスは期限の状態も出す） --}}
+                                    @if ($visit->member->latestPlan)
+                                        <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                                            <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-600">
+                                                {{ $visit->member->latestPlan->plan?->plan_type?->label() }}
+                                            </span>
+                                            <x-plan.expiry-badge :member-plan="$visit->member->latestPlan" />
+                                        </div>
+                                    @endif
                                 </div>
 
 
@@ -142,10 +152,11 @@
                                             {{ $visit->member->climbing_level?->label() ?? '—' }}
                                         </span>
 
-                                        {{-- プラン --}}
+                                        {{-- プラン（期間パスは期限の状態も出す） --}}
                                         <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-600">
-                                            {{ $visit->member->activePlan?->plan?->plan_type?->label() ?? '—' }}
+                                            {{ $visit->member->latestPlan?->plan?->plan_type?->label() ?? '—' }}
                                         </span>
+                                        <x-plan.expiry-badge :member-plan="$visit->member->latestPlan" />
 
                                         {{-- 区分 --}}
                                         <span class="px-2 py-0.5 rounded-full bg-gray-100 text-[11px] text-gray-600">

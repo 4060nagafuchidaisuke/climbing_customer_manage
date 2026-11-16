@@ -33,7 +33,7 @@ class VisitController extends Controller
     public function today()
     {
         $visits = Visit::whereDate('check_in_at', today())
-            ->with(['member.activePlan.plan', 'member.previousVisit'])
+            ->with(['member.latestPlan.plan', 'member.previousVisit'])
             ->orderByDesc('check_in_at')
             ->paginate(10);
 

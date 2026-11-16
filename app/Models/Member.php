@@ -136,6 +136,13 @@ class Member extends Model
         return $this->hasOne(MemberPlan::class)->active()->latestOfMany();
     }
 
+    // 最新のプラン（解約したものは除く。期限切れでも返す）
+    // 期間パスの「期限切れ」を画面に出すために使う。activePlan は期限切れだと null になる
+    public function latestPlan()
+    {
+        return $this->hasOne(MemberPlan::class)->whereNull('cancelled_at')->latestOfMany();
+    }
+
     // 現在入店中（退店時刻がnull）
     public function activeVisit()
     {

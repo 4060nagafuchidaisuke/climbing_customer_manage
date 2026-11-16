@@ -26,10 +26,11 @@ class DashboardController extends Controller
         $monthlyVisits = Visit::whereYear('check_in_at', $today->year)->whereMonth('check_in_at', $today->month)->count();
 
         // ── 在店中一覧（入店順） ─────────────────────────
-        $activeVisits = Visit::whereNull('check_out_at')->with(['member.activePlan'])->orderBy('check_in_at', 'asc')->limit(5)->get();
+        // 期間パスの期限切れも出すので、有効なプラン（activePlan）ではなく最新のプラン（latestPlan）を読む
+        $activeVisits = Visit::whereNull('check_out_at')->with(['member.latestPlan.plan'])->orderBy('check_in_at', 'asc')->limit(5)->get();
 
         // ── 本日の入退店ログ（直近 5 件） ───────────────
-        $recentVisits = Visit::whereDate('check_in_at', $today)->with('member.activePlan.plan')->orderByDesc('check_in_at')->limit(5)->get();
+        $recentVisits = Visit::whereDate('check_in_at', $today)->with('member.latestPlan.plan')->orderByDesc('check_in_at')->limit(5)->get();
 
         // ── 本日の総来店数） ───────────────
         $todayVisitsTotal = Visit::whereDate('check_in_at', $today)->count();
